@@ -13,7 +13,8 @@
 - **Persistent profile:** `ig_profile/` (auto-login, survives restarts)
 - **Recovery tool:** `python3 recover_sessions.py` (rebuilds from fallback)
 - **Health script:** `python3 check_sessions.py`
-- **Auto-refresh:** Cron **daily 8AM** — checks & refreshes all sessions
+- **Auto-recovery:** `python3 auto_recover.py` — fixes Playwright, Python, sessions after updates
+- **Auto-refresh:** Cron **daily 8AM** — checks & auto-recovers all systems
 - **Expiry check:** Cron **1st of month 9AM** — warns 30 days before cookie expiry
 - **Keep awake:** launchd agent `com.openclaw.keepawake` prevents sleep
 - **Expiry:** Instagram sessionid ~364d | Facebook c_user ~365d | TikTok sid_tt ~180d
