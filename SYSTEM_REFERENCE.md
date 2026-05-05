@@ -17,6 +17,15 @@ All accounts, tools, procedures, and recovery steps in one place.
 | Recovery | Google account recovery via phone |
 | Linked | Instagram, TikTok, GitHub |
 
+### Telegram (Communication Channel)
+| Field | Value |
+|-------|-------|
+| Bot ID | 8510041285 |
+| Mr D's User ID | 8248125738 |
+| Config | OpenClaw gateway `channels.telegram` |
+| Recovery | Re-pair via OpenClaw if needed |
+| Note | No session to maintain — bot-based, always on |
+
 ### Social Media
 | Platform | Handle/Page | Login Method | Session Expiry |
 |----------|-------------|-------------|----------------|

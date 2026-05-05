@@ -43,12 +43,20 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 - **List:** `gog gmail list <count>`
 - **Read:** `gog gmail read <thread_id>`
 
+### Telegram
+- **Bot ID:** 8510041285
+- **User ID:** 8248125738 (Mr D)
+- **Config:** OpenClaw gateway channels.telegram
+- **Pairing:** /Users/deonvandenberg/.openclaw/credentials/telegram-pairing.json
+- **Status:** Active — paired via OpenClaw gateway
+- **Recovery:** Re-pair via OpenClaw if needed
+
 ### Instagram
 - **Handle:** @tingalingpreprimary
 - **Email:** info@tingalingschools.com
 - **Password:** Tingaling@2026
 - **Full name:** Ting-A-Ling Schools
-- **Status:** Active — new account set up 2026-05-04 (replaced lost one on old Mac mini)
+- **Status:** Active — new account set up 2026-05-04
 - **Logo file:** /Users/deonvandenberg/.openclaw/media/inbound/35b41dbf-1767-4649-8e3b-2b1df0f996ed_4---a2dd6ca7-e609-4f62-9d90-588d64c8d9ed.jpg
 - **Credentials:** workspace/credentials.json
 - **Content strategy:** Pre-primary education tips, school activities, parenting advice for ages 2-6. Target: Richards Bay & surrounding areas.
@@ -56,7 +64,7 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 ### Facebook
 - **Email:** tingalingpreprimaryschool@gmail.com
-- **Status:** 2FA locked. Logged in on Mr D's phone.
+- **Status:** 2FA resolved. Session saved permanently.
 - **Credentials:** workspace/credentials.json
 
 ---
