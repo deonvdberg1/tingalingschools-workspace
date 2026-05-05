@@ -58,6 +58,10 @@ package-lock.json
 # Backup key (contains phrase used to encrypt sessions)
 .backup_key.json
 
+# Personal memory files (not for GitHub)
+memory/*.md
+memory/.dreams/
+
 # Logs
 *.log
 tmp/
