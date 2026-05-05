@@ -1,3 +1,4 @@
+import React from 'react'
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
@@ -19,12 +20,37 @@ const LayoutWrapper = ({ children, currentPageName }) => Layout ?
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  // Show loading spinner while checking app public settings or auth
-  if (isLoadingPublicSettings || isLoadingAuth) {
+  // Public pages that work without backend: Home page
+  const publicPages = ['Home', 'PageNotFound'];
+  const mainKey = mainPageKey ?? Object.keys(Pages)[0];
+  const isPublicPage = publicPages.includes(mainKey);
+
+  // Show loading spinner briefly (max 5 seconds)
+  const [timeoutReached, setTimeoutReached] = React.useState(false);
+  React.useEffect(() => {
+    const timer = setTimeout(() => setTimeoutReached(true), 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if ((isLoadingPublicSettings || isLoadingAuth) && !timeoutReached) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
       </div>
+    );
+  }
+
+  // If backend is unavailable after timeout, render pages without auth
+  if (timeoutReached || authError) {
+    return (
+      <Routes>
+        <Route path="/" element={
+          <LayoutWrapper currentPageName={mainKey}>
+            <MainPage />
+          </LayoutWrapper>
+        } />
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
     );
   }
 
@@ -33,7 +59,6 @@ const AuthenticatedApp = () => {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
       navigateToLogin();
       return null;
     }
@@ -43,7 +68,7 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route path="/" element={
-        <LayoutWrapper currentPageName={mainPageKey}>
+        <LayoutWrapper currentPageName={mainKey}>
           <MainPage />
         </LayoutWrapper>
       } />
