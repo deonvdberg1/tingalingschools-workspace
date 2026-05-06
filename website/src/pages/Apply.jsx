@@ -98,26 +98,18 @@ export default function Apply() {
       }
       setSending(true);
       try {
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        const { data: { session } } = await supabase.auth.getSession();
-        const token = session?.access_token;
-        
-        const res = await fetch(supabaseUrl + '/functions/v1/create-auth-user', {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + (token || '')
-          },
-          body: JSON.stringify({
+        const { data: fnData, error: fnError } = await supabase.functions.invoke('create-auth-user', {
+          body: {
             email: regForm.email,
             password: regForm.password,
             full_name: regForm.name,
             role: 'parent'
-          })
+          }
         });
-        const data = await res.json();
-        if (!data.success) {
-          throw new Error(data.error || 'Account creation failed');
+        
+        if (fnError) throw fnError;
+        if (!fnData.success) {
+          throw new Error(fnData.error || 'Account creation failed');
         }
         
         // Auto-login after account created
