@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/supabase/client';
+import { auth } from '@/supabase/auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -45,7 +46,7 @@ function LeaveAdmin({ leaveRequests, leaveBalances, onRefresh }) {
   const [noteTarget, setNoteTarget] = useState(null);
 
   const updateStatus = async (id, status) => {
-    await base44.entities.LeaveRequest.update(id, { status, admin_notes: adminNote });
+    await db.leaveRequests.update(id, { status, admin_notes: adminNote });
     toast.success(`Leave request ${status}`);
     setNoteTarget(null);
     setAdminNote('');
@@ -54,9 +55,9 @@ function LeaveAdmin({ leaveRequests, leaveBalances, onRefresh }) {
 
   const saveBalance = async () => {
     if (editBalance.id) {
-      await base44.entities.StaffLeaveBalance.update(editBalance.id, balanceForm);
+      await db.leaveBalances.update(editBalance.id, balanceForm);
     } else {
-      await base44.entities.StaffLeaveBalance.create({ ...balanceForm, staff_email: editBalance.staff_email, staff_name: editBalance.staff_name, leave_year: new Date().getFullYear() });
+      await db.leaveBalances.create({ ...balanceForm, staff_email: editBalance.staff_email, staff_name: editBalance.staff_name, leave_year: new Date().getFullYear() });
     }
     toast.success('Leave balance updated');
     setEditBalance(null);
@@ -180,7 +181,7 @@ function PurchaseAdmin({ requests, onRefresh }) {
   const [newStatus, setNewStatus] = useState('');
 
   const update = async (id, status, admin_notes) => {
-    await base44.entities.PurchaseRequest.update(id, { status, admin_notes });
+    await db.purchaseRequests.update(id, { status, admin_notes });
     toast.success('Updated');
     setEditId(null);
     setNote('');
@@ -238,9 +239,9 @@ function CalendarAdmin({ events, onRefresh }) {
 
   const save = async () => {
     if (editId) {
-      await base44.entities.SchoolEvent.update(editId, form);
+      await db.events.update(editId, form);
     } else {
-      await base44.entities.SchoolEvent.create(form);
+      await db.events.create(form);
     }
     toast.success('Event saved');
     setShowForm(false);
@@ -250,7 +251,7 @@ function CalendarAdmin({ events, onRefresh }) {
   };
 
   const del = async (id) => {
-    await base44.entities.SchoolEvent.delete(id);
+    await db.events.delete(id);
     toast.success('Event deleted');
     onRefresh();
   };
@@ -333,10 +334,11 @@ function PaySlipsAdmin({ payslips, onRefresh }) {
     setLoading(true);
     let document_url = '';
     if (file) {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const result = await db.upload({ file, bucket: 'contract_pdfs', path: 'documents' });
+      const file_url = result.file_url;
       document_url = file_url;
     }
-    await base44.entities.PaySlip.create({ ...form, gross_salary: parseFloat(form.gross_salary) || 0, net_salary: parseFloat(form.net_salary) || 0, document_url });
+    await db.paySlips.create({ ...form, gross_salary: parseFloat(form.gross_salary) || 0, net_salary: parseFloat(form.net_salary) || 0, document_url });
     toast.success('Pay slip uploaded');
     setShowForm(false);
     setForm({ staff_email: '', staff_name: '', pay_period: '', pay_date: '', gross_salary: '', net_salary: '', notes: '' });
@@ -346,7 +348,7 @@ function PaySlipsAdmin({ payslips, onRefresh }) {
   };
 
   const del = async (id) => {
-    await base44.entities.PaySlip.delete(id);
+    await db.paySlips.delete(id);
     toast.success('Deleted');
     onRefresh();
   };
@@ -415,9 +417,9 @@ function AnnouncementsAdmin({ announcements, onRefresh }) {
 
   const save = async () => {
     if (editId) {
-      await base44.entities.StaffAnnouncement.update(editId, form);
+      await db.announcements.update(editId, form);
     } else {
-      await base44.entities.StaffAnnouncement.create(form);
+      await db.announcements.create(form);
     }
     toast.success('Announcement saved');
     setShowForm(false);
@@ -427,7 +429,7 @@ function AnnouncementsAdmin({ announcements, onRefresh }) {
   };
 
   const del = async (id) => {
-    await base44.entities.StaffAnnouncement.delete(id);
+    await db.announcements.delete(id);
     toast.success('Deleted');
     onRefresh();
   };
@@ -515,15 +517,15 @@ export default function AdminStaffPortal() {
   const [loading, setLoading] = useState(true);
 
   const loadData = async () => {
-    const u = await base44.auth.me();
+    const u = await auth.me();
     setUser(u);
     const [lr, lb, pr, ps, ev, an] = await Promise.all([
-      base44.entities.LeaveRequest.list('-created_date', 50),
-      base44.entities.StaffLeaveBalance.list('-updated_date', 50),
-      base44.entities.PurchaseRequest.list('-created_date', 50),
-      base44.entities.PaySlip.list('-pay_date', 100),
-      base44.entities.SchoolEvent.list('-start_date', 100),
-      base44.entities.StaffAnnouncement.list('-created_date', 50)
+      db.leaveRequests.list('-created_date', 50),
+      db.leaveBalances.list('-updated_date', 50),
+      db.purchaseRequests.list('-created_date', 50),
+      db.paySlips.list('-pay_date', 100),
+      db.events.list('-start_date', 100),
+      db.announcements.list('-created_date', 50)
     ]);
     setLeaveRequests(lr);
     setLeaveBalances(lb);

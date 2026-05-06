@@ -47,9 +47,13 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import TestDashboard from './pages/TestDashboard';
 import AdminContracts from './pages/AdminContracts';
+import Apply from './pages/Apply';
+import ParentDashboard from './pages/ParentDashboard';
 import AdminStaffPortal from './pages/AdminStaffPortal';
 import Home from './pages/Home';
+import Login from './pages/Login';
 import MyContracts from './pages/MyContracts';
 import ParentContract from './pages/ParentContract';
 import StaffDashboard from './pages/StaffDashboard';
@@ -57,10 +61,17 @@ import AdminDashboard from './pages/AdminDashboard';
 import __Layout from './Layout.jsx';
 
 
+// List of pages that should NOT be wrapped in the Layout (e.g. full-screen pages)
+export const NO_LAYOUT_PAGES = ['Login', 'Apply'];
+
 export const PAGES = {
+    "TestDashboard": TestDashboard,
     "AdminContracts": AdminContracts,
+    "Apply": Apply,
+    "ParentDashboard": ParentDashboard,
     "AdminStaffPortal": AdminStaffPortal,
     "Home": Home,
+    "Login": Login,
     "MyContracts": MyContracts,
     "ParentContract": ParentContract,
     "StaffDashboard": StaffDashboard,
@@ -68,7 +79,7 @@ export const PAGES = {
 }
 
 export const pagesConfig = {
-    mainPage: "ParentContract",
+    mainPage: "Home",
     Pages: PAGES,
     Layout: __Layout,
 };

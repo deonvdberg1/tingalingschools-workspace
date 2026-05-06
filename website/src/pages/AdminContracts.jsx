@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/supabase/client';
+import { auth } from '@/supabase/auth';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -37,12 +38,12 @@ export default function AdminContracts() {
 
   const { data: user } = useQuery({
     queryKey: ['user'],
-    queryFn: () => base44.auth.me()
+    queryFn: () => auth.me()
   });
 
   const { data: contracts = [], isLoading } = useQuery({
     queryKey: ['contracts'],
-    queryFn: () => base44.entities.ParentContract.list('-created_date'),
+    queryFn: () => db.contracts.list('-created_date'),
     enabled: user?.role === 'admin'
   });
 
@@ -82,7 +83,7 @@ export default function AdminContracts() {
       }
 
       // Otherwise fetch from backend
-      const response = await base44.functions.invoke('getContractPdf', {
+      const response = await functions.invoke('getContractPdf', {
         contractId: contract.id
       });
 

@@ -1,23 +1,32 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { base44 } from '@/api/base44Client';
-import { LogOut, FileText } from 'lucide-react';
+import { db } from '@/supabase/client';
+import { auth } from '@/supabase/auth';
+import { LogOut, FileText, LogIn, LayoutDashboard, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => setUser(null));
+    auth.me().then(u => {
+      setUser(u);
+      setLoading(false);
+    }).catch(() => setLoading(false));
   }, []);
 
   const handleLogout = async () => {
-    await base44.auth.logout();
+    await auth.signOut();
+    setUser(null);
+    window.location.href = '/';
   };
 
-  const isAdmin = user?.role === 'admin';
+  const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
+  const isParent = user?.role === 'parent';
   const isStaff = user?.role === 'staff';
+  const isLoggedIn = !!user;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-50">
@@ -26,13 +35,13 @@ export default function Layout({ children, currentPageName }) {
           <div className="flex items-center justify-between">
             <Link to={createPageUrl('Home')} className="flex items-center gap-4 hover:opacity-80 transition-opacity">
               <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696a07baa661a7bdc51582ff/3e0084bba_35b41dbf-1767-4649-8e3b-2b1df0f996ed.jpeg"
-                alt="Ting-A-Ling School"
+                src="/logo.png"
+                alt="Ting-A-Ling Schools"
                 className="w-12 h-12 rounded-full"
               />
               <div>
-                <h1 className="text-2xl font-bold text-slate-800">Ting-A-Ling School</h1>
-                <p className="text-sm text-slate-600">Enrollment Management</p>
+                <h1 className="text-2xl font-bold text-slate-800">Ting-A-Ling Schools</h1>
+                <p className="text-sm text-slate-600">Pre-Primary · English Nurturing · Special Needs</p>
               </div>
             </Link>
             
@@ -40,8 +49,8 @@ export default function Layout({ children, currentPageName }) {
               {isAdmin && (
                 <Link to={createPageUrl('AdminDashboard')}>
                   <Button variant="ghost" className="gap-2">
-                    <FileText className="w-4 h-4" />
-                    Admin Dashboard
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
                   </Button>
                 </Link>
               )}
@@ -49,22 +58,33 @@ export default function Layout({ children, currentPageName }) {
                 <Link to={createPageUrl('StaffDashboard')}>
                   <Button variant="ghost" className="gap-2">
                     <FileText className="w-4 h-4" />
-                    Staff Dashboard
+                    Staff Portal
                   </Button>
                 </Link>
               )}
-              {!isAdmin && !isStaff && (
-                <Link to={createPageUrl('MyContracts')}>
+              {isParent && (
+                <Link to={createPageUrl('ParentDashboard')}>
                   <Button variant="ghost" className="gap-2">
-                    <FileText className="w-4 h-4" />
-                    My Contracts
+                    <User className="w-4 h-4" />
+                    My Portal
                   </Button>
                 </Link>
               )}
-              <Button variant="outline" onClick={handleLogout} className="gap-2">
-                <LogOut className="w-4 h-4" />
-                Logout
-              </Button>
+              {isLoggedIn ? (
+                <Button variant="outline" onClick={handleLogout} className="gap-2">
+                  <LogOut className="w-4 h-4" />
+                  Logout
+                </Button>
+              ) : (
+                !loading && (
+                  <Link to={createPageUrl('Login')}>
+                    <Button variant="outline" className="gap-2">
+                      <LogIn className="w-4 h-4" />
+                      Staff Login
+                    </Button>
+                  </Link>
+                )
+              )}
             </nav>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import React from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/supabase/client';
+import { auth } from '@/supabase/auth';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -20,14 +21,14 @@ const statusConfig = {
 export default function MyContracts() {
   const { data: user } = useQuery({
     queryKey: ['user'],
-    queryFn: () => base44.auth.me()
+    queryFn: () => auth.me()
   });
 
   const { data: contracts = [], isLoading } = useQuery({
     queryKey: ['myContracts', user?.email],
     queryFn: async () => {
       if (!user?.email) return [];
-      const allContracts = await base44.entities.ParentContract.list('-created_date');
+      const allContracts = await db.contracts.list('-created_date');
       return allContracts.filter(c => 
         c.parent1_email === user.email || c.parent2_email === user.email
       );
@@ -45,7 +46,7 @@ export default function MyContracts() {
         return;
       }
 
-      const response = await base44.functions.invoke('getContractPdf', {
+      const response = await functions.invoke('getContractPdf', {
         contractId: contract.id
       });
 
@@ -65,7 +66,7 @@ export default function MyContracts() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-2xl">My Enrollment Contracts</CardTitle>
+              <CardTitle className="text-2xl">My Applications</CardTitle>
               <Link to={createPageUrl('ParentContract')}>
                 <Button className="bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 gap-2">
                   <Plus className="w-4 h-4" />
@@ -81,7 +82,7 @@ export default function MyContracts() {
               <div className="text-center py-12">
                 <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
                 <p className="text-slate-600 text-lg mb-2">No contracts found</p>
-                <p className="text-slate-500 text-sm">You haven't submitted any enrollment contracts yet.</p>
+                <p className="text-slate-500 text-sm">You haven't submitted any applications yet.</p>
               </div>
             ) : (
               <div className="space-y-4">

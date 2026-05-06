@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/supabase/client';
+import { auth } from '@/supabase/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,12 +26,12 @@ export default function PurchaseAdmin() {
   useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
-    const pr = await base44.entities.PurchaseRequest.list('-created_date', 50);
+    const pr = await db.purchaseRequests.list('-created_date', 50);
     setRequests(pr);
   };
 
   const update = async (id, status, admin_notes) => {
-    await base44.entities.PurchaseRequest.update(id, { status, admin_notes });
+    await db.purchaseRequests.update(id, { status, admin_notes });
     toast.success('Updated');
     setEditId(null);
     setNote('');

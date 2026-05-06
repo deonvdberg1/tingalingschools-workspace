@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/supabase/client';
+import { auth } from '@/supabase/auth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -21,15 +22,15 @@ export default function PaySlipsAdmin() {
 
   const loadData = async () => {
     const [ps, sf] = await Promise.all([
-      base44.entities.PaySlip.list('-pay_date', 200),
-      base44.entities.StaffMember.list('-created_date', 100)
+      db.paySlips.list('-pay_date', 200),
+      db.staff.list('-created_date', 100)
     ]);
     setPayslips(ps);
     setStaff(sf);
   };
 
   const del = async (id) => {
-    await base44.entities.PaySlip.delete(id);
+    await db.paySlips.delete(id);
     toast.success('Deleted');
     loadData();
   };

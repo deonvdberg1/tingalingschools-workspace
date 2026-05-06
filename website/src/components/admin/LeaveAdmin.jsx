@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/supabase/client';
+import { auth } from '@/supabase/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -29,15 +30,15 @@ export default function LeaveAdmin() {
 
   const loadData = async () => {
     const [lr, lb] = await Promise.all([
-      base44.entities.LeaveRequest.list('-created_date', 50),
-      base44.entities.StaffLeaveBalance.list('-updated_date', 50)
+      db.leaveRequests.list('-created_date', 50),
+      db.leaveBalances.list('-updated_date', 50)
     ]);
     setLeaveRequests(lr);
     setLeaveBalances(lb);
   };
 
   const updateStatus = async (id, status) => {
-    await base44.entities.LeaveRequest.update(id, { status, admin_notes: adminNote });
+    await db.leaveRequests.update(id, { status, admin_notes: adminNote });
     toast.success(`Leave request ${status}`);
     setNoteTarget(null);
     setAdminNote('');
@@ -46,9 +47,9 @@ export default function LeaveAdmin() {
 
   const saveBalance = async () => {
     if (editBalance.id) {
-      await base44.entities.StaffLeaveBalance.update(editBalance.id, balanceForm);
+      await db.leaveBalances.update(editBalance.id, balanceForm);
     } else {
-      await base44.entities.StaffLeaveBalance.create({ ...balanceForm, staff_email: editBalance.staff_email, staff_name: editBalance.staff_name, leave_year: new Date().getFullYear() });
+      await db.leaveBalances.create({ ...balanceForm, staff_email: editBalance.staff_email, staff_name: editBalance.staff_name, leave_year: new Date().getFullYear() });
     }
     toast.success('Balance updated');
     setEditBalance(null);

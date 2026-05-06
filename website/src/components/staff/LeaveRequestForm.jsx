@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/supabase/client';
+import { auth } from '@/supabase/auth';
 import { toast } from 'sonner';
 import { differenceInBusinessDays, parseISO } from 'date-fns';
 
@@ -53,10 +54,10 @@ export default function LeaveRequestForm({ user, onSuccess }) {
     setLoading(true);
     let doc_url = '';
     if (file) {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      doc_url = file_url;
+      const result = await db.upload({ file, bucket: 'contract_pdfs', path: 'leave-documents' });
+      doc_url = result.file_url;
     }
-    await base44.entities.LeaveRequest.create({
+    await db.leaveRequests.create({
       staff_email: user.email,
       staff_name: user.full_name,
       leave_type: form.leave_type,

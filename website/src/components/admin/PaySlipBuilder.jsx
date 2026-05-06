@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/supabase/client';
+import { auth } from '@/supabase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -110,7 +111,7 @@ export default function PaySlipBuilder({ staffMember, onSaved, onCancel }) {
     }
     setErrors({});
     setSaving(true);
-    await base44.entities.PaySlip.create({
+    await db.paySlips.create({
       ...form,
       basic_salary: basic,
       gross_salary: gross,

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/supabase/client';
+import { auth } from '@/supabase/auth';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -24,7 +25,7 @@ export default function ContractsAdmin() {
 
   const { data: contracts = [], isLoading } = useQuery({
     queryKey: ['contracts'],
-    queryFn: () => base44.entities.ParentContract.list('-created_date')
+    queryFn: () => db.contracts.list('-created_date')
   });
 
   const filtered = contracts.filter(c => {
@@ -42,7 +43,7 @@ export default function ContractsAdmin() {
       window.open(contract.signed_pdf_url, '_blank');
       return;
     }
-    const response = await base44.functions.invoke('getContractPdf', { contractId: contract.id });
+    const response = await functions.invoke('getContractPdf', { contractId: contract.id });
     if (response.data?.success && response.data?.pdfUrl) {
       window.open(response.data.pdfUrl, '_blank');
       toast.success('PDF opened');

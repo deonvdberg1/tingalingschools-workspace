@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/supabase/client';
+import { supabase } from '@/supabase/client';
+import { auth } from '@/supabase/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,10 +47,10 @@ export default function StaffAdmin() {
 
   const loadAll = async () => {
     const [s, lr, lb, ps] = await Promise.all([
-      base44.entities.StaffMember.list('-created_date', 100),
-      base44.entities.LeaveRequest.list('-created_date', 200),
-      base44.entities.StaffLeaveBalance.list('-updated_date', 100),
-      base44.entities.PaySlip.list('-pay_date', 200)
+      db.staff.list('-created_date', 100),
+      db.leaveRequests.list('-created_date', 200),
+      db.leaveBalances.list('-updated_date', 100),
+      db.paySlips.list('-pay_date', 200)
     ]);
     setStaff(s);
     setLeaveRequests(lr);
@@ -59,10 +61,10 @@ export default function StaffAdmin() {
   // ---- Staff CRUD ----
   const saveStaff = async () => {
     if (editStaff?.id) {
-      await base44.entities.StaffMember.update(editStaff.id, staffForm);
+      await db.staff.update(editStaff.id, staffForm);
       toast.success('Staff member updated');
     } else {
-      await base44.entities.StaffMember.create(staffForm);
+      await db.staff.create(staffForm);
       toast.success('Staff member added');
     }
     setEditStaff(null);
@@ -70,11 +72,43 @@ export default function StaffAdmin() {
   };
 
   const deleteStaff = async (id) => {
-    await base44.entities.StaffMember.delete(id);
+    await db.staff.delete(id);
     toast.success('Removed');
     setSelectedMember(null);
     setShowMemberDetail(false);
     loadAll();
+  };
+
+  const createLogin = async (email, fullName, role) => {
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const { data: { session } } = await import('@/supabase/client').then(m => 
+        m.supabase.auth.getSession()
+      );
+      const token = session?.access_token;
+      
+      const res = await fetch(supabaseUrl + '/functions/v1/create-auth-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          email,
+          password: 'Tingaling2026!',
+          full_name: fullName,
+          role
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success('Login created! Password: Tingaling2026!');
+      } else {
+        toast.error(data.error || 'Failed to create login');
+      }
+    } catch (err) {
+      toast.error('Error: ' + err.message);
+    }
   };
 
   const openMember = (member) => {
@@ -90,9 +124,9 @@ export default function StaffAdmin() {
   const saveBalance = async () => {
     const existing = memberBalance(selectedMember.email);
     if (existing) {
-      await base44.entities.StaffLeaveBalance.update(existing.id, balanceForm);
+      await db.leaveBalances.update(existing.id, balanceForm);
     } else {
-      await base44.entities.StaffLeaveBalance.create({ ...balanceForm, staff_email: selectedMember.email, staff_name: selectedMember.full_name, leave_year: new Date().getFullYear() });
+      await db.leaveBalances.create({ ...balanceForm, staff_email: selectedMember.email, staff_name: selectedMember.full_name, leave_year: new Date().getFullYear() });
     }
     toast.success('Leave balance saved');
     setEditBalance(null);
@@ -100,13 +134,13 @@ export default function StaffAdmin() {
   };
 
   const deletePayslip = async (id) => {
-    await base44.entities.PaySlip.delete(id);
+    await db.paySlips.delete(id);
     toast.success('Deleted');
     loadAll();
   };
 
   const updateLeaveStatus = async (id, status) => {
-    await base44.entities.LeaveRequest.update(id, { status });
+    await db.leaveRequests.update(id, { status });
     toast.success(`Leave ${status}`);
     loadAll();
   };
@@ -249,6 +283,21 @@ export default function StaffAdmin() {
                     </div>
                   ))}
                   {selectedMember.notes && <p className="text-sm text-slate-500 italic">{selectedMember.notes}</p>}
+                  
+                  <div className="pt-4 border-t border-slate-200">
+                    <p className="text-sm font-semibold text-slate-700 mb-2">Login Account</p>
+                    <p className="text-xs text-slate-400 mb-2">Create a login so this staff member can access the portal.</p>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" className="text-xs" 
+                        onClick={() => createLogin(selectedMember.email, selectedMember.full_name, 'staff')}>
+                        Create Staff Login
+                      </Button>
+                      <Button size="sm" variant="outline" className="text-xs text-purple-600 border-purple-200 hover:bg-purple-50"
+                        onClick={() => createLogin(selectedMember.email, selectedMember.full_name, 'admin')}>
+                        Create Admin Login
+                      </Button>
+                    </div>
+                  </div>
                 </TabsContent>
 
                 {/* LEAVE TAB */}

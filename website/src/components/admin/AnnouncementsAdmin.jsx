@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/supabase/client';
+import { auth } from '@/supabase/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -28,15 +29,15 @@ export default function AnnouncementsAdmin() {
   useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
-    const an = await base44.entities.StaffAnnouncement.list('-created_date', 50);
+    const an = await db.announcements.list('-created_date', 50);
     setAnnouncements(an);
   };
 
   const save = async () => {
     if (editId) {
-      await base44.entities.StaffAnnouncement.update(editId, form);
+      await db.announcements.update(editId, form);
     } else {
-      await base44.entities.StaffAnnouncement.create(form);
+      await db.announcements.create(form);
     }
     toast.success('Saved');
     setShowForm(false);
@@ -46,7 +47,7 @@ export default function AnnouncementsAdmin() {
   };
 
   const del = async (id) => {
-    await base44.entities.StaffAnnouncement.delete(id);
+    await db.announcements.delete(id);
     toast.success('Deleted');
     loadData();
   };

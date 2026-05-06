@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { supabase, db } from '@/supabase/client';
+import { auth } from '@/supabase/auth';
 import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -46,7 +47,7 @@ export default function ParentContract() {
   React.useEffect(() => {
     const loadUserEmail = async () => {
       try {
-        const user = await base44.auth.me();
+        const user = await auth.me();
         const urlParams = new URLSearchParams(window.location.search);
         const schoolParam = urlParams.get('school');
         const schoolMap = {
@@ -218,7 +219,7 @@ export default function ParentContract() {
 
     setIsSubmitting(true);
     try {
-      const user = await base44.auth.me();
+      const user = await auth.me();
       
       formData.parent1_signature_date = new Date().toISOString();
       if (formData.parent2_signature_data) {
@@ -231,19 +232,31 @@ export default function ParentContract() {
         formData.parent1_email = user.email;
       }
 
-      const contract = await base44.entities.ParentContract.create(formData);
+      const contract = await db.contracts.create(formData);
 
-      const response = await base44.functions.invoke('generateContractPdf', {
-        contractId: contract.id
-      });
-
-      if (response.data.success) {
-        setSubmittedContract({ ...contract, signed_pdf_url: response.data.pdfUrl });
-        setIsComplete(true);
-        // Clear all contract-related cache
-        queryClient.removeQueries({ queryKey: ['myContracts'] });
-        queryClient.invalidateQueries({ queryKey: ['myContracts'] });
+      // Auto-generate PDF
+      try {
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        const supabaseAnon = import.meta.env.VITE_SUPABASE_ANON_KEY;
+        const pdfRes = await fetch(`${supabaseUrl}/functions/v1/generate-contract-pdf`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': supabaseAnon },
+          body: JSON.stringify({ contractId: contract.id })
+        });
+        const pdfData = await pdfRes.json();
+        if (pdfData.success) {
+          await db.contracts.update(contract.id, { signed_pdf_url: pdfData.pdfUrl });
+          setSubmittedContract({ ...contract, signed_pdf_url: pdfData.pdfUrl });
+        }
+      } catch (pdfErr) {
+        console.error('PDF generation failed:', pdfErr);
+        // Don't block the flow - contract was saved
+        setSubmittedContract(contract);
       }
+      setIsComplete(true);
+      // Clear all contract-related cache
+      queryClient.removeQueries({ queryKey: ['myContracts'] });
+      queryClient.invalidateQueries({ queryKey: ['myContracts'] });
     } catch (error) {
       console.error('Error submitting contract:', error);
       toast.error('Failed to submit contract. Please try again.');
@@ -276,7 +289,7 @@ export default function ParentContract() {
           </div>
           <h1 className="text-3xl font-bold text-slate-800 mb-4">Thank You!</h1>
           <p className="text-lg text-slate-600 mb-2">
-            Your enrollment contract for <strong>{formData.student_first_name}</strong> has been submitted successfully.
+            Your application for <strong>{formData.student_first_name}</strong> has been submitted successfully.
           </p>
           <p className="text-slate-600 mb-8">
             A signed copy has been sent to <strong>{formData.parent1_email}</strong>
@@ -312,12 +325,12 @@ export default function ParentContract() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <img 
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696a07baa661a7bdc51582ff/3e0084bba_35b41dbf-1767-4649-8e3b-2b1df0f996ed.jpeg"
+            src="/favicon.png"
             alt="Ting-A-Ling School Logo"
             className="w-32 h-32 mx-auto mb-4 rounded-full"
           />
           <h1 className="text-4xl font-bold text-slate-800 mb-2">Ting-A-Ling School</h1>
-          <p className="text-xl text-slate-600">Parent Enrollment Contract</p>
+          <p className="text-xl text-slate-600">Parent Application Form</p>
         </div>
 
         <div className="mb-8">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/supabase/client';
+import { auth } from '@/supabase/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,8 +42,8 @@ export default function AdminCalendar() {
 
   const loadData = async () => {
     const [evts, tmps] = await Promise.all([
-      base44.entities.SchoolEvent.list('-start_date', 300),
-      base44.entities.EventTemplate.list('-created_date', 50)
+      db.events.list('-start_date', 300),
+      db.eventTemplates.list('-created_date', 50)
     ]);
     setEvents(evts);
     setTemplates(tmps);
@@ -74,7 +75,7 @@ export default function AdminCalendar() {
   const saveEvent = async () => {
     if (!newEvent.title) return;
     setSaving(true);
-    await base44.entities.SchoolEvent.create({
+    await db.events.create({
       ...newEvent,
       start_date: format(selectedDay, 'yyyy-MM-dd'),
       end_date: newEvent.end_date || undefined
@@ -88,7 +89,7 @@ export default function AdminCalendar() {
 
   const saveAsTemplate = async () => {
     if (!newEvent.title) return;
-    await base44.entities.EventTemplate.create({
+    await db.eventTemplates.create({
       title: newEvent.title,
       description: newEvent.description,
       event_type: newEvent.event_type,
@@ -100,13 +101,13 @@ export default function AdminCalendar() {
   };
 
   const deleteEvent = async (id) => {
-    await base44.entities.SchoolEvent.delete(id);
+    await db.events.delete(id);
     toast.success('Event removed');
     loadData();
   };
 
   const deleteTemplate = async (id) => {
-    await base44.entities.EventTemplate.delete(id);
+    await db.eventTemplates.delete(id);
     loadData();
   };
 

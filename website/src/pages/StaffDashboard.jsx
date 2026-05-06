@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/supabase/client';
+import { auth } from '@/supabase/auth';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,16 +36,16 @@ export default function StaffDashboard() {
   const [loading, setLoading] = useState(true);
 
   const loadData = async () => {
-    const u = await base44.auth.me();
+    const u = await auth.me();
     setUser(u);
 
     const [balances, leaves, purchases, slips, evts, anncts] = await Promise.all([
-      base44.entities.StaffLeaveBalance.filter({ staff_email: u.email }),
-      base44.entities.LeaveRequest.filter({ staff_email: u.email }, '-created_date', 20),
-      base44.entities.PurchaseRequest.filter({ staff_email: u.email }, '-created_date', 20),
-      base44.entities.PaySlip.filter({ staff_email: u.email }, '-pay_date', 12),
-      base44.entities.SchoolEvent.list('-start_date', 100),
-      base44.entities.StaffAnnouncement.filter({ is_active: true }, '-created_date', 20)
+      db.leaveBalances.filter({ staff_email: u.email }),
+      db.leaveRequests.filter({ staff_email: u.email }, '-created_date', 20),
+      db.purchaseRequests.filter({ staff_email: u.email }, '-created_date', 20),
+      db.paySlips.filter({ staff_email: u.email }, '-pay_date', 12),
+      db.events.list('-start_date', 100),
+      db.announcements.filter({ is_active: true }, '-created_date', 20)
     ]);
 
     setLeaveBalance(balances[0] || null);

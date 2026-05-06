@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { base44 } from '@/api/base44Client';
+import { db } from '@/supabase/client';
+import { auth } from '@/supabase/auth';
 import { toast } from 'sonner';
 
 export default function PurchaseRequestForm({ user, onSuccess }) {
@@ -16,7 +17,7 @@ export default function PurchaseRequestForm({ user, onSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await base44.entities.PurchaseRequest.create({
+    await db.purchaseRequests.create({
       staff_email: user.email,
       staff_name: user.full_name,
       ...form,
