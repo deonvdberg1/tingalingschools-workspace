@@ -14,6 +14,7 @@ cp "$FRED/MEMORY.md" "$SNAPSHOT/" 2>/dev/null
 cp "$FRED/SOUL.md" "$FRED/AGENTS.md" "$FRED/IDENTITY.md" "$FRED/USER.md" "$FRED/TOOLS.md" "$SNAPSHOT/" 2>/dev/null
 cp -R "$FRED/projects" "$SNAPSHOT/projects" 2>/dev/null
 cp "$FRED/whatsapp-server/server.js" "$SNAPSHOT/" 2>/dev/null
+cp "$FRED/whatsapp-server/conversations.json" "$SNAPSHOT/" 2>/dev/null
 # Clean up old backup folders (keep 30 days)
 find "$FRED/backups" -maxdepth 1 -type d -mtime +30 -exec rm -rf {} \; 2>/dev/null
 
