@@ -1,0 +1,16 @@
+{
+  "name": "tingaling-whatsapp-server",
+  "version": "1.0.0",
+  "description": "WhatsApp Cloud API integration server for Ting-A-Ling Schools demo",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "node-tunnel": "^4.0.1"
+  }
+}
