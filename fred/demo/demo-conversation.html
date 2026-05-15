@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AutoEffortless — WhatsApp Demo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    font-family: -apple-system, 'Helvetica Neue', sans-serif;
+    padding: 10px;
+  }
+  .phone {
+    width: 393px;
+    max-width: 100%;
+    background: #e5ddd5;
+    border-radius: 40px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    overflow: hidden;
+    position: relative;
+  }
+  .header {
+    background: #075e54;
+    color: #fff;
+    padding: 20px 16px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .header .back { font-size: 20px; opacity: 0.8; }
+  .header .avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: #128c7e; display: flex; align-items: center;
+    justify-content: center; font-weight: 700; font-size: 18px;
+  }
+  .header .info { flex: 1; }
+  .header .info .name { font-size: 16px; font-weight: 600; }
+  .header .info .status { font-size: 11px; opacity: 0.8; }
+  .header .icons { display: flex; gap: 16px; font-size: 18px; opacity: 0.8; }
+  .chat { padding: 8px 14px; background: #e5ddd5; }
+  .scene-label { text-align: center; margin: 16px 0 6px; }
+  .scene-label span {
+    background: #e1f3fb; color: #1f7a8a; font-size: 11px;
+    font-weight: 600; padding: 4px 14px; border-radius: 10px;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .msg-row { display: flex; margin-bottom: 3px; }
+  .msg-row.in { justify-content: flex-start; }
+  .msg-row.out { justify-content: flex-end; }
+  .msg-bubble {
+    max-width: 82%; padding: 6px 10px 7px;
+    border-radius: 8px; font-size: 14.5px; line-height: 1.45;
+    word-wrap: break-word; box-shadow: 0 1px 1px rgba(0,0,0,0.08);
+  }
+  .msg-row.in .msg-bubble { background: #fff; border-top-left-radius: 2px; }
+  .msg-row.out .msg-bubble { background: #dcf8c6; border-top-right-radius: 2px; }
+  .msg-time { font-size: 10px; color: #667781; text-align: right; margin-top: 2px; }
+  .msg-row.in .msg-time { text-align: left; }
+  .msg-bubble strong { color: #075e54; }
+  .typing .dots {
+    background: #fff; padding: 10px 14px; border-radius: 8px;
+    border-top-left-radius: 2px; display: inline-flex; gap: 4px;
+  }
+  .typing .dots span {
+    width: 8px; height: 8px; background: #8696a0;
+    border-radius: 50%; display: inline-block;
+  }
+  .bot-badge {
+    font-size: 10px; font-weight: 600; color: #fff;
+    background: #128c7e; padding: 1px 8px; border-radius: 8px;
+    display: inline-block; margin-bottom: 3px;
+  }
+  .parent-badge {
+    font-size: 10px; font-weight: 600; color: #555;
+    background: #e8e8e8; padding: 1px 8px; border-radius: 8px;
+    display: inline-block; margin-bottom: 3px;
+  }
+  .brand-footer {
+    text-align: center; padding: 14px;
+    background: linear-gradient(135deg, #075e54, #128c7e);
+    color: #fff; font-size: 13px; font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .brand-footer span { color: #dcf8c6; }
+  .footer {
+    background: #f0f2f5; padding: 8px 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .footer .input {
+    flex: 1; background: #fff; border-radius: 24px;
+    padding: 9px 16px; font-size: 14px; color: #667781;
+  }
+  .footer .mic {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: #075e54; color: #fff; display: flex;
+    align-items: center; justify-content: center; font-size: 18px;
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="header">
+    <span class="back">←</span>
+    <div class="avatar">T</div>
+    <div class="info">
+      <div class="name">Ting-A-Ling Schools</div>
+      <div class="status">online</div>
+    </div>
+    <div class="icons"><span>📞</span><span>⋮</span></div>
+  </div>
+  
+  <div class="chat">
+    <!-- Scene 1 -->
+    <div class="scene-label"><span>💰 Parent asks about fees</span></div>
+    <div class="msg-row out"><div class="msg-bubble"><div class="parent-badge">Parent</div>Hi, I'd like to know what the school fees are for Grade R please<div class="msg-time">10:02 ✓</div></div></div>
+    <div class="msg-row" style="margin-bottom:6px;"><div class="typing"><div class="dots"><span></span><span></span><span></span></div></div></div>
+    <div class="msg-row in" style="margin-bottom:12px;"><div class="msg-bubble"><div class="bot-badge">AI Assistant</div><strong>🏫 Fee Enquiry</strong><br><br>For current fee structures, please contact our admin office (07:30–15:30 weekdays).<br><br>📞 035 XXX XXXX<br>✉️ admin@tingaling.co.za<div class="msg-time">10:02 ✓✓</div></div></div>
+    
+    <!-- Scene 2 -->
+    <div class="scene-label"><span>⏰ Parent asks about hours</span></div>
+    <div class="msg-row out"><div class="msg-bubble"><div class="parent-badge">Parent</div>What time does the school open and close?<div class="msg-time">10:05 ✓</div></div></div>
+    <div class="msg-row" style="margin-bottom:6px;"><div class="typing"><div class="dots"><span></span><span></span><span></span></div></div></div>
+    <div class="msg-row in" style="margin-bottom:12px;"><div class="msg-bubble"><div class="bot-badge">AI Assistant</div><strong>⏰ Operating Hours</strong><br><br>🏫 School Day: 07:30–14:00 (Mon–Fri)<br>🏢 Office: 07:00–15:30<br>🌙 Aftercare: Until 17:00<br><br>Holiday Programmes also available!<div class="msg-time">10:05 ✓✓</div></div></div>
+    
+    <!-- Scene 3 -->
+    <div class="scene-label"><span>👔 Parent asks about uniform</span></div>
+    <div class="msg-row out"><div class="msg-bubble"><div class="parent-badge">Parent</div>Where can I buy the school uniform?<div class="msg-time">10:08 ✓</div></div></div>
+    <div class="msg-row" style="margin-bottom:6px;"><div class="typing"><div class="dots"><span></span><span></span><span></span></div></div></div>
+    <div class="msg-row in" style="margin-bottom:12px;"><div class="msg-bubble"><div class="bot-badge">AI Assistant</div><strong>👔 Uniform</strong><br><br>Available from:<br>• School shop (Mon & Thu, 07:30–09:00)<br>• Visit the office for a full list & pricelist<div class="msg-time">10:08 ✓✓</div></div></div>
+    
+    <!-- Scene 4 -->
+    <div class="scene-label"><span>📋 Absentee report</span></div>
+    <div class="msg-row out" style="margin-bottom:12px;"><div class="msg-bubble"><div class="parent-badge">Parent</div>My daughter Thandi won't be coming today, she's sick<div class="msg-time">10:15 ✓</div></div></div>
+  </div>
+  
+  <div class="brand-footer">⚡ Powered by <span>AutoEffortless</span> · AI Auto-Reply</div>
+  
+  <div class="footer">
+    <div class="input">Type a message...</div>
+    <div class="mic">🎤</div>
+  </div>
+</div>
+</body>
+</html>
