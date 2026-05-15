@@ -26,3 +26,13 @@ if ! git diff --cached --quiet; then
     git commit -m "Fred auto-backup $TIMESTAMP"
     git push origin main
 fi
+
+# Rotate server logs (keep last 1MB)
+LOG_DIR="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server"
+for f in server.log cloudflared.log tunnel-setup.log; do
+    LOGFILE="$LOG_DIR/$f"
+    if [ -f "$LOGFILE" ] && [ $(stat -f%z "$LOGFILE") -gt 1048576 ]; then
+        tail -c 524288 "$LOGFILE" > "${LOGFILE}.tmp" && mv "${LOGFILE}.tmp" "$LOGFILE"
+        echo "[LOG ROTATION] Trimmed $f to 512KB"
+    fi
+done
