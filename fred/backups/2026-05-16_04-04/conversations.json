@@ -1,0 +1,92 @@
+{
+  "27615274429": {
+    "name": "Deon",
+    "phone": "27615274429",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "💾 Persistent storage is live — conversations now save to disk!",
+        "timestamp": "2026-05-14T17:36:46.794Z"
+      },
+      {
+        "direction": "in",
+        "text": "🔄 Testing persistence — kill and restart incoming",
+        "timestamp": "2026-05-14T17:37:08.186Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi?",
+        "timestamp": "2026-05-14T17:39:24.596Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-14T17:39:35.820Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-14T17:43:06.566Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-14T17:43:36.719Z"
+      },
+      {
+        "direction": "in",
+        "text": "Testing inbound webhook",
+        "timestamp": "2026-05-15T16:23:41.612Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-15T17:41:36.697Z"
+      },
+      {
+        "direction": "out",
+        "text": "👋 Welcome to *Ting-A-Ling Schools*!\n\nI'm here to help with common enquiries. Just ask me about:\n\n• 💰 Fees & payments\n• ⏰ School hours\n• 👔 Uniforms\n• 📋 Absentee reporting\n• 📅 Events & calendar\n• 📍 Contact details\n• 📝 Enrolment\n\nIf you need something else, a human will be with you shortly!",
+        "timestamp": "2026-05-15T17:41:36.697Z"
+      },
+      {
+        "direction": "in",
+        "text": "School fees",
+        "timestamp": "2026-05-15T17:41:53.388Z"
+      },
+      {
+        "direction": "out",
+        "text": "🏫 *Ting-A-Ling Schools - Fee Enquiry*\n\nFor current fee structures and payment options, please contact our admin office during school hours (07:30 - 15:30 weekdays).\n\n📞 035 XXX XXXX\n✉️ admin@tingaling.co.za\n\nAlternatively, tell us which class/grade your child is in and we'll have the relevant information sent to you.",
+        "timestamp": "2026-05-15T17:41:53.388Z"
+      },
+      {
+        "direction": "in",
+        "text": "Thank for the hard work, sleep well",
+        "timestamp": "2026-05-15T20:03:10.954Z"
+      }
+    ],
+    "firstSeen": "2026-05-14T17:36:46.794Z",
+    "lastSeen": "2026-05-15T20:03:10.954Z",
+    "autoReplied": 2,
+    "humanRequests": 8
+  },
+  "27724561282": {
+    "name": "Sandi",
+    "phone": "27724561282",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-15T18:59:36.881Z"
+      },
+      {
+        "direction": "out",
+        "text": "👋 Welcome to *Ting-A-Ling Schools*!\n\nI'm here to help with common enquiries. Just ask me about:\n\n• 💰 Fees & payments\n• ⏰ School hours\n• 👔 Uniforms\n• 📋 Absentee reporting\n• 📅 Events & calendar\n• 📍 Contact details\n• 📝 Enrolment\n\nIf you need something else, a human will be with you shortly!",
+        "timestamp": "2026-05-15T18:59:36.881Z"
+      }
+    ],
+    "firstSeen": "2026-05-15T18:59:36.881Z",
+    "lastSeen": "2026-05-15T18:59:36.881Z",
+    "autoReplied": 1,
+    "humanRequests": 0
+  }
+}
