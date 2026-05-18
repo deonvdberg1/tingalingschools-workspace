@@ -6,9 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase, db } from '@/supabase/client';
-import { auth } from '@/supabase/auth';
 import { toast } from 'sonner';
-import { CheckCircle, ArrowLeft, UserPlus } from 'lucide-react';
+import { CheckCircle, ArrowLeft, Send } from 'lucide-react';
 
 const SCHOOL_INFO = {
   PrePrimary: { name: 'Pre-Primary School', color: 'teal', address: '74 Krewilkring, Meerensee' },
@@ -30,33 +29,13 @@ export default function Apply() {
   const navigate = useNavigate();
   const info = SCHOOL_INFO[school];
 
-  // Auth state
-  const [user, setUser] = useState(null);
-  const [checkingAuth, setCheckingAuth] = useState(true);
-
-  // Registration
-  const [registering, setRegistering] = useState(false);
-  const [regForm, setRegForm] = useState({ name: '', email: '', password: '', confirm: '' });
-
-  // Application
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
-  const [parentPassword, setParentPassword] = useState('');
   const [form, setForm] = useState({
     parent_name: '', parent_email: '', parent_phone: '',
     child_name: '', child_age: '', previous_school: '', grade: '',
     special_needs: '',
   });
-
-  useEffect(() => {
-    auth.me().then(u => {
-      setUser(u);
-      if (u) {
-        setForm(p => ({ ...p, parent_name: u.full_name || '', parent_email: u.email || '' }));
-      }
-      setCheckingAuth(false);
-    }).catch(() => setCheckingAuth(false));
-  }, []);
 
   if (!info) {
     return (
@@ -67,104 +46,6 @@ export default function Apply() {
     );
   }
 
-  // Step 1: Register / Sign in
-  if (!checkingAuth && !user && !registering) {
-    return (
-      <div className="min-h-[60vh] bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center p-4">
-        <Card className="max-w-md w-full p-8 text-center">
-          <UserPlus className="w-12 h-12 text-teal-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-slate-800 mb-2">Create Your Account</h2>
-          <p className="text-slate-500 text-sm mb-6">Sign up to apply to {info.name}. Your details will be saved for future applications.</p>
-          <div className="space-y-3">
-            <Button className="w-full bg-teal-600 hover:bg-teal-700" onClick={() => setRegistering(true)}>
-              Create Account & Apply
-            </Button>
-            <p className="text-xs text-slate-400">
-              Already have an account? <Link to="/Login" className="text-teal-600 hover:underline">Log in</Link>
-            </p>
-          </div>
-        </Card>
-      </div>
-    );
-  }
-
-  // Step 1b: Registration form
-  if (!checkingAuth && !user && registering) {
-    const handleRegister = async (e) => {
-      e.preventDefault();
-      if (regForm.password !== regForm.confirm) {
-        toast.error('Passwords do not match');
-        return;
-      }
-      setSending(true);
-      try {
-        const { data: fnData, error: fnError } = await supabase.functions.invoke('create-auth-user', {
-          body: {
-            email: regForm.email,
-            password: regForm.password,
-            full_name: regForm.name,
-            role: 'parent'
-          }
-        });
-        
-        if (fnError) throw fnError;
-        if (!fnData.success) {
-          throw new Error(fnData.error || 'Account creation failed');
-        }
-        
-        // Auto-login after account created
-        await supabase.auth.signInWithPassword({
-          email: regForm.email,
-          password: regForm.password
-        });
-        
-        toast.success('Account created! You can now fill in your application.');
-        setSending(false);
-        setUser({ email: regForm.email, full_name: regForm.name });
-        setForm(p => ({ ...p, parent_name: regForm.name, parent_email: regForm.email }));
-        setRegistering(false);
-      } catch (err) {
-        setSending(false);
-        toast.error(err.message || 'Registration failed. Try again or contact us.');
-      }
-    };
-
-    return (
-      <div className="min-h-[60vh] bg-gradient-to-br from-slate-50 to-slate-100 py-10 px-4">
-        <div className="max-w-md mx-auto">
-          <button onClick={() => setRegistering(false)} className="flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 mb-6">
-            <ArrowLeft className="w-3 h-3" /> Back
-          </button>
-          <Card className="p-6">
-            <h2 className="text-lg font-bold text-slate-800 mb-4">Create Account</h2>
-            <form onSubmit={handleRegister} className="space-y-3">
-              <div>
-                <Label>Full Name *</Label>
-                <Input value={regForm.name} onChange={e => setRegForm(p => ({...p, name: e.target.value}))} required placeholder="Your name" />
-              </div>
-              <div>
-                <Label>Email *</Label>
-                <Input type="email" value={regForm.email} onChange={e => setRegForm(p => ({...p, email: e.target.value}))} required placeholder="you@email.com" />
-              </div>
-              <div>
-                <Label>Password *</Label>
-                <Input type="password" value={regForm.password} onChange={e => setRegForm(p => ({...p, password: e.target.value}))} required placeholder="Min 6 characters" minLength={6} />
-              </div>
-              <div>
-                <Label>Confirm Password *</Label>
-                <Input type="password" value={regForm.confirm} onChange={e => setRegForm(p => ({...p, confirm: e.target.value}))} required placeholder="Repeat password" minLength={6} />
-              </div>
-              <Button type="submit" disabled={sending} className={`w-full ${school === 'PrePrimary' ? 'bg-teal-600 hover:bg-teal-700' : 'bg-purple-600 hover:bg-purple-700'}`}>
-                {sending ? 'Creating...' : 'Create Account'}
-              </Button>
-            </form>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
-  // Step 2: Application form (user is logged in or just registered)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSending(true);
@@ -186,6 +67,26 @@ export default function Apply() {
         emergency_contact1_phone: '.',
         emergency_contact1_relationship: '.',
       });
+
+      // Also send email notification via Edge Function
+      try {
+        await supabase.functions.invoke('notify-application', {
+          body: {
+            school: info.name,
+            parent_name: form.parent_name,
+            parent_email: form.parent_email,
+            parent_phone: form.parent_phone,
+            child_name: form.child_name,
+            child_age: form.child_age,
+            grade: form.grade,
+            previous_school: form.previous_school,
+            special_needs: form.special_needs,
+          }
+        });
+      } catch (notifyErr) {
+        console.error('Email notification failed (application still saved):', notifyErr);
+      }
+
       setSubmitted(true);
     } catch (err) {
       toast.error('Could not submit. Please email us at info@tingaling.co.za');
@@ -200,8 +101,8 @@ export default function Apply() {
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-2">Application Submitted!</h2>
           <p className="text-slate-500 mb-4">Your application for {info.name} has been received.</p>
-          <p className="text-xs text-slate-400 mb-6">You can track your application status in the Parent Portal.</p>
-          <Link to="/ParentDashboard"><Button className="bg-teal-600 hover:bg-teal-700">Go to My Portal</Button></Link>
+          <p className="text-xs text-slate-400 mb-6">We'll be in touch with you at <strong>{form.parent_email}</strong>.</p>
+          <Link to="/"><Button className="bg-teal-600 hover:bg-teal-700">Back to Home</Button></Link>
         </Card>
       </div>
     );
@@ -216,18 +117,22 @@ export default function Apply() {
           <ArrowLeft className="w-3 h-3" /> Back
         </Link>
         <Card className="p-6">
-          <h1 className="text-xl font-bold text-slate-800 mb-1">Apply to {info.name}</h1>
-          <p className="text-sm text-slate-500 mb-1">{info.address}</p>
-          <p className="text-xs text-slate-400 mb-5">Logged in as <strong>{form.parent_email}</strong></p>
+          <div className="flex items-center gap-3 mb-4">
+            <Send className={`w-6 h-6 ${school === 'PrePrimary' ? 'text-teal-500' : 'text-purple-500'}`} />
+            <div>
+              <h1 className="text-xl font-bold text-slate-800">Apply to {info.name}</h1>
+              <p className="text-sm text-slate-500">{info.address}</p>
+            </div>
+          </div>
           <form onSubmit={handleSubmit} className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div className="col-span-2">
-                <Label>Your Name *</Label>
+                <Label>Your Full Name *</Label>
                 <Input value={form.parent_name} onChange={e => setForm(p => ({...p, parent_name: e.target.value}))} required placeholder="Full name" />
               </div>
               <div>
-                <Label>Email</Label>
-                <Input type="email" value={form.parent_email} disabled className="bg-slate-100" />
+                <Label>Email *</Label>
+                <Input type="email" value={form.parent_email} onChange={e => setForm(p => ({...p, parent_email: e.target.value}))} required placeholder="you@email.com" />
               </div>
               <div>
                 <Label>Phone *</Label>
