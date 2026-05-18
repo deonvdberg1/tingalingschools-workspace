@@ -1,6 +1,7 @@
 # 🖥️ Mac Mini — Complete Handover Document
 
 **Prepared:** 2026-05-15  
+**Last Updated:** 2026-05-18  
 **Mac:** Deon's Mac mini (Apple Silicon, macOS 15.5)  
 **Purpose:** WhatsApp Business API server + OpenClaw AI agent platform
 
@@ -19,8 +20,8 @@ This Mac mini runs two critical systems:
 
 | Service | Status | Port | Auto-restart |
 |---------|--------|------|-------------|
-| **WhatsApp Server** (`server.js`) | ✅ Running | 3000 | ❌ Manual (no LaunchAgent) |
-| **Cloudflare Tunnel** (`cloudflared`) | ✅ Running | → 3000 | ❌ Manual (no LaunchAgent) |
+| **WhatsApp Server** (`server.js`) | ✅ Running | 3000 | ✅ LaunchAgent (`com.tingaling.whatsapp-server.plist`) |
+| **Cloudflare Tunnel** (`cloudflared`) | ✅ Running | → 3000 | ✅ LaunchAgent (`com.tingaling.cloudflared.plist`) — also auto-updates webhook URL |
 | **OpenClaw Gateway** | ✅ Running | 18789 | ✅ LaunchAgent (`ai.openclaw.gateway.plist`) |
 | **Keep Awake** (caffeinate) | ✅ Running | — | ✅ LaunchAgent (`com.openclaw.keepawake.plist`) |
 
@@ -38,24 +39,21 @@ This Mac mini runs two critical systems:
 - Telegram bot comes back online
 - **No action needed**
 
-### Step 3: Start the WhatsApp Server
-```bash
-cd /Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server
-npm start
-```
-- Runs on port 3000
-- Dashboard: http://localhost:3000/dashboard
-- Status endpoint: http://localhost:3000/status
+### Step 3: Verify WhatsApp Server & Tunnel
+Both are LaunchAgent-managed and start automatically on boot. No manual steps needed.
 
-### Step 4: Start Cloudflare Tunnel
-```bash
-cloudflared tunnel --url http://localhost:3000 --no-autoupdate &
-```
-- Creates a temporary `trycloudflare.com` URL
-- The URL appears in the terminal output after ~5 seconds
-- **IMPORTANT:** The URL changes every restart. You need to update it in:
-  - Meta WhatsApp Manager → Webhook configuration
-  - Done via: https://business.facebook.com/wa/manage
+If you need to check:
+- Dashboard: http://localhost:3000/dashboard
+- Status: http://localhost:3000/status
+- Tunnel URL: `cat whatsapp-server/tunnel-url.txt`
+
+**The tunnel URL auto-updates** via `scripts/start-tunnel.sh` which:
+1. Starts cloudflared
+2. Captures the new trycloudflare URL
+3. Saves to `whatsapp-server/tunnel-url.txt`
+4. Attempts to update Meta webhook subscription
+
+⚠️ Meta API currently blocked (display name PENDING_REVIEW) — webhook auto-update fails until resolved.
 
 ---
 
@@ -112,7 +110,7 @@ All credentials are stored in the `.env` file. Do NOT share these publicly.
 | Business Portfolio | D&S Comp |
 | WABA ID | `1124652154068427` |
 | Old Number | ~~+27 78 836 3027~~ (deregistered) |
-| New Number | +27 68 754 8390 — **PENDING APPROVAL** |
+| New Number | +27 68 754 8390 — Verified ✅ but API blocked (display name PENDING_REVIEW — resubmitted as "Ting-A-Ling Schools") |
 | App Name | Ting-A-Ling Connect (App ID: 1771774490471649) |
 | Verify Token | `tingaling-schools-verify-2026` |
 | Webhook URL | Cloudflare tunnel URL + `/webhooks/whatsapp` |
@@ -149,16 +147,18 @@ All credentials are stored in the `.env` file. Do NOT share these publicly.
 ### "Cannot GET /health" on the server
 The server doesn't have a `/health` endpoint. Use `/status` or `/dashboard` instead.
 
-### "Account not registered" when sending messages
-The phone number hasn't been fully registered in the WABA yet. Check WhatsApp Manager for pending status.
+### "API access blocked" — OAuthException code 200
+Entire API is blocked by Meta. Likely cause: display name pending/rejected. Resubmit with the business's actual registered name.
+- **Current display name:** "Ting-A-Ling Schools" (resubmitted 2026-05-18)
+- **Check:** Meta WhatsApp Manager → Phone Numbers → Display name status
 
-### Webhook returns 403
+### Webhook returns 403 on GET
 That's normal for direct GET requests without proper verify token. The verification flow uses `hub.verify_token` parameter.
 
 ### Cloudflare tunnel URL changed
-The trycloudflare.com URL is temporary. If the tunnel restarts, the URL changes. You must:
-1. Get the new URL from tunnel output
-2. Go to WhatsApp Manager → Webhook → Update URL
+The trycloudflare.com URL is temporary. The tunnel LaunchAgent + script auto-captures the new URL and saves it to `whatsapp-server/tunnel-url.txt`.
+- The startup script tries to update Meta's webhook automatically
+- If Meta API is blocked, you'll need to update webhook URL manually once access is restored
 
 ---
 
@@ -167,8 +167,9 @@ The trycloudflare.com URL is temporary. If the tunnel restarts, the URL changes.
 - [ ] New number approved → verify via API, update server `.env`
 - [ ] Test inbound WhatsApp messages
 - [ ] Record demo video for Ting-A-Ling
-- [ ] Set up WhatsApp server as a LaunchAgent for auto-start on boot
-- [ ] Set up Cloudflare tunnel as a LaunchAgent for auto-start on boot
+- [x] Set up WhatsApp server as a LaunchAgent for auto-start on boot
+- [x] Set up Cloudflare tunnel as a LaunchAgent for auto-start on boot
+- [ ] Resolve Meta API block (display name)
 - [ ] Buy UPS (~R1,200) for power outage protection
 - [ ] Enable macOS auto-start after power failure (System Settings → Energy)
 
@@ -178,8 +179,8 @@ The trycloudflare.com URL is temporary. If the tunnel restarts, the URL changes.
 
 - **Fred:** Available via Telegram @Fredtheautoguy_bot
 - **Mr D:** Founder — reachable via Telegram or WhatsApp
-- **Tunnel (live):** https://examines-citations-gps-fusion.trycloudflare.com
+- **Tunnel (live):** https://appendix-employ-highs-eliminate.trycloudflare.com
 
 ---
 
-*End of Handover Document — Last updated 2026-05-15*
+*End of Handover Document — Last updated 2026-05-18*
