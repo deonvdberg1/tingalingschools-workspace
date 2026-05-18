@@ -34,7 +34,7 @@ const schools = [
     lightColor: 'from-purple-50 to-pink-50',
     border: 'border-purple-200',
     badge: 'bg-purple-100 text-purple-800',
-    image: 'https://images.unsplash.com/photo-1544776193-352d25ca82cd?w=600&q=80',
+    image: 'https://images.pexels.com/photos/8613089/pexels-photo-8613089.jpeg?auto=compress&cs=tinysrgb&w=600',
   }
 ];
 
