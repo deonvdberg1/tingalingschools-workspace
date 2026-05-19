@@ -21,7 +21,14 @@ async def check_platform(url, name, timeout=15000):
         if os.path.exists(STATE_FILE):
             with open(STATE_FILE) as f:
                 state = json.load(f)
-            await context.add_cookies(state['cookies'])
+            # Normalize cookies: Playwright exports secure/httpOnly as int, needs bool
+            cookies = state['cookies']
+            for c in cookies:
+                if 'secure' in c and not isinstance(c['secure'], bool):
+                    c['secure'] = bool(c['secure'])
+                if 'httpOnly' in c and not isinstance(c['httpOnly'], bool):
+                    c['httpOnly'] = bool(c['httpOnly'])
+            await context.add_cookies(cookies)
         
         page = await context.new_page()
         await page.goto(url, timeout=timeout, wait_until='domcontentloaded')

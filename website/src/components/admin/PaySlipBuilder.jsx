@@ -15,7 +15,7 @@ const SCHOOL_INFO = {
   name: 'Ting-A-Ling Schools',
   address1: '74 Krewilkring, Meerensee',
   address2: '18 Elweboog, Meerensee',
-  email: 'info@tingaling.co.za',
+  email: 'info@tingalingschools.com',
   reg: '',
 };
 

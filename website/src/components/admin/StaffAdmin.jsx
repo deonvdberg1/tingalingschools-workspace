@@ -16,7 +16,7 @@ import { format, parseISO } from 'date-fns';
 import { Plus, Pencil, Trash2, ChevronRight, User, CalendarDays, Banknote, Eye } from 'lucide-react';
 import PaySlipBuilder, { PaySlipPreview } from './PaySlipBuilder';
 
-const SCHOOL_INFO = { name: 'Ting-A-Ling Schools', address1: '74 Krewilkring, Meerensee', email: 'info@tingaling.co.za' };
+const SCHOOL_INFO = { name: 'Ting-A-Ling Schools', address1: '74 Krewilkring, Meerensee', email: 'info@tingalingschools.com' };
 
 const BLANK_STAFF = { full_name: '', email: '', phone: '', id_number: '', job_title: '', school: 'PrePrimary', start_date: '', emergency_contact_name: '', emergency_contact_phone: '', notes: '', is_active: true };
 const BLANK_BALANCE = { annual_leave_total: 15, annual_leave_used: 0, sick_leave_total: 30, sick_leave_used: 0, family_leave_total: 3, family_leave_used: 0, notes: '' };

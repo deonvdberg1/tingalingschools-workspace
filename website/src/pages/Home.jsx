@@ -56,7 +56,7 @@ export default function Home() {
       toast.success('Message sent! We will get back to you soon.');
       setCf({ name: '', email: '', phone: '', subject: '', message: '' });
     } catch (err) {
-      toast.error('Could not send message. Please email us directly at info@tingaling.co.za');
+      toast.error('Could not send message. Please email us directly at info@tingalingschools.com');
     }
     setSending(false);
   };
@@ -181,7 +181,7 @@ export default function Home() {
               <div className="flex items-center gap-3"><MapPin className="w-4 h-4 text-teal-400 shrink-0" /> 74 Krewilkring, Meerensee (Pre-Primary)</div>
               <div className="flex items-center gap-3"><MapPin className="w-4 h-4 text-purple-400 shrink-0" /> 18 Elweboog, Meerensee (Special Needs)</div>
               <div className="flex items-center gap-3"><Phone className="w-4 h-4 text-teal-400" /> 061 527 4429 / 072 456 1281</div>
-              <div className="flex items-center gap-3"><Mail className="w-4 h-4 text-teal-400" /> info@tingaling.co.za</div>
+              <div className="flex items-center gap-3"><Mail className="w-4 h-4 text-teal-400" /> info@tingalingschools.com</div>
             </div>
           </div>
           <div>

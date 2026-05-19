@@ -9,7 +9,7 @@ import { format, parseISO } from 'date-fns';
 import { Plus, Trash2, Eye } from 'lucide-react';
 import PaySlipBuilder, { PaySlipPreview } from './PaySlipBuilder';
 
-const SCHOOL_INFO = { name: 'Ting-A-Ling Schools', address1: '74 Krewilkring, Meerensee', email: 'info@tingaling.co.za' };
+const SCHOOL_INFO = { name: 'Ting-A-Ling Schools', address1: '74 Krewilkring, Meerensee', email: 'info@tingalingschools.com' };
 
 export default function PaySlipsAdmin() {
   const [payslips, setPayslips] = useState([]);

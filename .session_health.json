@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-05-19T07:04:14.804756",
+  "status": "ALL_OK",
+  "results": {
+    "instagram": {
+      "ok": true,
+      "detail": "\u2705 Instagram \u2014 OK"
+    },
+    "facebook": {
+      "ok": true,
+      "detail": "\u2705 Facebook \u2014 OK"
+    },
+    "tiktok": {
+      "ok": true,
+      "detail": "\u2705 TikTok \u2014 OK"
+    }
+  }
+}

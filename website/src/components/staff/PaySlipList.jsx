@@ -6,7 +6,7 @@ import { FileText, Eye, Download } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { PaySlipPreview } from '../admin/PaySlipBuilder';
 
-const SCHOOL_INFO = { name: 'Ting-A-Ling Schools', address1: '74 Krewilkring, Meerensee', email: 'info@tingaling.co.za' };
+const SCHOOL_INFO = { name: 'Ting-A-Ling Schools', address1: '74 Krewilkring, Meerensee', email: 'info@tingalingschools.com' };
 
 const fmt = (n) => `R ${parseFloat(n || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}`;
 
@@ -28,7 +28,7 @@ export default function PaySlipList({ payslips }) {
       <style>body{font-family:Arial,sans-serif;margin:0;color:#1e293b;font-size:13px}</style></head>
       <body>
         <div style="background:#1e293b;color:#fff;padding:24px 32px;display:flex;justify-content:space-between">
-          <div><div style="font-size:20px;font-weight:bold">Ting-A-Ling Schools</div><div style="font-size:11px;color:#94a3b8">info@tingaling.co.za</div></div>
+          <div><div style="font-size:20px;font-weight:bold">Ting-A-Ling Schools</div><div style="font-size:11px;color:#94a3b8">info@tingalingschools.com</div></div>
           <div style="text-align:right"><div style="font-size:22px;font-weight:bold;color:#99f6e4">PAY SLIP</div><div style="color:#94a3b8">${slip.pay_period}</div><div style="color:#64748b;font-size:12px">Pay Date: ${slip.pay_date}</div></div>
         </div>
         <div style="background:#f8fafc;padding:16px 32px;display:grid;grid-template-columns:1fr 1fr;gap:8px;border-bottom:1px solid #e2e8f0">
@@ -59,7 +59,7 @@ export default function PaySlipList({ payslips }) {
           <div style="text-align:right;font-size:12px;color:#99f6e4"><div>Gross: R ${parseFloat(gross).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</div><div>Deductions: −R ${parseFloat(totalDeductions).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</div></div>
         </div>
         ${slip.notes ? `<div style="padding:12px 32px;border-top:1px solid #e2e8f0;font-size:11px;color:#64748b"><strong>Notes:</strong> ${slip.notes}</div>` : ''}
-        <div style="padding:10px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;display:flex;justify-content:space-between"><span>Ting-A-Ling Schools · info@tingaling.co.za</span><span>Computer generated pay slip</span></div>
+        <div style="padding:10px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;display:flex;justify-content:space-between"><span>Ting-A-Ling Schools · info@tingalingschools.com</span><span>Computer generated pay slip</span></div>
       </body></html>
     `);
     printWindow.document.close();

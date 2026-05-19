@@ -56,7 +56,7 @@ def export_cookies():
                     'name': c.name, 'value': c.value, 'domain': c.domain, 'path': c.path or '/',
                     'expires': int(c.expires) if c.expires else 2147483647,
                     'httpOnly': bool(c.has_nonstandard_attr('httponly')) if c.has_nonstandard_attr else False,
-                    'secure': c.secure, 'sameSite': 'Lax'
+                    'secure': bool(c.secure), 'sameSite': 'Lax'
                 })
         except:
             pass

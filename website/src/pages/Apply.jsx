@@ -89,7 +89,7 @@ export default function Apply() {
 
       setSubmitted(true);
     } catch (err) {
-      toast.error('Could not submit. Please email us at info@tingaling.co.za');
+      toast.error('Could not submit. Please email us at info@tingalingschools.com');
     }
     setSending(false);
   };
@@ -102,7 +102,10 @@ export default function Apply() {
           <h2 className="text-2xl font-bold mb-2">Application Submitted!</h2>
           <p className="text-slate-500 mb-4">Your application for {info.name} has been received.</p>
           <p className="text-xs text-slate-400 mb-6">We'll be in touch with you at <strong>{form.parent_email}</strong>.</p>
-          <Link to="/"><Button className="bg-teal-600 hover:bg-teal-700">Back to Home</Button></Link>
+          <div className="flex flex-col gap-2">
+            <Link to="/Login"><Button className="w-full bg-teal-600 hover:bg-teal-700">Go to My Portal</Button></Link>
+            <Link to="/"><Button variant="outline" className="w-full">Back to Home</Button></Link>
+          </div>
         </Card>
       </div>
     );
