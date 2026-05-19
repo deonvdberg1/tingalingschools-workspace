@@ -54,93 +54,96 @@ function saveConversations() {
 const conversations = loadConversations();
 const processed_messages = new Set();
 
-// ── Ting-A-Ling auto-reply rules ──────────────────────────────────────────
-function getAutoReply(messageText) {
+// ── Template cache ────────────────────────────────────────────────────────
+const CLIENT_NUMBER_MAP = {
+  '27687548390': 1,  // Ting-A-Ling Schools
+};
+
+let cachedTemplates = null;
+let cacheTime = 0;
+const CACHE_TTL = 30000; // 30 seconds
+
+async function fetchTemplates(clientId) {
+  const now = Date.now();
+  if (cachedTemplates && now - cacheTime < CACHE_TTL) {
+    return cachedTemplates;
+  }
+  try {
+    const res = await fetch('http://localhost:3001/api/clients/' + clientId + '/templates');
+    if (res.ok) {
+      cachedTemplates = await res.json();
+      cacheTime = now;
+      return cachedTemplates;
+    }
+  } catch {}
+  return cachedTemplates || [];
+}
+
+// ── Smart keyword matcher ─────────────────────────────────────────────────
+function matchKeywords(message, keywordsStr) {
+  if (!keywordsStr || !keywordsStr.trim()) return 0;
+  const msg = message.toLowerCase().trim();
+  const keywords = keywordsStr.split(',').map(k => k.trim().toLowerCase()).filter(k => k);
+  if (keywords.length === 0) return 0;
+  
+  let score = 0;
+  for (const keyword of keywords) {
+    if (!keyword) continue;
+    const safeKw = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // Exact word match (highest priority)
+    if (new RegExp('\\b' + safeKw + '\\b', 'i').test(msg)) {
+      score += 3 * keyword.length;
+    }
+    // Word starts with keyword (e.g. "pay" matches "payment")
+    else if (new RegExp('\\b' + safeKw, 'i').test(msg)) {
+      score += 2 * keyword.length;
+    }
+    // Keyword appears anywhere
+    else if (msg.includes(keyword)) {
+      score += 1 * keyword.length;
+    }
+  }
+  return score;
+}
+
+// ── Smart auto-reply using templates from DB ──────────────────────────────
+async function getAutoReply(messageText, fromNumber) {
   const msg = (messageText || '').toLowerCase().trim();
-
-  // Opt-out handling (MUST be first — Meta policy requirement)
+  
+  // Opt-out (MUST be first — Meta policy)
   if (/^stop$|^unsubscribe$|^opt.?out$|^cancel$/i.test(msg)) {
-    return {
-      text: `✅ You have been unsubscribed from Ting-A-Ling Schools WhatsApp messages. You will no longer receive statements or announcements.
-
-If you change your mind, just send "START" and we'll reactivate your account.`,
-      type: 'text'
-    };
+    return { text: '✅ You have been unsubscribed.\n\nSend "START" to reactivate.', type: 'text' };
   }
-
-  // Opt-in handling
   if (/^start$|^resubscribe$|^opt.?in$/i.test(msg)) {
-    return {
-      text: `✅ You have been resubscribed to Ting-A-Ling Schools WhatsApp messages. Welcome back!`,
-      type: 'text'
-    };
+    return { text: '✅ You have been resubscribed. Welcome back!', type: 'text' };
   }
 
-  // Fees
-  if (/fee|school fee|schoolfees|payment|cost|amount|how much|price|tariff/i.test(msg)) {
-    return {
-      text: `🏫 *Ting-A-Ling Schools - Fee Enquiry*\n\nFor current fee structures and payment options, please contact our admin office during school hours (07:30 - 15:30 weekdays).\n\n📞 035 XXX XXXX\n✉️ admin@tingaling.co.za\n\nAlternatively, tell us which class/grade your child is in and we'll have the relevant information sent to you.`,
-      type: 'text'
-    };
+  // Look up client by phone number
+  const cleanNumber = (fromNumber || '').replace(/[^0-9]/g, '');
+  const clientId = CLIENT_NUMBER_MAP[cleanNumber];
+  
+  if (clientId) {
+    const templates = await fetchTemplates(clientId);
+    if (templates && templates.length > 0) {
+      // Score each template
+      const scored = templates
+        .filter(t => t.active !== 0)
+        .map(t => ({ template: t, score: matchKeywords(msg, t.trigger_keyword) }))
+        .sort((a, b) => b.score - a.score);
+      
+      // Best match
+      if (scored.length > 0 && scored[0].score > 0) {
+        return { text: scored[0].template.content, type: 'text' };
+      }
+      
+      // Fallback: first "General" or greeting template
+      const greeting = templates.find(t => t.category?.toLowerCase() === 'general');
+      if (greeting) {
+        return { text: greeting.content, type: 'text' };
+      }
+    }
   }
 
-  // Hours / Times
-  if (/hour|time|open|close|when|operating|school day/i.test(msg)) {
-    return {
-      text: `⏰ *Ting-A-Ling Schools - Operating Hours*\n\n*School Day:* 07:30 - 14:00 (Mon-Fri)\n*Office:* 07:00 - 15:30 (Mon-Fri)\n*Aftercare:* Until 17:00\n\n*Holiday Programmes:* Available during school breaks — ask us for details!`,
-      type: 'text'
-    };
-  }
-
-  // Uniform
-  if (/uniform|dress|clothes|wear|attire/i.test(msg)) {
-    return {
-      text: `👔 *Ting-A-Ling Schools - Uniform*\n\nUniforms are available from:\n• The school shop (Mondays & Thursdays, 07:30-09:00)\n• [Supplier Name], [Address]\n\nPlease visit the office for a full uniform list and pricelist.`,
-      type: 'text'
-    };
-  }
-
-  // Absentee / sick
-  if (/absent|sick|missing|absentee|ill|not coming|leaving early/i.test(msg)) {
-    return {
-      text: `📋 *Ting-A-Ling Schools - Absentee Reporting*\n\nPlease call the school office to report your child's absence:\n📞 035 XXX XXXX\n\nAlternatively, send a message with your child's NAME, GRADE and REASON and we'll log it for the class teacher.`,
-      type: 'text'
-    };
-  }
-
-  // Events / calendar
-  if (/event|calendar|sports|concert|function|parent.*meeting|sport/i.test(msg)) {
-    return {
-      text: `📅 *Ting-A-Ling Schools - Events & Calendar*\n\nUpcoming events are communicated via:\n• Parent WhatsApp groups\n• Weekly newsletter (sent every Friday)\n• Notice board at the school gate\n\nFor specific event info, please let us know which event you're asking about!`,
-      type: 'text'
-    };
-  }
-
-  // Contact / phone / address
-  if (/contact|phone|number|address|where|lost|found/i.test(msg)) {
-    return {
-      text: `📍 *Ting-A-Ling Schools - Contact Details*\n\n📞 Office: 035 XXX XXXX\n✉️ Email: admin@tingaling.co.za\n📍 [School Address, Richards Bay]\n\nOffice Hours: 07:00 - 15:30 (Weekdays)`,
-      type: 'text'
-    };
-  }
-
-  // Registration / enrollment
-  if (/register|enrol|admission|apply|new student|new learner|enrollment/i.test(msg)) {
-    return {
-      text: `📝 *Ting-A-Ling Schools - Enrolment*\n\nThank you for your interest! To enrol your child:\n\n1️⃣ Visit the school office (Mon-Fri, 08:00-14:00) for a registration pack\n2️⃣ Bring: Child's birth certificate, parent ID, latest report\n3️⃣ Pay the registration fee\n\nAlternatively, request a registration form and we'll email it to you.\n\n📞 035 XXX XXXX`,
-      type: 'text'
-    };
-  }
-
-  // General greeting
-  if (/hi|hello|good morning|good afternoon|howdy|hey/i.test(msg)) {
-    return {
-      text: `👋 Welcome to *Ting-A-Ling Schools*!\n\nI'm here to help with common enquiries. Just ask me about:\n\n• 💰 Fees & payments\n• ⏰ School hours\n• 👔 Uniforms\n• 📋 Absentee reporting\n• 📅 Events & calendar\n• 📍 Contact details\n• 📝 Enrolment\n\nIf you need something else, a human will be with you shortly!`,
-      type: 'text'
-    };
-  }
-
-  // Default: hand off to human
   return null;
 }
 
@@ -266,7 +269,7 @@ app.post('/webhooks/whatsapp', express.json(), async (req, res) => {
       if (processed_messages.has(msg.id)) { continue; }
       processed_messages.add(msg.id);
       if (processed_messages.size > 1000) { processed_messages.clear(); }      const text = msg.text.body;
-      const reply = getAutoReply(text);
+      const reply = await getAutoReply(text, from);
 
       logConversation(from, name, text, reply);
 

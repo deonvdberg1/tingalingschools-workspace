@@ -61,7 +61,10 @@ app.post('/api/clients', (req, res) => {
 });
 
 app.put('/api/clients/:id', (req, res) => {
-  const { name, phone, email, status, notes, whatsapp_number, client_type } = req.body;
+  const { name, phone, email, status, notes, whatsapp_number, client_type,
+    onboarding_status, onboarding_whatsapp, onboarding_display_name,
+    onboarding_auto_reply, onboarding_opt_in, onboarding_website,
+    health_status } = req.body;
   
   const fields = [];
   const values = [];
@@ -73,6 +76,13 @@ app.put('/api/clients/:id', (req, res) => {
   if (notes !== undefined) { fields.push('notes = ?'); values.push(notes); }
   if (whatsapp_number !== undefined) { fields.push('whatsapp_number = ?'); values.push(whatsapp_number); }
   if (client_type !== undefined) { fields.push('client_type = ?'); values.push(client_type); }
+  if (onboarding_status !== undefined) { fields.push('onboarding_status = ?'); values.push(onboarding_status); }
+  if (onboarding_whatsapp !== undefined) { fields.push('onboarding_whatsapp = ?'); values.push(onboarding_whatsapp); }
+  if (onboarding_display_name !== undefined) { fields.push('onboarding_display_name = ?'); values.push(onboarding_display_name); }
+  if (onboarding_auto_reply !== undefined) { fields.push('onboarding_auto_reply = ?'); values.push(onboarding_auto_reply); }
+  if (onboarding_opt_in !== undefined) { fields.push('onboarding_opt_in = ?'); values.push(onboarding_opt_in); }
+  if (onboarding_website !== undefined) { fields.push('onboarding_website = ?'); values.push(onboarding_website); }
+  if (health_status !== undefined) { fields.push('health_status = ?'); values.push(health_status); }
   
   if (fields.length === 0) return res.status(400).json({ error: 'No fields to update' });
   
@@ -156,17 +166,273 @@ app.put('/api/settings', (req, res) => {
 
 // ── DASHBOARD STATS ──
 
-app.get('/api/stats', (req, res) => {
+async function fetchWhatsAppStats() {
+  try {
+    const [statusRes, convRes] = await Promise.all([
+      fetch('http://localhost:3000/status').catch(() => null),
+      fetch('http://localhost:3000/api/conversations').catch(() => null),
+    ]);
+    
+    if (!statusRes || !convRes) return { total_messages: 0, active_conversations: 0, pending_replies: 0, server_status: 'offline' };
+    
+    const status = await statusRes.json();
+    const conversations = await convRes.json();
+    
+    const totalMessages = conversations.reduce((s, c) => s + (c.messages?.length || 0), 0);
+    const pendingReplies = conversations.filter(c => (c.humanRequests || 0) > (c.autoReplied || 0)).length;
+    
+    return {
+      total_messages: totalMessages,
+      active_conversations: conversations.length,
+      pending_replies: pendingReplies,
+      server_status: 'online',
+    };
+  } catch {
+    return { total_messages: 0, active_conversations: 0, pending_replies: 0, server_status: 'offline' };
+  }
+}
+
+app.get('/api/stats', async (req, res) => {
   const total = query('SELECT COUNT(*) as c FROM clients')[0].c;
   const active = query("SELECT COUNT(*) as c FROM clients WHERE status = 'active'")[0].c;
+  const wa = await fetchWhatsAppStats();
   
   res.json({
     total_clients: total,
     active_clients: active,
-    total_messages: 0,
-    active_conversations: 0,
-    pending_replies: 0
+    ...wa,
   });
+});
+
+// ── TEMPLATES ──
+
+app.get('/api/clients/:id/templates', (req, res) => {
+  const templates = query('SELECT * FROM templates WHERE client_id = ? ORDER BY category, name', [req.params.id]);
+  res.json(templates);
+});
+
+app.post('/api/clients/:id/templates', (req, res) => {
+  const { name, category, trigger_keyword, content } = req.body;
+  if (!name || !content) return res.status(400).json({ error: 'Name and content are required' });
+  
+  run(
+    'INSERT INTO templates (client_id, name, category, trigger_keyword, content) VALUES (?, ?, ?, ?, ?)',
+    [req.params.id, name, category || 'general', trigger_keyword || '', content]
+  );
+  saveDb();
+  
+  const t = query('SELECT * FROM templates ORDER BY id DESC LIMIT 1')[0];
+  res.status(201).json(t);
+});
+
+app.put('/api/templates/:id', (req, res) => {
+  const { name, category, trigger_keyword, content, active } = req.body;
+  
+  const fields = [];
+  const values = [];
+  if (name !== undefined) { fields.push('name = ?'); values.push(name); }
+  if (category !== undefined) { fields.push('category = ?'); values.push(category); }
+  if (trigger_keyword !== undefined) { fields.push('trigger_keyword = ?'); values.push(trigger_keyword); }
+  if (content !== undefined) { fields.push('content = ?'); values.push(content); }
+  if (active !== undefined) { fields.push('active = ?'); values.push(active); }
+  
+  if (fields.length === 0) return res.status(400).json({ error: 'No fields to update' });
+  fields.push("updated_at = datetime('now')");
+  values.push(req.params.id);
+  
+  run(`UPDATE templates SET ${fields.join(', ')} WHERE id = ?`, values);
+  saveDb();
+  
+  const templates = query('SELECT * FROM templates WHERE id = ?', [req.params.id]);
+  if (templates.length === 0) return res.status(404).json({ error: 'Template not found' });
+  res.json(templates[0]);
+});
+
+app.delete('/api/templates/:id', (req, res) => {
+  run('DELETE FROM templates WHERE id = ?', [req.params.id]);
+  saveDb();
+  res.json({ success: true });
+});
+
+// ── CLIENT HEALTH ──
+
+app.get('/api/clients/:id/health', async (req, res) => {
+  const clients = query('SELECT * FROM clients WHERE id = ?', [req.params.id]);
+  if (clients.length === 0) return res.status(404).json({ error: 'Client not found' });
+  
+  const client = clients[0];
+  const phoneClean = (client.phone || client.whatsapp_number || '').replace(/[^0-9]/g, '');
+  
+  let conversationStats = {
+    total_messages: 0,
+    auto_replies: 0,
+    human_replies: 0,
+    last_message: null,
+    needs_attention: false,
+  };
+  
+  if (phoneClean) {
+    try {
+      const convRes = await fetch('http://localhost:3000/api/conversations').catch(() => null);
+      if (convRes) {
+        const convs = await convRes.json();
+        const match = convs.find(c => c.phone?.replace(/[^0-9]/g, '') === phoneClean);
+        if (match) {
+          const msgs = match.messages || [];
+          conversationStats.total_messages = msgs.length;
+          conversationStats.auto_replies = msgs.filter(m => m.direction === 'out').length;
+          conversationStats.human_replies = msgs.filter(m => m.direction === 'in').length;
+          conversationStats.last_message = msgs.length > 0 ? msgs[msgs.length - 1].timestamp : null;
+          conversationStats.needs_attention = (match.humanRequests || 0) > (match.autoReplied || 0);
+        }
+      }
+    } catch {}
+  }
+  
+  // Count templates
+  const templateCount = query('SELECT COUNT(*) as c FROM templates WHERE client_id = ?', [req.params.id])[0].c;
+  
+  res.json({
+    client: {
+      id: client.id,
+      name: client.name,
+      health_status: client.health_status || 'pending',
+      onboarding_status: client.onboarding_status || 'not_started',
+      onboarding: {
+        whatsapp: !!client.onboarding_whatsapp,
+        display_name: !!client.onboarding_display_name,
+        auto_reply: !!client.onboarding_auto_reply,
+        opt_in: !!client.onboarding_opt_in,
+        website: !!client.onboarding_website,
+      },
+    },
+    conversation: conversationStats,
+    templates: templateCount,
+  });
+});
+
+// ── ANALYTICS ──
+
+app.get('/api/analytics/messages', async (req, res) => {
+  try {
+    const convRes = await fetch('http://localhost:3000/api/conversations').catch(() => null);
+    if (!convRes) {
+      return res.json({
+        daily: [],
+        total_messages: 0,
+        auto_reply_rate: 0,
+        avg_response_time: '—',
+      });
+    }
+    
+    const conversations = await convRes.json();
+    
+    // Compute daily message volume for the last 7 days
+    const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const dailyTotals = Array(7).fill(0);
+    const dailyAuto = Array(7).fill(0);
+    
+    conversations.forEach(conv => {
+      (conv.messages || []).forEach(msg => {
+        const d = new Date(msg.timestamp);
+        // Only count last 7 days
+        const daysAgo = Math.floor((Date.now() - d.getTime()) / 86400000);
+        if (daysAgo >= 0 && daysAgo < 7) {
+          const idx = 6 - daysAgo;
+          dailyTotals[idx]++;
+          if (msg.direction === 'out') dailyAuto[idx]++;
+        }
+      });
+    });
+    
+    const totalMessages = dailyTotals.reduce((s, v) => s + v, 0);
+    const totalAuto = dailyAuto.reduce((s, v) => s + v, 0);
+    
+    res.json({
+      daily: dayLabels.map((label, i) => ({
+        day: label,
+        total: dailyTotals[i],
+        auto: dailyAuto[i],
+        human: dailyTotals[i] - dailyAuto[i],
+      })),
+      total_messages: totalMessages,
+      auto_reply_rate: totalMessages > 0 ? Math.round((totalAuto / totalMessages) * 100) : 0,
+      avg_response_time: totalMessages > 0 ? '< 1 min' : '—',
+    });
+  } catch {
+    res.json({ daily: [], total_messages: 0, auto_reply_rate: 0, avg_response_time: '—' });
+  }
+});
+
+// ── BROADCAST ──
+
+// Broadcast log (in-memory — persists across restarts via DB eventually)
+const broadcastLog = [];
+
+app.get('/api/broadcasts', (req, res) => {
+  res.json(broadcastLog.slice().reverse());
+});
+
+app.post('/api/broadcasts/send', async (req, res) => {
+  const { message, client_ids } = req.body;
+  if (!message?.trim()) return res.status(400).json({ error: 'Message is required' });
+  
+  // Get target clients
+  let targets;
+  if (client_ids && client_ids.length > 0) {
+    targets = query(`SELECT * FROM clients WHERE id IN (${client_ids.map(() => '?').join(',')})`, client_ids);
+  } else {
+    targets = query("SELECT * FROM clients WHERE status = 'active'");
+  }
+  
+  if (targets.length === 0) {
+    return res.status(400).json({ error: 'No clients to send to' });
+  }
+  
+  const results = [];
+  for (const client of targets) {
+    const phone = client.phone?.replace(/[^0-9]/g, '');
+    if (!phone || phone.length < 10) {
+      results.push({ client: client.name, phone: client.phone, status: 'skipped', error: 'No valid phone number' });
+      continue;
+    }
+    
+    try {
+      const waRes = await fetch('http://localhost:3000/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to: phone, text: message }),
+      }).catch(() => null);
+      
+      if (!waRes) {
+        results.push({ client: client.name, phone: client.phone, status: 'failed', error: 'WhatsApp server offline' });
+      } else {
+        const waData = await waRes.json();
+        results.push({
+          client: client.name,
+          phone: client.phone,
+          status: waData.success ? 'sent' : 'failed',
+          error: waData.error || null,
+          message_id: waData.id || null,
+        });
+      }
+    } catch (e) {
+      results.push({ client: client.name, phone: client.phone, status: 'error', error: e.message });
+    }
+  }
+  
+  const broadcast = {
+    id: Date.now().toString(),
+    message,
+    total: targets.length,
+    sent: results.filter(r => r.status === 'sent').length,
+    failed: results.filter(r => r.status !== 'sent').length,
+    results,
+    created_at: new Date().toISOString(),
+  };
+  
+  broadcastLog.push(broadcast);
+  res.json(broadcast);
 });
 
 // ── Health ──

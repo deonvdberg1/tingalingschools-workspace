@@ -33,10 +33,61 @@ export async function initDb() {
       notes TEXT DEFAULT '',
       whatsapp_number TEXT DEFAULT '',
       client_type TEXT DEFAULT 'school',
+      
+      -- Onboarding checklist
+      onboarding_status TEXT DEFAULT 'not_started',
+      onboarding_whatsapp INTEGER DEFAULT 0,
+      onboarding_display_name INTEGER DEFAULT 0,
+      onboarding_auto_reply INTEGER DEFAULT 0,
+      onboarding_opt_in INTEGER DEFAULT 0,
+      onboarding_website INTEGER DEFAULT 0,
+      
+      -- Health
+      health_status TEXT DEFAULT 'pending',
+      
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );
+  
+    CREATE TABLE IF NOT EXISTS templates (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      category TEXT DEFAULT 'general',
+      trigger_keyword TEXT DEFAULT '',
+      content TEXT NOT NULL,
+      active INTEGER DEFAULT 1,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+    );
+  
+    -- Add columns if they don't exist (for existing DBs)
+    CREATE TABLE IF NOT EXISTS schema_version (version INTEGER);
   `);
+  
+  // Migrate existing clients — add onboarding columns
+  try {
+    db.run("ALTER TABLE clients ADD COLUMN onboarding_status TEXT DEFAULT 'not_started'");
+  } catch {}
+  try {
+    db.run('ALTER TABLE clients ADD COLUMN onboarding_whatsapp INTEGER DEFAULT 0');
+  } catch {}
+  try {
+    db.run('ALTER TABLE clients ADD COLUMN onboarding_display_name INTEGER DEFAULT 0');
+  } catch {}
+  try {
+    db.run('ALTER TABLE clients ADD COLUMN onboarding_auto_reply INTEGER DEFAULT 0');
+  } catch {}
+  try {
+    db.run('ALTER TABLE clients ADD COLUMN onboarding_opt_in INTEGER DEFAULT 0');
+  } catch {}
+  try {
+    db.run('ALTER TABLE clients ADD COLUMN onboarding_website INTEGER DEFAULT 0');
+  } catch {}
+  try {
+    db.run("ALTER TABLE clients ADD COLUMN health_status TEXT DEFAULT 'pending'");
+  } catch {}
   
   db.run(`
     CREATE TABLE IF NOT EXISTS profile (
