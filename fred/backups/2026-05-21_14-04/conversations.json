@@ -1,0 +1,212 @@
+{
+  "27615274429": {
+    "name": "Deon",
+    "phone": "27615274429",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "💾 Persistent storage is live — conversations now save to disk!",
+        "timestamp": "2026-05-14T17:36:46.794Z"
+      },
+      {
+        "direction": "in",
+        "text": "🔄 Testing persistence — kill and restart incoming",
+        "timestamp": "2026-05-14T17:37:08.186Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi?",
+        "timestamp": "2026-05-14T17:39:24.596Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-14T17:39:35.820Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-14T17:43:06.566Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-14T17:43:36.719Z"
+      },
+      {
+        "direction": "in",
+        "text": "Testing inbound webhook",
+        "timestamp": "2026-05-15T16:23:41.612Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-15T17:41:36.697Z"
+      },
+      {
+        "direction": "out",
+        "text": "👋 Welcome to *Ting-A-Ling Schools*!\n\nI'm here to help with common enquiries. Just ask me about:\n\n• 💰 Fees & payments\n• ⏰ School hours\n• 👔 Uniforms\n• 📋 Absentee reporting\n• 📅 Events & calendar\n• 📍 Contact details\n• 📝 Enrolment\n\nIf you need something else, a human will be with you shortly!",
+        "timestamp": "2026-05-15T17:41:36.697Z"
+      },
+      {
+        "direction": "in",
+        "text": "School fees",
+        "timestamp": "2026-05-15T17:41:53.388Z"
+      },
+      {
+        "direction": "out",
+        "text": "🏫 *Ting-A-Ling Schools - Fee Enquiry*\n\nFor current fee structures and payment options, please contact our admin office during school hours (07:30 - 15:30 weekdays).\n\n📞 035 XXX XXXX\n✉️ admin@tingaling.co.za\n\nAlternatively, tell us which class/grade your child is in and we'll have the relevant information sent to you.",
+        "timestamp": "2026-05-15T17:41:53.388Z"
+      },
+      {
+        "direction": "in",
+        "text": "Thank for the hard work, sleep well",
+        "timestamp": "2026-05-15T20:03:10.954Z"
+      },
+      {
+        "direction": "in",
+        "text": "Still working?",
+        "timestamp": "2026-05-16T10:42:56.163Z"
+      },
+      {
+        "direction": "out",
+        "text": "📋 *Ting-A-Ling Schools - Absentee Reporting*\n\nPlease call the school office to report your child's absence:\n📞 035 XXX XXXX\n\nAlternatively, send a message with your child's NAME, GRADE and REASON and we'll log it for the class teacher.",
+        "timestamp": "2026-05-16T10:42:56.163Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-16T13:59:22.896Z"
+      },
+      {
+        "direction": "out",
+        "text": "👋 Welcome to *Ting-A-Ling Schools*!\n\nI'm here to help with common enquiries. Just ask me about:\n\n• 💰 Fees & payments\n• ⏰ School hours\n• 👔 Uniforms\n• 📋 Absentee reporting\n• 📅 Events & calendar\n• 📍 Contact details\n• 📝 Enrolment\n\nIf you need something else, a human will be with you shortly!",
+        "timestamp": "2026-05-16T13:59:22.896Z"
+      },
+      {
+        "direction": "in",
+        "text": "How much for school fees",
+        "timestamp": "2026-05-16T14:00:31.503Z"
+      },
+      {
+        "direction": "out",
+        "text": "🏫 *Ting-A-Ling Schools - Fee Enquiry*\n\nFor current fee structures and payment options, please contact our admin office during school hours (07:30 - 15:30 weekdays).\n\n📞 035 XXX XXXX\n✉️ admin@tingaling.co.za\n\nAlternatively, tell us which class/grade your child is in and we'll have the relevant information sent to you.",
+        "timestamp": "2026-05-16T14:00:31.503Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-16T23:49:37.028Z"
+      },
+      {
+        "direction": "out",
+        "text": "👋 Welcome to *Ting-A-Ling Schools*!\n\nI'm here to help with common enquiries. Just ask me about:\n\n• 💰 Fees & payments\n• ⏰ School hours\n• 👔 Uniforms\n• 📋 Absentee reporting\n• 📅 Events & calendar\n• 📍 Contact details\n• 📝 Enrolment\n\nIf you need something else, a human will be with you shortly!",
+        "timestamp": "2026-05-16T23:49:37.028Z"
+      },
+      {
+        "direction": "in",
+        "text": "I got my reply?",
+        "timestamp": "2026-05-21T07:19:09.069Z"
+      },
+      {
+        "direction": "in",
+        "text": "Good please respond again",
+        "timestamp": "2026-05-21T07:19:12.019Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-21T07:31:15.760Z"
+      },
+      {
+        "direction": "in",
+        "text": "Test inbound again",
+        "timestamp": "2026-05-21T08:37:17.043Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-21T08:54:13.586Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hi there! Welcome to Ting-A-Ling Schools. I'm TingAI, your friendly AI assistant here to help with any school-related queries you may have. How can I assist you today? 🤗",
+        "timestamp": "2026-05-21T08:54:13.586Z"
+      },
+      {
+        "direction": "in",
+        "text": "Tell me more about your schools?",
+        "timestamp": "2026-05-21T08:54:38.694Z"
+      },
+      {
+        "direction": "out",
+        "text": "We have multiple schools under the Ting-A-Ling umbrella. Our main campus is in the heart of Pretoria, and we also have branches in Johannesburg and Cape Town. Each school offers a well-rounded education with a focus on academic excellence, creativity, and character development. Would you like to know more about our specific campuses or perhaps which one is closest to you?",
+        "timestamp": "2026-05-21T08:54:38.694Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi tell me more about the schools you have",
+        "timestamp": "2026-05-21T09:09:07.373Z"
+      },
+      {
+        "direction": "out",
+        "text": "We offer two dedicated schools: Pre-Primary School and Special Needs School. Our Pre-Primary School is for children aged 2 to 6 years, with a play-based learning approach that focuses on building confidence, creativity, and school readiness. The Special Needs School provides individualised care and education for children with diverse learning needs in a supportive environment.",
+        "timestamp": "2026-05-21T09:09:07.373Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-21T09:28:15.042Z"
+      },
+      {
+        "direction": "out",
+        "text": "Mr D! 🚀 Good to hear from you. What's on your mind?",
+        "timestamp": "2026-05-21T09:28:15.042Z"
+      },
+      {
+        "direction": "in",
+        "text": "Tell me who the schools teachers and owners are",
+        "timestamp": "2026-05-21T09:29:09.425Z"
+      },
+      {
+        "direction": "out",
+        "text": "I don't have that information available. Please contact the school office at info@tingalingschools.com or visit during office hours (07:00-15:30 weekdays) and they'll be happy to help. 😊",
+        "timestamp": "2026-05-21T09:29:09.425Z"
+      },
+      {
+        "direction": "in",
+        "text": "Thanks",
+        "timestamp": "2026-05-21T09:29:25.540Z"
+      },
+      {
+        "direction": "out",
+        "text": "You're welcome! 😊 If you have any questions about the school—fees, enrolment, hours, uniforms, or anything else—just give me a shout. Have a great day!",
+        "timestamp": "2026-05-21T09:29:25.540Z"
+      }
+    ],
+    "firstSeen": "2026-05-14T17:36:46.794Z",
+    "lastSeen": "2026-05-21T09:29:25.540Z",
+    "autoReplied": 12,
+    "humanRequests": 12
+  },
+  "27724561282": {
+    "name": "Sandi",
+    "phone": "27724561282",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-15T18:59:36.881Z"
+      },
+      {
+        "direction": "out",
+        "text": "👋 Welcome to *Ting-A-Ling Schools*!\n\nI'm here to help with common enquiries. Just ask me about:\n\n• 💰 Fees & payments\n• ⏰ School hours\n• 👔 Uniforms\n• 📋 Absentee reporting\n• 📅 Events & calendar\n• 📍 Contact details\n• 📝 Enrolment\n\nIf you need something else, a human will be with you shortly!",
+        "timestamp": "2026-05-15T18:59:36.881Z"
+      }
+    ],
+    "firstSeen": "2026-05-15T18:59:36.881Z",
+    "lastSeen": "2026-05-15T18:59:36.881Z",
+    "autoReplied": 1,
+    "humanRequests": 0
+  }
+}
