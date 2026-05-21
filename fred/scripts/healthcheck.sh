@@ -25,10 +25,18 @@ fi
 
 # 2. Tunnel check
 TUNNEL_URL=$(cat "$TUNNEL_URL_FILE" 2>/dev/null)
-if [ -n "$TUNNEL_URL" ] && curl -sf "$TUNNEL_URL/dashboard" > /dev/null 2>&1; then
-  echo "  [OK] Tunnel live: $TUNNEL_URL" >> "$LOG_FILE"
+if [ -n "$TUNNEL_URL" ]; then
+  # Try normal DNS first, fall back to direct Cloudflare IP resolve (DNS cache can be stale)
+  if curl -sf --connect-timeout 5 "$TUNNEL_URL/status" > /dev/null 2>&1; then
+    echo "  [OK] Tunnel live: $TUNNEL_URL" >> "$LOG_FILE"
+  elif curl -sf --connect-timeout 8 --resolve "$(echo $TUNNEL_URL | sed 's|https://||;s|/.*||'):443:104.16.231.132" "$TUNNEL_URL/status" > /dev/null 2>&1; then
+    echo "  [OK] Tunnel live (via alt DNS): $TUNNEL_URL" >> "$LOG_FILE"
+  else
+    echo "  [FAIL] Tunnel DOWN: $TUNNEL_URL" >> "$LOG_FILE"
+    FAILURES="$FAILURES tunnel"
+  fi
 else
-  echo "  [FAIL] Tunnel DOWN" >> "$LOG_FILE"
+  echo "  [FAIL] No tunnel URL file" >> "$LOG_FILE"
   FAILURES="$FAILURES tunnel"
 fi
 

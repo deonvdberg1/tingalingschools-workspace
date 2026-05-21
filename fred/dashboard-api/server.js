@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import crypto from 'crypto';
 import { initDb, getDb, saveDb } from './db.js';
 
 const PORT = 3001;
@@ -10,14 +11,12 @@ app.use(express.json());
 
 let db;
 
-// ── Helper: parametrised query, returns array of row objects ──
+// ── Helper: parametrised query ──
 function query(sql, params = []) {
   const stmt = db.prepare(sql);
   if (params.length > 0) stmt.bind(params);
   const rows = [];
-  while (stmt.step()) {
-    rows.push(stmt.getAsObject());
-  }
+  while (stmt.step()) rows.push(stmt.getAsObject());
   stmt.free();
   return rows;
 }
@@ -26,26 +25,133 @@ function run(sql, params = []) {
   db.run(sql, params);
 }
 
+// ── Auth helpers ──
+function hashPassword(pw) {
+  return crypto.createHash('sha256').update(pw).digest('hex');
+}
+
+function createToken(user) {
+  const payload = { id: user.id, role: user.role, client_id: user.client_id };
+  return Buffer.from(JSON.stringify(payload)).toString('base64');
+}
+
+function parseToken(token) {
+  try {
+    const payload = JSON.parse(Buffer.from(token, 'base64').toString());
+    return payload;
+  } catch { return null; }
+}
+
+// ── Auth middleware ──
+function requireAuth(req, res, next) {
+  const auth = req.headers.authorization;
+  if (!auth || !auth.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  const user = parseToken(auth.slice(7));
+  if (!user) return res.status(401).json({ error: 'Invalid token' });
+  
+  // Verify user still exists in DB
+  const users = query('SELECT * FROM users WHERE id = ?', [user.id]);
+  if (users.length === 0) return res.status(401).json({ error: 'User not found' });
+  
+  req.user = users[0];
+  next();
+}
+
+// ── Role middleware ──
+function requireRole(...roles) {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    next();
+  };
+}
+
 // ── Initialise ──
 app.listen(PORT, async () => {
   db = await initDb();
   console.log(`🚀 AutoEffortless API running on port ${PORT}`);
 });
 
-// ── CLIENTS ──
+// ── AUTH ──
 
-app.get('/api/clients', (req, res) => {
-  const clients = query('SELECT * FROM clients ORDER BY created_at DESC');
+app.post('/api/auth/signin', (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
+  
+  const users = query('SELECT * FROM users WHERE email = ?', [email.toLowerCase().trim()]);
+  if (users.length === 0) return res.status(401).json({ error: 'Invalid credentials' });
+  
+  const user = users[0];
+  if (user.password !== hashPassword(password)) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+  
+  const token = createToken(user);
+  
+  // Get client name if client admin
+  let clientName = null;
+  if (user.client_id) {
+    const clients = query('SELECT name FROM clients WHERE id = ?', [user.client_id]);
+    clientName = clients[0]?.name || null;
+  }
+  
+  res.json({
+    token,
+    user: { id: user.id, name: user.name, email: user.email, role: user.role, client_id: user.client_id, client_name: clientName }
+  });
+});
+
+app.post('/api/auth/signup', (req, res) => {
+  const { email, password, name } = req.body;
+  if (!email || !password || !name) return res.status(400).json({ error: 'All fields required' });
+  
+  const existing = query('SELECT id FROM users WHERE email = ?', [email.toLowerCase().trim()]);
+  if (existing.length > 0) return res.status(409).json({ error: 'Email already registered' });
+  
+  run('INSERT INTO users (email, password, name, role) VALUES (?, ?, ?, ?)',
+    [email.toLowerCase().trim(), hashPassword(password), name, 'client_admin']);
+  saveDb();
+  
+  const users = query('SELECT * FROM users ORDER BY id DESC LIMIT 1');
+  const token = createToken(users[0]);
+  res.status(201).json({ token, user: { id: users[0].id, name: users[0].name, email: users[0].email, role: users[0].role } });
+});
+
+app.get('/api/auth/me', requireAuth, (req, res) => {
+  let clientName = null;
+  if (req.user.client_id) {
+    const clients = query('SELECT name FROM clients WHERE id = ?', [req.user.client_id]);
+    clientName = clients[0]?.name || null;
+  }
+  res.json({ id: req.user.id, name: req.user.name, email: req.user.email, role: req.user.role, client_id: req.user.client_id, client_name: clientName });
+});
+
+// ── CLIENTS (role-filtered) ──
+
+app.get('/api/clients', requireAuth, (req, res) => {
+  let clients;
+  if (req.user.role === 'overlord') {
+    clients = query('SELECT * FROM clients ORDER BY created_at DESC');
+  } else {
+    clients = query('SELECT * FROM clients WHERE id = ?', [req.user.client_id]);
+  }
   res.json(clients);
 });
 
-app.get('/api/clients/:id', (req, res) => {
+app.get('/api/clients/:id', requireAuth, (req, res) => {
+  // Client admins can only see their own client
+  if (req.user.role !== 'overlord' && req.user.client_id != req.params.id) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
   const clients = query('SELECT * FROM clients WHERE id = ?', [req.params.id]);
   if (clients.length === 0) return res.status(404).json({ error: 'Client not found' });
   res.json(clients[0]);
 });
 
-app.post('/api/clients', (req, res) => {
+app.post('/api/clients', requireAuth, requireRole('overlord'), (req, res) => {
   const { name, phone, email, status, notes, whatsapp_number, client_type } = req.body;
   if (!name) return res.status(400).json({ error: 'Name is required' });
   
@@ -97,7 +203,7 @@ app.put('/api/clients/:id', (req, res) => {
   res.json(clients[0]);
 });
 
-app.delete('/api/clients/:id', (req, res) => {
+app.delete('/api/clients/:id', requireAuth, requireRole('overlord'), (req, res) => {
   run('DELETE FROM clients WHERE id = ?', [req.params.id]);
   saveDb();
   res.json({ success: true });

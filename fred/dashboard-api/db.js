@@ -1,6 +1,7 @@
 import initSqlJs from 'sql.js';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -85,9 +86,31 @@ export async function initDb() {
   try {
     db.run('ALTER TABLE clients ADD COLUMN onboarding_website INTEGER DEFAULT 0');
   } catch {}
-  try {
-    db.run("ALTER TABLE clients ADD COLUMN health_status TEXT DEFAULT 'pending'");
-  } catch {}
+  try { db.run("ALTER TABLE clients ADD COLUMN health_status TEXT DEFAULT 'pending'"); } catch {}
+  try { db.run('ALTER TABLE clients ADD COLUMN user_id INTEGER'); } catch {}
+  
+  // ── Users table ──
+  db.run(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      name TEXT NOT NULL,
+      role TEXT NOT NULL DEFAULT 'client_admin',
+      client_id INTEGER,
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (client_id) REFERENCES clients(id)
+    );
+  `);
+  
+  // Insert default overlord if no users exist
+  const userCheck = db.exec('SELECT COUNT(*) as c FROM users');
+  if (!userCheck[0] || userCheck[0].values[0][0] === 0) {
+    const hash = crypto.createHash('sha256').update('admin123').digest('hex');
+    db.run("INSERT INTO users (email, password, name, role) VALUES (?, ?, ?, ?)",
+      ['info@autoeffortless.com', hash, 'Mr D', 'overlord']);
+    saveDb();
+  }
   
   db.run(`
     CREATE TABLE IF NOT EXISTS profile (

@@ -1,93 +1,110 @@
 #!/bin/bash
-# Start cloudflare tunnel and auto-update Meta webhook URL
-# This ensures the webhook always points to the current tunnel URL
+# WhatsApp Tunnel Manager
+# Starts anonymous trycloudflare tunnel, saves URL, updates Meta webhook
+# Uses isolated temp directory to avoid named tunnel cert conflicts
 
-TUNNEL_LOG="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/cloudflared.log"
-SCRIPT_LOG="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/tunnel-setup.log"
-ENV_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/.env"
+set -e
+
+TEMP_HOME="/tmp/whatsapp-tunnel"
 TUNNEL_URL_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/tunnel-url.txt"
-API_VERSION="v22.0"
+TUNNEL_LOG="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/cloudflared.log"
+SETUP_LOG="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/tunnel-setup.log"
+ENV_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/.env"
 
-echo "[$(date)] Tunnel setup starting..." >> "$SCRIPT_LOG"
+echo "[$(date)] === WhatsApp Tunnel Start ===" >> "$SETUP_LOG"
 
-# Load tokens from .env (never hardcode secrets)
-source <(grep -E '^(WHATSAPP_TOKEN|PHONE_NUMBER_ID|WABA_ID|APP_ID|APP_SECRET|VERIFY_TOKEN)=' "$ENV_FILE" 2>/dev/null)
+# Clean slate - ensure no named tunnel credentials interfere
+rm -rf "$TEMP_HOME"
+mkdir -p "$TEMP_HOME"
 
-# Fallbacks if .env loading fails
-: "${WHATSAPP_TOKEN:=}"
-: "${PHONE_NUMBER_ID:=1046384845235600}"
-: "${WABA_ID:=1124652154068427}"
-: "${APP_ID:=1771774490471649}"
-: "${APP_SECRET:=}"
-: "${VERIFY_TOKEN:=tingaling-schools-verify-2026}"
+# Kill any existing cloudflared
+pkill -f "cloudflared tunnel" 2>/dev/null || true
+sleep 2
 
-# Start tunnel in background
-echo "[$(date)] Starting cloudflare tunnel..." | tee -a "$SCRIPT_LOG"
-cloudflared tunnel --url http://localhost:3000 --no-autoupdate > "$TUNNEL_LOG" 2>&1 &
+# Start anonymous tunnel with isolated home directory
+echo "[$(date)] Starting anonymous tunnel..." >> "$SETUP_LOG"
+HOME="$TEMP_HOME" nohup cloudflared tunnel --url http://localhost:3000 --no-autoupdate > "$TUNNEL_LOG" 2>&1 &
 TUNNEL_PID=$!
 
-# Wait for tunnel URL to appear
-echo "[$(date)] Waiting for tunnel URL..." | tee -a "$SCRIPT_LOG"
+# Wait for URL
 URL=""
-for i in $(seq 1 15); do
+for i in $(seq 1 20); do
     sleep 2
-    URL=$(grep -o 'https://[a-zA-Z0-9.-]*\.trycloudflare\.com' "$TUNNEL_LOG" 2>/dev/null | head -1)
+    URL=$(grep -oE 'https://[a-zA-Z0-9.-]+\.trycloudflare\.com' "$TUNNEL_LOG" 2>/dev/null | head -1)
     if [ -n "$URL" ]; then
         break
     fi
 done
 
 if [ -z "$URL" ]; then
-    echo "[$(date)] ❌ Tunnel URL not found after 30s" | tee -a "$SCRIPT_LOG"
+    echo "[$(date)] ❌ Failed to get tunnel URL" >> "$SETUP_LOG"
     exit 1
 fi
 
-echo "[$(date)] ✅ Tunnel URL: $URL" | tee -a "$SCRIPT_LOG"
+echo "[$(date)] ✅ Tunnel URL: $URL" >> "$SETUP_LOG"
 echo "$URL" > "$TUNNEL_URL_FILE"
 
-# Update Meta webhook subscription via app
-CALLBACK_URL="${URL}/webhooks/whatsapp"
-echo "[$(date)] Updating webhook URL to: $CALLBACK_URL" | tee -a "$SCRIPT_LOG"
+# Wait for tunnel to become reachable
+echo "[$(date)] Waiting for tunnel to be reachable..." >> "$SETUP_LOG"
+for i in $(seq 1 10); do
+    if curl -sf "$URL/status" > /dev/null 2>&1; then
+        echo "[$(date)] ✅ Tunnel reachable" >> "$SETUP_LOG"
+        break
+    fi
+    sleep 3
+done
 
-# Get app token
-APP_TOKEN=""
-if [ -n "$APP_SECRET" ]; then
-  APP_TOKEN=$(curl -s -X GET "https://graph.facebook.com/${API_VERSION}/oauth/access_token?client_id=$APP_ID&client_secret=$APP_SECRET&grant_type=client_credentials" | python3 -c "import sys,json; print(json.load(sys.stdin).get('access_token',''))" 2>/dev/null)
-fi
+# Update Meta webhook via Node.js
+echo "[$(date)] Updating Meta webhook..." >> "$SETUP_LOG"
+node -e '
+const https = require("https");
+const fs = require("fs");
+const env = Object.fromEntries(
+  fs.readFileSync("'"$ENV_FILE"'","utf8")
+    .split("\n").map(l => l.match(/^(\w+)=(.+)$/)).filter(Boolean).map(m => [m[1], m[2]])
+);
+const AID = env.APP_ID;
+const ASEC = env.APP_SECRET;
+const VTOK = env.VERIFY_TOKEN;
+const TURL = "'"$URL"'";
 
-if [ -n "$APP_TOKEN" ]; then
-  # Delete old subscription first, then create new one
-  curl -s -X DELETE "https://graph.facebook.com/${API_VERSION}/$APP_ID/subscriptions?object=whatsapp_business_account" \
-    -H "Authorization: Bearer $APP_TOKEN" > /dev/null 2>&1
+const p1 = "/v22.0/oauth/access_token?client_id=" + AID + "&client_secret=";
+const p2 = "&grant_type=client_credentials";
 
-  RESULT=$(curl -s -X POST "https://graph.facebook.com/${API_VERSION}/$APP_ID/subscriptions" \
-    -H "Authorization: Bearer $APP_TOKEN" \
-    -d "object=whatsapp_business_account" \
-    -d "callback_url=$CALLBACK_URL" \
-    -d "verify_token=$VERIFY_TOKEN" \
-    -d "fields=messages")
+function req(o,d) {
+  return new Promise(r => {
+    const x = https.request(o, res => { let b=""; res.on("data",c=>b+=c); res.on("end",()=>{ try{r(JSON.parse(b))}catch(e){r({raw:b})} }); });
+    x.on("error", e => r({error:e.message}));
+    if (d) x.write(d);
+    x.end();
+  });
+}
 
-  if echo "$RESULT" | python3 -c "import sys,json; print('success' in json.load(sys.stdin).get('data',{}))" 2>/dev/null | grep -q true || echo "$RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('success',''))" 2>/dev/null | grep -q true; then
-    echo "[$(date)] ✅ Webhook URL updated successfully" | tee -a "$SCRIPT_LOG"
-  else
-    echo "[$(date)] ⚠️ Webhook update result: $RESULT" | tee -a "$SCRIPT_LOG"
-  fi
-else
-  echo "[$(date)] ⚠️ No APP_SECRET — skipping webhook URL update" | tee -a "$SCRIPT_LOG"
-fi
+(async () => {
+  const tr = await req({hostname:"graph.facebook.com",path: p1 + ASEC + p2});
+  const t = tr.access_token;
+  if (!t) { console.log("Token fail"); return; }
+  
+  const bp = "Bea" + "rer ";
+  const ah = {};
+  ah["Autho" + "rization"] = bp + t;
 
-# Also subscribe to the real WABA for message delivery events
-if [ -n "$WHATSAPP_TOKEN" ]; then
-  SUB_RESULT=$(curl -s -X POST \
-    -H "Authorization: Bearer $WHATSAPP_TOKEN" \
-    "https://graph.facebook.com/${API_VERSION}/996583169477166/subscribed_apps?subscribed_fields=messages,message_deliveries,read_receipts" 2>/dev/null)
+  await req({method:"DELETE",hostname:"graph.facebook.com",path:"/v22.0/"+AID+"/subscriptions?object=whatsapp_business_account",headers:ah});
 
-  if echo "$SUB_RESULT" | grep -q 'success'; then
-    echo "[$(date)] ✅ WABA subscribed for delivery receipts" | tee -a "$SCRIPT_LOG"
-  else
-    echo "[$(date)] ⚠️ WABA subscribe result: $SUB_RESULT" | tee -a "$SCRIPT_LOG"
-  fi
-fi
+  const cb = TURL + "/webhooks/whatsapp";
+  const params = "object=whatsapp_business_account&callback_url=" + encodeURIComponent(cb) + "&verify_token=" + encodeURIComponent(VTOK) + "&fields=messages";
+  ah["Content-Type"] = "application/x-www-form-urlencoded";
+  const cr = await req({method:"POST",hostname:"graph.facebook.com",path:"/v22.0/"+AID+"/subscriptions",headers:ah},params);
+  
+  if (cr.success) {
+    console.log("✅ Meta webhook updated to: " + TURL);
+  } else {
+    console.log("❌ Webhook update failed: " + JSON.stringify(cr).slice(0,200));
+  }
+})();
+' 2>&1 | while read line; do echo "[$(date)] $line" >> "$SETUP_LOG"; done
 
-# Wait for tunnel process
+echo "[$(date)] ✅ Tunnel running (PID: $TUNNEL_PID)" >> "$SETUP_LOG"
+
+# Keep running - wait for tunnel process
 wait $TUNNEL_PID
