@@ -1,92 +1,69 @@
-// Ting-A-Ling AI Assistant v3
+// Ting-A-Ling AI Assistant v4
 // Uses DeepSeek V4 Flash via OpenClaw Gateway (OpenAI-compatible API)
-// STRICT knowledge-only mode: only answers from the provided knowledge base
+// Knowledge base loaded from external markdown file for easy editing
 
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 const GATEWAY_URL = 'http://localhost:18789/v1/chat/completions';
 const MODEL = 'openclaw/default';
 const BACKEND_MODEL = 'deepseek/deepseek-v4-flash';
 
 // ═══════════════════════════════════════════════════════════════════════════
-// KNOWLEDGE BASE — ONLY source of truth for answers
+// KNOWLEDGE BASE — loaded from external file for easy editing
+// Edit: tingaling-knowledge-base.md
 // ═══════════════════════════════════════════════════════════════════════════
 
-const KNOWLEDGE = `
-## SCHOOL OVERVIEW
-Ting-A-Ling Schools in Meerensee, Richards Bay offers two dedicated schools:
-1. Pre-Primary School — 74 Krewilkring, Meerensee (ages 2-6)
-2. Special Needs School — 18 Elweboog, Meerensee
+let KNOWLEDGE = '';
 
-## PRE-PRIMARY SCHOOL
-- Ages: 2 to 6 years
-- Play-based learning approach
-- English language nurturing integrated into daily programme
-- School readiness programme
-- Focus: building confidence, creativity, and school readiness
-- Half-day options available
+function loadKnowledgeBase() {
+  const kbPath = path.join(__dirname, 'tingaling-knowledge-base.md');
+  try {
+    const content = fs.readFileSync(kbPath, 'utf8');
+    // Extract the knowledge content (everything except the AI rules section at the bottom)
+    const match = content.match(/## ⚙️ AI ASSISTANT RULES/);
+    if (match) {
+      KNOWLEDGE = content.substring(0, match.index);
+    } else {
+      KNOWLEDGE = content;
+    }
+    console.log(`[AI] Knowledge base loaded (${KNOWLEDGE.length} chars from ${kbPath})`);
+  } catch (e) {
+    console.error(`[AI] Failed to load knowledge base: ${e.message}`);
+    KNOWLEDGE = `Ting-A-Ling Schools in Meerensee, Richards Bay.
+Contact: info@tingalingschools.com`;
+  }
+}
 
-## SPECIAL NEEDS SCHOOL
-- Individualised care and education for children with diverse learning needs
-- Dedicated team of specialists creating personalised programmes
-- Therapy support available
-- Inclusive environment
+// Load on startup
+loadKnowledgeBase();
 
-## OPERATING HOURS
-- School Day: 07:30 - 14:00 (Monday to Friday)
-- Office: 07:00 - 15:30 (Monday to Friday)
-- Aftercare: Available until 17:00
-- Daily pickup times: 13:00, 13:30, 15:00, 17:00
-- Holiday programmes: Available during school breaks
+// Watch for changes to the knowledge base file
+try {
+  fs.watchFile(path.join(__dirname, 'tingaling-knowledge-base.md'), (curr, prev) => {
+    if (curr.mtime !== prev.mtime) {
+      console.log('[AI] Knowledge base changed — reloading...');
+      loadKnowledgeBase();
+    }
+  });
+} catch (e) {
+  // File watching not critical
+}
 
-## CONTACT
-- Email: info@tingalingschools.com
-- Pre-Primary Address: 74 Krewilkring, Meerensee, Richards Bay
-- Special Needs Address: 18 Elweboog, Meerensee, Richards Bay
-- Office Hours: 07:00 - 15:30 weekdays
-- For urgent matters, parents should call the office during working hours
+const SYSTEM_PROMPT = () => `You are TingAI, the official AI assistant for Ting-A-Ling Schools in Meerensee, Richards Bay, South Africa.
 
-## ENROLMENT
-- Available for both Pre-Primary and Special Needs
-- Online enrolment via the Ting-A-Ling Schools website (parent portal)
-- Alternatively, visit the school office for a registration pack
-- Required documents: child's birth certificate, parent ID, latest school report
-- Registration fee applies
-- Online form has 7 sections: Student Info, Parent Info, Emergency Contacts, Medical, Pick-up Authorisation, Fees & Consent, Terms, Signature
-
-## FEES
-- Monthly fee amount set per student
-- Payment methods: EFT, Debit Order, Cash, Other
-- Fees due on the 2nd of each month
-- Payable for 11 months (January to November)
-- Registration fee applies
-- For specific fee structures, contact office or email info@tingalingschools.com
-
-## ABSENTEE REPORTING
-- Call the school office to report absence
-- Alternatively, send message with child's NAME, GRADE and REASON
-- Office hours: 07:00 - 15:30 weekdays
-
-## UNIFORM
-- Uniforms available from the school shop
-- Full uniform list and pricelist available from the office
-
-## EVENTS
-- Communicated via parent WhatsApp groups
-- Weekly newsletter (Fridays)
-- Notice board at school gate
-`;
-
-const SYSTEM_PROMPT = `You are TingAI, the official AI assistant for Ting-A-Ling Schools in Meerensee, Richards Bay, South Africa.
-
-## CRITICAL RULES (you must follow these exactly):
-1. ONLY answer using the KNOWLEDGE section below. Do NOT use any other knowledge.
-2. If the KNOWLEDGE section doesn't have the answer, say: "I don't have that information available. Please contact the school office at info@tingalingschools.com or visit during office hours (07:00-15:30 weekdays) and they'll be happy to help."
-3. Keep responses brief and warm — 2 to 3 sentences maximum.
-4. Use South African English.
-5. Never make up phone numbers, addresses, or any details not in the KNOWLEDGE section.
-6. If a parent asks to speak to a person or sounds frustrated: give them info@tingalingschools.com
-7. Use emojis sparingly (one per message maximum).
+## ABSOLUTE RULES (every response MUST follow these):
+1. You have NO knowledge other than what is written below in the KNOWLEDGE section. You were not trained on information about Ting-A-Ling Schools — you only know what is written below.
+2. READ the KNOWLEDGE section for EVERY response. Do not answer from memory or from your training data. Only answer from the text below.
+3. Never add commentary like "I wish I had" or "unfortunately" or "I hear you" or "I understand". Just state what the knowledge base says, worded naturally.
+4. If the KNOWLEDGE section does not contain the answer, say EXACTLY: "I don't have that specific information. Please contact the school office at info@tingalingschools.com, 0615274429 / 0724561282, or visit during office hours (07:00-15:30 weekdays) and they'll be happy to help."
+5. Whenever the answer differs between the Pre-Primary School and the Special Needs School, you MUST first ask which school before giving any details.
+6. Keep responses brief — 2 to 3 sentences maximum. No long explanations.
+7. Use South African English.
+8. Never make up phone numbers, addresses, amounts, or any details.
+9. If a parent asks to speak to a person or sounds frustrated: give them the office contact info.
+10. Use emojis sparingly (one per message maximum).
 
 ## KNOWLEDGE
 ${KNOWLEDGE}`;
@@ -107,7 +84,7 @@ function callDeepSeek(messages) {
       messages: messages,
       stream: false,
       max_tokens: 300,
-      temperature: 0.3
+      temperature: 0.1
     });
 
     const req = http.request({
@@ -139,7 +116,7 @@ function callDeepSeek(messages) {
 
 function buildMessages(phone, message) {
   const history = getHistory(phone);
-  const msgs = [{ role: 'system', content: SYSTEM_PROMPT }];
+  const msgs = [{ role: 'system', content: SYSTEM_PROMPT() }];
 
   // Add recent conversation history
   const recent = history.slice(-6);
@@ -158,6 +135,11 @@ async function getAIAutoReply(messageText, fromNumber) {
   // Opt-out handled by server, but just in case
   if (/^stop$|^unsubscribe$|^opt.?out$|^cancel$/.test(msg)) return null;
   if (/^start$|^resubscribe$|^opt.?in$/i.test(msg)) return null;
+
+  // Always reload knowledge base from file before every response.
+  // This guarantees the AI always uses the latest content, even if the
+  // dashboard saved new data between messages. No stale cache.
+  loadKnowledgeBase();
 
   const messages = buildMessages(fromNumber, messageText);
   const reply = await callDeepSeek(messages);

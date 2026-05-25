@@ -1,7 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { initDb, getDb, saveDb } from './db.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PORT = 3001;
 const app = express();
@@ -539,6 +545,62 @@ app.post('/api/broadcasts/send', async (req, res) => {
   
   broadcastLog.push(broadcast);
   res.json(broadcast);
+});
+
+// ── Onboarding update endpoint ──
+app.post('/api/onboarding/update', requireAuth, (req, res) => {
+  const { client_id, field, value } = req.body;
+  if (!client_id || !field) return res.status(400).json({ error: 'client_id and field required' });
+  
+  // Only allow updating own client or if overlord
+  if (req.user.role !== 'overlord' && req.user.client_id !== client_id) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  
+  const validFields = ['whatsapp','display_name','auto_reply','opt_in','website','status'];
+  const dbField = field === 'status' ? 'onboarding_status' : `onboarding_${field}`;
+  if (!validFields.includes(field)) return res.status(400).json({ error: 'Invalid field' });
+  
+  if (field === 'status') {
+    run('UPDATE clients SET onboarding_status = ? WHERE id = ?', [value, client_id]);
+  } else {
+    // Column name is sanitized by the validFields whitelist
+    const sql = 'UPDATE clients SET onboarding_' + field + ' = ? WHERE id = ?';
+    run(sql, [value ? 1 : 0, client_id]);
+  }
+  saveDb();
+  res.json({ success: true });
+});
+
+// ── Knowledge Base ──
+app.get('/api/clients/:id/knowledge', requireAuth, (req, res) => {
+  if (req.user.role !== 'overlord' && req.user.client_id != req.params.id) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  const clients = query('SELECT knowledge_base, name FROM clients WHERE id = ?', [req.params.id]);
+  if (clients.length === 0) return res.status(404).json({ error: 'Not found' });
+  res.json({ id: req.params.id, name: clients[0].name, knowledge_base: clients[0].knowledge_base || '' });
+});
+
+app.put('/api/clients/:id/knowledge', requireAuth, (req, res) => {
+  const { knowledge_base } = req.body;
+  if (req.user.role !== 'overlord' && req.user.client_id != req.params.id) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  if (knowledge_base === undefined) return res.status(400).json({ error: 'knowledge_base is required' });
+  run('UPDATE clients SET knowledge_base = ? WHERE id = ?', [knowledge_base, req.params.id]);
+  saveDb();
+  
+  // Also write to the WhatsApp server's knowledge file for live AI updates
+  try {
+    const kbFile = path.join(__dirname, '..', 'whatsapp-server', 'tingaling-knowledge-base.md');
+    fs.writeFileSync(kbFile, knowledge_base, 'utf8');
+    console.log(`[KB] Saved to file for client ${req.params.id}`);
+  } catch (e) {
+    console.error(`[KB] Failed to write file: ${e.message}`);
+  }
+  
+  res.json({ success: true });
 });
 
 // ── Health ──
