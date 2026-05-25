@@ -5,16 +5,6 @@
     "messages": [
       {
         "direction": "in",
-        "text": "Pre-Primary",
-        "timestamp": "2026-05-25T09:14:45.881Z"
-      },
-      {
-        "direction": "out",
-        "text": "The Pre-Primary School fees vary by age group (2–3 years vs 4–6 years), and there's a reduced rate for the half-day option. Aftercare is also available at an additional cost.\n\nFor the exact fee amounts, please contact the office or email **info@tingalingschools.com** — they'll give you the full breakdown 😊",
-        "timestamp": "2026-05-25T09:14:45.881Z"
-      },
-      {
-        "direction": "in",
         "text": "Lets try again, what are your school fees?",
         "timestamp": "2026-05-25T09:15:30.313Z"
       },
@@ -252,11 +242,21 @@
         "direction": "out",
         "text": "I don't have that specific information. Please contact the school office at info@tingalingschools.com, 0615274429 / 0724561282, or",
         "timestamp": "2026-05-25T09:38:15.188Z"
+      },
+      {
+        "direction": "in",
+        "text": "Special needs?",
+        "timestamp": "2026-05-25T09:41:03.114Z"
+      },
+      {
+        "direction": "out",
+        "text": "The Special Needs School does offer therapy support including occupational therapy, but the knowledge base doesn't specify whether it's included in the monthly fees or charged separately. I'd recommend contacting",
+        "timestamp": "2026-05-25T09:41:03.114Z"
       }
     ],
     "firstSeen": "2026-05-14T17:36:46.794Z",
-    "lastSeen": "2026-05-25T09:38:15.188Z",
-    "autoReplied": 54,
+    "lastSeen": "2026-05-25T09:41:03.114Z",
+    "autoReplied": 55,
     "humanRequests": 12
   },
   "27724561282": {

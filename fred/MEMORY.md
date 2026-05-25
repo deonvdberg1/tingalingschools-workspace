@@ -38,7 +38,7 @@ This is where I keep what matters.
 ## Infrastructure
 
 - WhatsApp server LaunchAgent: ✅ (auto-starts)
-- Tunnel auto-setup script: ✅ (auto-updates Meta webhook — **FIXED 2026-05-21** — now uses Node.js to load secrets safely, no more bash env sourcing issues)
+- Tunnel auto-setup script: ✅ (auto-updates Meta webhook)
 - Auto-restart after power loss: ✅ Enabled
 - Log rotation: ✅ Set
 - Dedup webhook: ✅ Added
@@ -46,31 +46,88 @@ This is where I keep what matters.
 - Health check monitoring: ✅ Created (runs every 2h, silent unless critical)
 - UPS: ❌ Not purchased (R1,293 recommended)
 
-## Telegram
+## 🚀 AutoEffortless Dashboard (Port 5173)
 
-- Bot: @Fredtheautoguy_bot — working ✅
-- All context saved in workspace files — seamless channel handover ✅
+- **Frontend:** Vite React app at localhost:5173
+- **API:** Express server at localhost:3001 (ES modules)
+- **DB:** SQLite at `dashboard-api/data/autoeffortless.db`
+- **Admin login:** info@autoeffortless.com / admin123
+- **Client login example:** info@tingalingschools.com / Tingaling2026!
+
+### Auth & Onboarding
+- AuthContext with token persistence in localStorage
+- 5-step onboarding wizard for new clients (WhatsApp → Name → Auto-Reply → Opt-In → Website)
+- OnboardingGuard redirects incomplete users to wizard
+- ProtectedRoute redirects unauthenticated users to /signin
+
+### Roles
+- **overlord:** Mr D — sees all clients, analytics, broadcast, full admin
+- **client_admin:** Clients — sees only Overview, WhatsApp, Knowledge Base, Settings, Profile
+- Sidebar filters nav items by role
+
+### Knowledge Base Editor
+- Route: `/knowledge`
+- Split-pane: markdown editor + live HTML preview
+- Paste from Excel: Ctrl+V converts clipbaord tables to markdown (HTML + TSV fallback)
+- Empty cells preserved in preview rendering
+- API: `GET/PUT /api/clients/:id/knowledge` — per-client KB in DB + file sync
+- File (`tingaling-knowledge-base.md`) gets written on save for live AI updates
+
+## 🧠 AI Assistant (v4)
+
+- **Engine:** DeepSeek V4 Flash via OpenClaw Gateway (port 18789)
+- **Temperature:** 0.1 (strict)
+- **Knowledge file:** `whatsapp-server/tingaling-knowledge-base.md`
+- **System prompt:** Strict KB-only mode, no hallucination rules, phone numbers in fallback
+- **Load on every message:** KB file reloaded before each response (no stale cache)
+- **File watcher:** Auto-reloads on file changes
+- **Fallback:** Directs to info@tingalingschools.com, 0615274429 / 0724561282
+
+### Current KB Content (5909 chars, 12 sections)
+- School Overview, Pre-Primary, Special Needs, Hours, Contact, Enrolment
+- Fees (with actual amounts: R1.9k–R3.3k per month + R1,300 reg fee)
+- Absentee Reporting, Uniform (R150 shirt, R450 tracksuit), Events, Facilities, FAQ
+- GENERAL INSTRUCTION: ask which school when info differs
+
+## 👥 Clients
+
+### Ting-A-Ling Schools (ID: 6)
+- **Login:** info@tingalingschools.com / Tingaling2026!
+- **Role:** client_admin
+- **WhatsApp number:** +27 68 754 8390
+- **Contact phone:** +27615274429
+- **Status:** active, health: healthy
+- **Onboarding:** reset to not_started (will see wizard on login)
+
+## 🔑 Credentials (stored in .env / secrets/)
+```
+WHATSAPP_TOKEN           → whatsapp-server/.env
+APP_ID                   → whatsapp-server/.env
+APP_SECRET               → whatsapp-server/.env
+VERIFY_TOKEN             → whatsapp-server/.env
+Ionos API keys           → secrets/ionos-api.env
+Cloudflare tunnel token  → secrets/cert.pem + 41e8685d-...json
+```
 
 ## Risks
 
 - ~~Display name PENDING_REVIEW~~ ✅ Approved
+- **Named tunnel:** DNS delegation stuck (Ionos→Cloudflare nameservers not propagating, Day 5+)
+- Domains API: returns 500 (product not provisioned for this account)
 - Primary Business Location greyed out in Meta
 - No UPS for load shedding
 - No payment method set in Meta
-- Human handoff target not decided
-- Token could be revoked if Meta re-inspects the app
+- Messaging limit: LIMITED (250/day)
 - Tunnel URL changes on every restart (trycloudflare ephemeral)
-- Messaging limit: LIMITED (250/day) — need 1K unique conversations for upgrade
 
 ## What's Next
 
-1. **Named tunnel** (Cloudflare Argo or custom domain) — eliminate tunnel URL risk
-2. Add payment method to Meta Business Manager
-3. Generate backup token and store securely
-4. Parent opt-in campaign
-5. Demo video polish
-6. Real client onboarding
+1. **Named tunnel** — Mr D to check Ionos web portal for NS delegation
+2. Parent opt-in campaign — need parent contact list from Ting-A-Ling
+3. Auto-reply templates — create keyword-triggered templates
+4. Demo video polish
+5. Real client onboarding (walk Ting-A-Ling through wizard)
 
 ---
 
-*Last updated 2026-05-21 09:30 SAST — API restored, webhook fixed, start-tunnel.sh hardened, health monitoring live.*
+*Last updated 2026-05-25 11:40 SAST — Major build day: dashboard overhaul, auth, onboarding wizard, KB editor, AI v4 with strict KB-only mode. All locked in and committed.*
