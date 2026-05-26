@@ -13,7 +13,10 @@ const TOKEN = process.env.WHATSAPP_TOKEN;
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN || 'tingaling-verify';
 
-// Admin numbers (reserved for future selective features)
+// ── Admin/Owner phone whitelist ───────────────────────────────────────────
+// These numbers get full AI assistant responses.
+// Everyone else gets only template-based (KB-approved) replies — no LLM.
+// Add numbers as 27XXXXXXXXX (country code, no + or spaces)
 const ADMIN_NUMBERS = new Set([
   '27615274429',  // Mr D
 ]);
@@ -62,7 +65,7 @@ const processed_messages = new Set();
 
 // ── Template cache ────────────────────────────────────────────────────────
 const CLIENT_NUMBER_MAP = {
-  '27687548390': 6,  // Ting-A-Ling Schools (DB client ID 6)
+  '27687548390': 1,  // Ting-A-Ling Schools
 };
 
 let cachedTemplates = null;
@@ -147,11 +150,13 @@ async function getAutoReply(messageText, fromNumber) {
     }
   }
 
-  // Step 2: Try AI assistant for nuanced queries
-  // Uses DeepSeek with KB-only system prompt
-  const aiReply = await getAIAutoReply(messageText, fromNumber);
-  if (aiReply) {
-    return aiReply;
+  // Step 2: AI assistant — ONLY for whitelisted admin numbers
+  // Everyone else gets template-only responses (no LLM exposure)
+  if (ADMIN_NUMBERS.has(cleanNumber)) {
+    const aiReply = await getAIAutoReply(messageText, fromNumber);
+    if (aiReply) {
+      return aiReply;
+    }
   }
 
   return null;

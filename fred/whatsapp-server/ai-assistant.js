@@ -93,7 +93,8 @@ function callDeepSeek(messages) {
       headers: {
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(data),
-        'x-openclaw-model': BACKEND_MODEL
+        'x-openclaw-model': BACKEND_MODEL,
+        'x-openclaw-light-context': 'true'  // Prevent agent context leakage
       }
     }, res => {
       let body = '';
