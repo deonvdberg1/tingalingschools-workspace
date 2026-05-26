@@ -1,6 +1,6 @@
-// Ting-A-Ling AI Assistant v4
-// Uses DeepSeek V4 Flash via OpenClaw Gateway (OpenAI-compatible API)
-// Knowledge base loaded from external markdown file for easy editing
+// Ting-A-Ling AI Assistant v5
+// Uses DeepSeek via OpenClaw Gateway with light-context isolation
+// Prevents Fred's agent context from leaking into school responses
 
 const http = require('http');
 const fs = require('fs');
@@ -28,9 +28,9 @@ function loadKnowledgeBase() {
     } else {
       KNOWLEDGE = content;
     }
-    console.log(`[AI] Knowledge base loaded (${KNOWLEDGE.length} chars from ${kbPath})`);
+    console.log(`[TINGAI] Knowledge base loaded (${KNOWLEDGE.length} chars from ${kbPath})`);
   } catch (e) {
-    console.error(`[AI] Failed to load knowledge base: ${e.message}`);
+    console.error(`[TINGAI] Failed to load knowledge base: ${e.message}`);
     KNOWLEDGE = `Ting-A-Ling Schools in Meerensee, Richards Bay.
 Contact: info@tingalingschools.com`;
   }
@@ -43,7 +43,7 @@ loadKnowledgeBase();
 try {
   fs.watchFile(path.join(__dirname, 'tingaling-knowledge-base.md'), (curr, prev) => {
     if (curr.mtime !== prev.mtime) {
-      console.log('[AI] Knowledge base changed — reloading...');
+      console.log('[TINGAI] Knowledge base changed — reloading...');
       loadKnowledgeBase();
     }
   });
@@ -51,22 +51,27 @@ try {
   // File watching not critical
 }
 
-const SYSTEM_PROMPT = () => `You are TingAI, the official AI assistant for Ting-A-Ling Schools in Meerensee, Richards Bay, South Africa.
+// ── System prompt with embedded KB ────────────────────────────────────────
+// Built fresh every call so KB changes take effect immediately
+function buildSystemPrompt() {
+  return `You are TingAI, the official AI assistant for Ting-A-Ling Schools in Meerensee, Richards Bay, South Africa.
 
 ## ABSOLUTE RULES (every response MUST follow these):
-1. You have NO knowledge other than what is written below in the KNOWLEDGE section. You were not trained on information about Ting-A-Ling Schools — you only know what is written below.
-2. READ the KNOWLEDGE section for EVERY response. Do not answer from memory or from your training data. Only answer from the text below.
-3. Never add commentary like "I wish I had" or "unfortunately" or "I hear you" or "I understand". Just state what the knowledge base says, worded naturally.
-4. If the KNOWLEDGE section does not contain the answer, say EXACTLY: "I don't have that specific information. Please contact the school office at info@tingalingschools.com, 0615274429 / 0724561282, or visit during office hours (07:00-15:30 weekdays) and they'll be happy to help."
-5. Whenever the answer differs between the Pre-Primary School and the Special Needs School, you MUST first ask which school before giving any details.
-6. Keep responses brief — 2 to 3 sentences maximum. No long explanations.
+1. You have NO knowledge other than what is written below in the KNOWLEDGE section.
+2. READ the KNOWLEDGE section for EVERY response. Only answer from the text below.
+3. Never add commentary like "I wish I had" or "unfortunately" or "I hear you" or "I understand".
+4. If the KNOWLEDGE section does not contain the answer, say: "I don't have that specific information. Please contact the school office at info@tingalingschools.com, 0615274429 / 0724561282, or visit during office hours (07:00-15:30 weekdays) and they'll be happy to help."
+5. Whenever the answer differs between the Pre-Primary School and the Special Needs School, first ask which school.
+6. Keep responses brief — 2 to 3 sentences maximum.
 7. Use South African English.
 8. Never make up phone numbers, addresses, amounts, or any details.
 9. If a parent asks to speak to a person or sounds frustrated: give them the office contact info.
 10. Use emojis sparingly (one per message maximum).
+11. Never address anyone by name unless they tell you their name first.
 
 ## KNOWLEDGE
 ${KNOWLEDGE}`;
+}
 
 // ── Conversation memory ───────────────────────────────────────────────────
 const conversations = new Map();
@@ -83,18 +88,20 @@ function callDeepSeek(messages) {
       model: MODEL,
       messages: messages,
       stream: false,
-      max_tokens: 300,
+      max_tokens: 400,
       temperature: 0.1
     });
 
     const req = http.request({
-      hostname: 'localhost', port: 18789, path: '/v1/chat/completions',
+      hostname: 'localhost',
+      port: 18789,
+      path: '/v1/chat/completions',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(data),
         'x-openclaw-model': BACKEND_MODEL,
-        'x-openclaw-light-context': 'true'  // Prevent agent context leakage
+        'x-openclaw-light-context': 'true'  // Prevents Fred context leakage
       }
     }, res => {
       let body = '';
@@ -105,11 +112,15 @@ function callDeepSeek(messages) {
           const content = j.choices?.[0]?.message?.content;
           resolve(content || null);
         } catch(e) {
+          console.error('[TINGAI] Parse error:', e.message);
           resolve(null);
         }
       });
     });
-    req.on('error', () => resolve(null));
+    req.on('error', (e) => {
+      console.error('[TINGAI] Request error:', e.message);
+      resolve(null);
+    });
     req.write(data);
     req.end();
   });
@@ -117,9 +128,9 @@ function callDeepSeek(messages) {
 
 function buildMessages(phone, message) {
   const history = getHistory(phone);
-  const msgs = [{ role: 'system', content: SYSTEM_PROMPT() }];
+  const msgs = [{ role: 'system', content: buildSystemPrompt() }];
 
-  // Add recent conversation history
+  // Add recent conversation history for context
   const recent = history.slice(-6);
   for (const m of recent) {
     msgs.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content });
@@ -137,9 +148,7 @@ async function getAIAutoReply(messageText, fromNumber) {
   if (/^stop$|^unsubscribe$|^opt.?out$|^cancel$/.test(msg)) return null;
   if (/^start$|^resubscribe$|^opt.?in$/i.test(msg)) return null;
 
-  // Always reload knowledge base from file before every response.
-  // This guarantees the AI always uses the latest content, even if the
-  // dashboard saved new data between messages. No stale cache.
+  // Always reload knowledge base from file before every response
   loadKnowledgeBase();
 
   const messages = buildMessages(fromNumber, messageText);
