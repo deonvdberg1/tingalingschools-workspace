@@ -145,13 +145,22 @@ Cloudflare tunnel token  → secrets/cert.pem + 41e8685d-...json
 
 **Each client gets their own dedicated AI agent** — an independent OpenClaw agent with isolated identity, knowledge base, and configuration.
 
-### Current State (Interim — working today)
+### Current Flow (AI-First — final architecture)
 ```
-WhatsApp → Server → resolveClient() → Template match → Single DeepSeek with dynamic prompt
+WhatsApp → Server → resolveClient()
+  → AI agent first (TingAI dedicated agent)
+  → Template match as fallback only
+  → Human handoff if nothing works
 ```
 - Phone number → client resolution: ✅
-- Template matching per client: ✅
-- Dynamic AI prompt per client: ✅ (but single-agent, not isolated)
+- **AI is primary response** — clients pay for AI, not templates
+- Templates are fallback only (if AI is offline)
+- Each client has their own dedicated OpenClaw agent
+
+### Business Decision (2026-05-28)
+- **No more template-first.** Templates are cheap, we sell AI.
+- The AI agent is the main responder on every message
+- Templates exist only as emergency fallback if the AI agent is unreachable
 
 ### Target State (When we have paying clients)
 ```

@@ -216,7 +216,18 @@ async function getAutoReply(messageText, fromNumber) {
   
   log('INFO', 'AUTO', `Resolved sender ${cleanNumber} → ${client.clientName} (ID: ${client.clientId})`);
 
-  // Step 1: Try template matching first (client-approved content)
+  // Step 1: Route to AI agent first (this is what clients are paying for)
+  const isAdmin = ADMIN_NUMBERS.has(cleanNumber);
+  
+  if (client.aiEnabled || isAdmin) {
+    const aiReply = await getAIAutoReply(messageText, fromNumber, client);
+    if (aiReply) {
+      log('INFO', 'AUTO', `AI response for ${client.clientName} (via ${client.agentId})`);
+      return aiReply;
+    }
+  }
+
+  // Step 2: Fall back to template matching if AI unavailable
   const templates = await fetchTemplates(client.clientId);
   if (templates && templates.length > 0) {
     const scored = templates
@@ -232,12 +243,6 @@ async function getAutoReply(messageText, fromNumber) {
     if (greeting) {
       return { text: greeting.content, type: 'text' };
     }
-  }
-
-  // Step 2: Try AI assistant for nuanced queries — route to client's dedicated agent
-  const aiReply = await getAIAutoReply(messageText, fromNumber, client);
-  if (aiReply) {
-    return aiReply;
   }
 
   return null;
