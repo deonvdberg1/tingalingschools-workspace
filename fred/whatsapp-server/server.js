@@ -105,10 +105,46 @@ function saveConversations() {
 const conversations = loadConversations();
 const processed_messages = new Set();
 
-// ── Template cache ────────────────────────────────────────────────────────
-const CLIENT_NUMBER_MAP = {
-  '27687548390': 6,  // Ting-A-Ling Schools (DB client ID 6)
-};
+// ── Client cache (phone → client resolution) ──────────────────────────────
+const DASHBOARD_API = 'http://localhost:3001';
+
+async function resolveClient(senderNumber) {
+  // First try: look up the bot's own phone number (the WhatsApp number assigned to the client)
+  try {
+    const res = await fetch(`${DASHBOARD_API}/api/phone-lookup/${PHONE_NUMBER_ID}`);
+    if (res.ok) {
+      const data = await res.json();
+      return {
+        clientId: data.client_id,
+        clientName: data.client_name,
+        aiEnabled: data.ai_enabled,
+        agentId: data.agent_id,
+        contactPhone: data.contact_phone,
+        contactEmail: data.contact_email,
+      };
+    }
+  } catch (e) {
+    log('ERROR', 'CLIENT', 'Failed to resolve client for number', e.message);
+  }
+  
+  // Fallback: try sender's number (for admin/manual testing)
+  try {
+    const res = await fetch(`${DASHBOARD_API}/api/phone-lookup/${senderNumber}`);
+    if (res.ok) {
+      const data = await res.json();
+      return {
+        clientId: data.client_id,
+        clientName: data.client_name,
+        aiEnabled: data.ai_enabled,
+        agentId: data.agent_id,
+        contactPhone: data.contact_phone,
+        contactEmail: data.contact_email,
+      };
+    }
+  } catch {}
+  
+  return null;
+}
 
 let cachedTemplates = null;
 let cacheTime = 0;
@@ -120,7 +156,7 @@ async function fetchTemplates(clientId) {
     return cachedTemplates;
   }
   try {
-    const res = await fetch('http://localhost:3001/api/clients/' + clientId + '/templates');
+    const res = await fetch(`${DASHBOARD_API}/api/clients/${clientId}/templates`);
     if (res.ok) {
       cachedTemplates = await res.json();
       cacheTime = now;
@@ -169,31 +205,37 @@ async function getAutoReply(messageText, fromNumber) {
     return { text: '✅ You have been resubscribed. Welcome back!', type: 'text' };
   }
 
-  // Step 1: Try template matching first (school-approved content)
+  // Step 0: Resolve which client this message belongs to
   const cleanNumber = (fromNumber || '').replace(/[^0-9]/g, '');
-  const clientId = CLIENT_NUMBER_MAP[cleanNumber];
+  const client = await resolveClient(cleanNumber);
   
-  if (clientId) {
-    const templates = await fetchTemplates(clientId);
-    if (templates && templates.length > 0) {
-      const scored = templates
-        .filter(t => t.active !== 0)
-        .map(t => ({ template: t, score: matchKeywords(msg, t.trigger_keyword) }))
-        .sort((a, b) => b.score - a.score);
-      
-      if (scored.length > 0 && scored[0].score > 0) {
-        return { text: scored[0].template.content, type: 'text' };
-      }
-      
-      const greeting = templates.find(t => t.category?.toLowerCase() === 'general');
-      if (greeting) {
-        return { text: greeting.content, type: 'text' };
-      }
+  if (!client) {
+    log('WARN', 'AUTO', `No client found for sender ${cleanNumber}`);
+    return null;
+  }
+  
+  log('INFO', 'AUTO', `Resolved sender ${cleanNumber} → ${client.clientName} (ID: ${client.clientId})`);
+
+  // Step 1: Try template matching first (client-approved content)
+  const templates = await fetchTemplates(client.clientId);
+  if (templates && templates.length > 0) {
+    const scored = templates
+      .filter(t => t.active !== 0)
+      .map(t => ({ template: t, score: matchKeywords(msg, t.trigger_keyword) }))
+      .sort((a, b) => b.score - a.score);
+    
+    if (scored.length > 0 && scored[0].score > 0) {
+      return { text: scored[0].template.content, type: 'text' };
+    }
+    
+    const greeting = templates.find(t => t.category?.toLowerCase() === 'general');
+    if (greeting) {
+      return { text: greeting.content, type: 'text' };
     }
   }
 
-  // Step 2: Try AI assistant for nuanced queries
-  const aiReply = await getAIAutoReply(messageText, fromNumber);
+  // Step 2: Try AI assistant for nuanced queries — route to client's dedicated agent
+  const aiReply = await getAIAutoReply(messageText, fromNumber, client);
   if (aiReply) {
     return aiReply;
   }

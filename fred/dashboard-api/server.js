@@ -341,6 +341,7 @@ app.get("/api/phone-lookup/:number", (req, res) => {
     client_type: match.client_type || "school",
     health_status: match.health_status || "pending",
     ai_enabled: match.ai_enabled || false,
+    agent_id: match.agent_id || "",
     knowledge_base: match.knowledge_base || "",
     contact_phone: match.phone || "",
     contact_email: match.email || "",

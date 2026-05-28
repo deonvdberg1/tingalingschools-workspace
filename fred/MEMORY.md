@@ -141,6 +141,39 @@ Cloudflare tunnel token  → secrets/cert.pem + 41e8685d-...json
 - **Alternative rejected:** Using D&S Comp WABA for all clients (Meta may reject display names not matching the business)
 - **Next step:** CIPC registration + new Meta WABA under AutoEffortless
 
+## 🏗️ Architecture Decision: Per-Client AI Agents (2026-05-28)
+
+**Each client gets their own dedicated AI agent** — an independent OpenClaw agent with isolated identity, knowledge base, and configuration.
+
+### Current State (Interim — working today)
+```
+WhatsApp → Server → resolveClient() → Template match → Single DeepSeek with dynamic prompt
+```
+- Phone number → client resolution: ✅
+- Template matching per client: ✅
+- Dynamic AI prompt per client: ✅ (but single-agent, not isolated)
+
+### Target State (When we have paying clients)
+```
+WhatsApp → Server → resolveClient() → Template match → Route to dedicated AI agent
+                                                              ├── tingai (Ting-A-Ling)
+                                                              ├── agent-xyz (Client #2)
+                                                              └── agent-abc (Client #3)
+```
+Each client agent has:
+- Own identity files (SOUL.md, AGENTS.md, etc.) — isolated from Fred and other clients
+- Own knowledge base (editable via dashboard)
+- Access to client's own tools but NOT to Fred's tools or other clients' data
+- Communicated with via OpenClaw Gateway API (port 18789)
+
+### When We Build It
+- The per-client agents get created **when a new client is onboarded** and opts into AI
+- The current synchronous DeepSeek call gets replaced with an agent session call
+- Template matching stays as the first line (no AI cost for simple queries)
+
+### Note
+- `tingai` agent was set up as a prototype but has issues — not to be used as reference
+
 ## What's Next
 
 1. ~~Named tunnel~~ ✅ RESOLVED — DNS delegation propagated, tunnel on permanent URL
