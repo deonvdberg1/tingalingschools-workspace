@@ -37,11 +37,51 @@
         "direction": "in",
         "text": "Hi",
         "timestamp": "2026-05-28T09:10:59.369Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-28T09:28:01.893Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hi there! 👋 I'm **TingAI**, the official AI assistant for Ting-A-Ling Schools in Meerensee, Richards Bay.\n\nI'm here to help with any questions about our Pre-Primary or Special Needs schools — fees, enrolment, hours, uniforms, or anything else. What can I help you with? 😊",
+        "timestamp": "2026-05-28T09:28:01.893Z"
+      },
+      {
+        "direction": "in",
+        "text": "Tell me more about out the schools",
+        "timestamp": "2026-05-28T09:28:33.514Z"
+      },
+      {
+        "direction": "out",
+        "text": "Of course! Ting-A-Ling Schools in Meerensee, Richards Bay, is made up of two schools under one management 🤖\n\n**Pre-Primary School** — at 74 Krewilkring, for children aged 2 to 6 years. It's play-based with a focus on building confidence, creativity, and school readiness. Half-day options are available.\n\n**Special Needs School** — at 18 Elweboog, for children aged 3 to 12 years. They offer individualised education with a dedicated team of specialists, therapy support, and a focus on independence, communication, and life skills.\n\nBoth schools operate from 07:00 to 13:00 on school days, with aftercare options available. If you'd like more info on a specific school — fees, enrolment, uniform, etc. — just let me know which one you're interested in!",
+        "timestamp": "2026-05-28T09:28:33.514Z"
+      },
+      {
+        "direction": "in",
+        "text": "Thats great how do I enroll my child?",
+        "timestamp": "2026-05-28T09:30:56.618Z"
+      },
+      {
+        "direction": "out",
+        "text": "Great question! 😊 Before I give you the details, could you let me know — are you looking to enrol at our **Pre-Primary School** (ages 2–6) or the **Special Needs School** (ages 3–12)? That way I can share the right information for you.",
+        "timestamp": "2026-05-28T09:30:56.618Z"
+      },
+      {
+        "direction": "in",
+        "text": "Special needs",
+        "timestamp": "2026-05-28T09:31:15.553Z"
+      },
+      {
+        "direction": "out",
+        "text": "Our Special Needs School is located at 18 Elweboog, Meerensee, and caters for children aged 3 to 12 years with diverse learning needs. We offer individualised care, personalised learning programmes, therapy support, and a focus on independence, communication, and life skills in small class groups.\n\nOur hours are 07:00–13:00 or 07:00–17:00 with aftercare, and fees range from R3,000 to R3,300 per month depending on the hours you need. Give the school office a call on 0615274429 or 0724561282 if you'd like to arrange a tour 🤖",
+        "timestamp": "2026-05-28T09:31:15.553Z"
       }
     ],
     "firstSeen": "2026-05-26T08:02:06.050Z",
-    "lastSeen": "2026-05-28T09:10:59.369Z",
-    "autoReplied": 3,
+    "lastSeen": "2026-05-28T09:31:15.553Z",
+    "autoReplied": 7,
     "humanRequests": 1
   }
 }
