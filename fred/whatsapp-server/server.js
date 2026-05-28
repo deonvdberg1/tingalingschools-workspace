@@ -105,6 +105,40 @@ function saveConversations() {
 const conversations = loadConversations();
 const processed_messages = new Set();
 
+// ── POPIA: Data deletion & retention ─────────────────────────────────────
+const DATA_RETENTION_DAYS = 90; // Auto-delete conversations older than this
+
+function deleteConversation(phone) {
+  const clean = phone.replace(/[^0-9]/g, '');
+  const found = Object.keys(conversations).find(k => k.replace(/[^0-9]/g, '') === clean);
+  if (found) {
+    delete conversations[found];
+    saveConversations();
+    log('INFO', 'POPIA', `Deleted conversation for ${clean}`);
+  }
+}
+
+function expireOldConversations() {
+  const cutoff = Date.now() - (DATA_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+  let expired = 0;
+  for (const [key, conv] of Object.entries(conversations)) {
+    const lastSeen = new Date(conv.lastSeen || 0).getTime();
+    if (lastSeen > 0 && lastSeen < cutoff) {
+      delete conversations[key];
+      expired++;
+    }
+  }
+  if (expired > 0) {
+    saveConversations();
+    log('INFO', 'POPIA', `Auto-expired ${expired} conversations older than ${DATA_RETENTION_DAYS} days`);
+  }
+}
+
+// Run expiry check every 6 hours
+setInterval(expireOldConversations, 6 * 60 * 60 * 1000);
+// Also run once on startup
+expireOldConversations();
+
 // ── Client cache (phone → client resolution) ──────────────────────────────
 const DASHBOARD_API = 'http://localhost:3001';
 
@@ -171,7 +205,15 @@ async function fetchTemplates(clientId) {
 async function getAutoReply(messageText, fromNumber) {
   const msg = (messageText || '').toLowerCase().trim();
 
-  // Opt-out (MUST be first — Meta policy)
+  // POPIA: Data deletion request (MUST be before opt-out — data right supersedes marketing)
+  if (/^delete.?my.?data$|^erase|^remove.?my.?data$/i.test(msg)) {
+    const cleanNumber = (fromNumber || '').replace(/[^0-9]/g, '');
+    deleteConversation(cleanNumber);
+    log('INFO', 'POPIA', `Data deletion requested for ${cleanNumber}`);
+    return { text: 'Your conversation history and personal information have been deleted from our systems. If you have further questions, please contact the school office directly.', type: 'text' };
+  }
+
+  // Opt-out (MUST be early — Meta policy)
   if (/^stop$|^unsubscribe$|^opt.?out$|^cancel$/i.test(msg)) {
     return { text: '✅ You have been unsubscribed.\n\nSend "START" to reactivate.', type: 'text' };
   }
@@ -359,6 +401,30 @@ app.post('/webhooks/whatsapp', express.json(), async (req, res) => {
       }
     }
   }
+});
+
+// ── POPIA: Data deletion API (for web-based requests) ────────────────────
+app.post('/api/delete-data', express.json(), (req, res) => {
+  const { phone } = req.body;
+  if (!phone) return res.status(400).json({ error: 'Phone number required' });
+  deleteConversation(phone);
+  res.json({ success: true, message: 'Your data has been deleted.' });
+});
+
+// ── POPIA: Data export (user requests their data) ─────────────────────────
+app.post('/api/export-data', express.json(), (req, res) => {
+  const { phone } = req.body;
+  if (!phone) return res.status(400).json({ error: 'Phone number required' });
+  
+  const clean = phone.replace(/[^0-9]/g, '');
+  const conv = Object.entries(conversations).find(([k]) => k.replace(/[^0-9]/g, '') === clean);
+  
+  if (!conv) return res.json({ data: null, message: 'No data found for this number' });
+  
+  res.json({
+    data: conv[1],
+    message: 'This is your conversation data. It will be deleted after 90 days of inactivity.'
+  });
 });
 
 // ── Dashboard: Send messages ─────────────────────────────────────────────
