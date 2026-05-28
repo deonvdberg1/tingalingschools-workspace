@@ -142,6 +142,9 @@ setInterval(expireOldConversations, 6 * 60 * 60 * 1000);
 // Also run once on startup
 expireOldConversations();
 
+// 14. Periodic auto-save every 30 seconds (safety net for crash recovery)
+setInterval(saveConversations, 30 * 1000);
+
 // ── Client cache (phone → client resolution) ──────────────────────────────
 const DASHBOARD_API = 'http://localhost:3001';
 
@@ -526,6 +529,35 @@ app.get('/status', (req, res) => {
     wabaId: process.env.WABA_ID,
     conversations: Object.keys(conversations).length,
     totalMessages: Object.values(conversations).reduce((sum, c) => sum + c.messages.length, 0)
+  });
+});
+
+// ── Today's metrics ───────────────────────────────────────────────────────
+app.get('/api/metrics/today', (req, res) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayTs = today.toISOString();
+  
+  let todayMessages = 0;
+  let todayAuto = 0;
+  let todayHuman = 0;
+  
+  for (const conv of Object.values(conversations)) {
+    for (const msg of (conv.messages || [])) {
+      if (msg.timestamp >= todayTs) {
+        todayMessages++;
+        if (msg.direction === 'out') todayAuto++;
+        else todayHuman++;
+      }
+    }
+  }
+  
+  res.json({
+    today_messages: todayMessages,
+    today_auto_replies: todayAuto,
+    today_human_requests: todayHuman,
+    auto_reply_rate: todayMessages > 0 ? Math.round((todayAuto / todayMessages) * 100) : 0,
+    active_conversations: Object.keys(conversations).length,
   });
 });
 
