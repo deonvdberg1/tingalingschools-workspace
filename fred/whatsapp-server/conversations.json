@@ -5,26 +5,6 @@
     "messages": [
       {
         "direction": "in",
-        "text": "Tell me a little about the school",
-        "timestamp": "2026-05-28T09:36:28.935Z"
-      },
-      {
-        "direction": "out",
-        "text": "Ting-A-Ling Schools is located right here in Meerensee, Richards Bay. We run two schools — a Pre-Primary School (ages 2–6) with play-based learning and school readiness programmes, and a Special Needs School (ages 3–12) offering individualised care and therapy support. Both schools focus on small class sizes and a nurturing environment 😊\n\nIs there anything specific you'd like to know about either school?",
-        "timestamp": "2026-05-28T09:36:28.935Z"
-      },
-      {
-        "direction": "in",
-        "text": "Does the SN have therapy?",
-        "timestamp": "2026-05-28T09:37:00.303Z"
-      },
-      {
-        "direction": "out",
-        "text": "Yes, the Special Needs School offers therapy support for the learners, including occupational therapy. For more specific information about the therapy programmes, feel free to contact the school office.",
-        "timestamp": "2026-05-28T09:37:00.303Z"
-      },
-      {
-        "direction": "in",
         "text": "How much are the u uniforms?",
         "timestamp": "2026-05-28T09:37:42.169Z"
       },
@@ -252,11 +232,31 @@
         "direction": "out",
         "text": "Good morning! Welcome to Ting-A-Ling Schools. How can I help you today? 😊",
         "timestamp": "2026-05-28T16:14:30.095Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-28T16:15:58.317Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! Welcome to Ting-A-Ling Schools — what can I help you with today? 😊",
+        "timestamp": "2026-05-28T16:15:58.317Z"
+      },
+      {
+        "direction": "in",
+        "text": "Are you open during school holidays?",
+        "timestamp": "2026-05-28T16:16:26.971Z"
+      },
+      {
+        "direction": "out",
+        "text": "Yes, we're open during school holidays — we run holiday programmes during the school breaks. The hours vary depending on the programme, so feel free to contact the office for the specific times. 😊",
+        "timestamp": "2026-05-28T16:16:26.971Z"
       }
     ],
     "firstSeen": "2026-05-26T08:02:06.050Z",
-    "lastSeen": "2026-05-28T16:14:30.095Z",
-    "autoReplied": 33,
+    "lastSeen": "2026-05-28T16:16:26.971Z",
+    "autoReplied": 35,
     "humanRequests": 1
   }
 }
