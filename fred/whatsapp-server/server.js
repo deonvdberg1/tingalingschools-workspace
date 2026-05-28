@@ -166,34 +166,8 @@ async function fetchTemplates(clientId) {
   return cachedTemplates || [];
 }
 
-// ── Smart keyword matcher ─────────────────────────────────────────────────
-function matchKeywords(message, keywordsStr) {
-  if (!keywordsStr || !keywordsStr.trim()) return 0;
-  const msg = message.toLowerCase().trim();
-  const keywords = keywordsStr.split(',').map(k => k.trim().toLowerCase()).filter(k => k);
-  if (keywords.length === 0) return 0;
-  
-  let score = 0;
-  for (const keyword of keywords) {
-    if (!keyword) continue;
-    const safeKw = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    // Exact word match (highest priority)
-    if (new RegExp('\\b' + safeKw + '\\b', 'i').test(msg)) {
-      score += 3 * keyword.length;
-    }
-    // Word starts with keyword (e.g. "pay" matches "payment")
-    else if (new RegExp('\\b' + safeKw, 'i').test(msg)) {
-      score += 2 * keyword.length;
-    }
-    // Keyword appears anywhere
-    else if (msg.includes(keyword)) {
-      score += 1 * keyword.length;
-    }
-  }
-  return score;
-}
 
-// ── Smart auto-reply: Template-first, AI-fallback ─────────────────────────
+// ── Smart auto-reply: AI-first, simple contact fallback ────────────────────
 async function getAutoReply(messageText, fromNumber) {
   const msg = (messageText || '').toLowerCase().trim();
 
@@ -227,22 +201,12 @@ async function getAutoReply(messageText, fromNumber) {
     }
   }
 
-  // Step 2: Fall back to template matching if AI unavailable
-  const templates = await fetchTemplates(client.clientId);
-  if (templates && templates.length > 0) {
-    const scored = templates
-      .filter(t => t.active !== 0)
-      .map(t => ({ template: t, score: matchKeywords(msg, t.trigger_keyword) }))
-      .sort((a, b) => b.score - a.score);
-    
-    if (scored.length > 0 && scored[0].score > 0) {
-      return { text: scored[0].template.content, type: 'text' };
-    }
-    
-    const greeting = templates.find(t => t.category?.toLowerCase() === 'general');
-    if (greeting) {
-      return { text: greeting.content, type: 'text' };
-    }
+  // Step 2: Fall back to simple contact-info template if AI unavailable
+  // (No keyword matching — just a generic "reach us here" message)
+  const fallbackTemplates = await fetchTemplates(client.clientId);
+  const greeting = (fallbackTemplates || []).find(t => t.category?.toLowerCase() === 'general');
+  if (greeting) {
+    return { text: greeting.content, type: 'text' };
   }
 
   return null;
