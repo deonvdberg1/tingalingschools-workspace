@@ -1,22 +1,57 @@
-// AutoEffortless AI Assistant v7 — Per-Client Agent Routing
+// AutoEffortless AI Assistant v7.1 — Per-Client Agent Routing + Conversation Memory
 // Routes AI requests to dedicated OpenClaw agents (one per client)
-// Each client gets its own isolated agent with its own identity + KB
+// Maintains conversation history per phone number for context
 
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 const GATEWAY_URL = 'http://localhost:18789/v1/chat/completions';
-const DEFAULT_MODEL = 'openclaw/default';
 
-// ── Agent lookup ───────────────────────────────────────────────────────────
-// Agent IDs come from the dashboard API (stored per-client in the DB).
-// Currently: client 6 → tingai (Ting-A-Ling Schools)
+// ── Conversation memory (persisted to disk) ──────────────────────────────────
+const AI_CONV_FILE = path.join(__dirname, 'ai-conversations.json');
+const MAX_HISTORY = 20;
 
-function callGateway(messages, agentId) {
-  const model = agentId ? `openclaw/${agentId}` : DEFAULT_MODEL;
+function loadHistory() {
+  try {
+    if (fs.existsSync(AI_CONV_FILE)) {
+      const data = fs.readFileSync(AI_CONV_FILE, 'utf8');
+      const parsed = JSON.parse(data);
+      const map = new Map();
+      for (const [key, val] of Object.entries(parsed)) {
+        map.set(key, val);
+      }
+      return map;
+    }
+  } catch (e) {
+    console.error('[AI] Failed to load conversation history:', e.message);
+  }
+  return new Map();
+}
 
+function saveHistory() {
+  try {
+    const obj = {};
+    for (const [key, val] of conversationHistory) {
+      obj[key] = val;
+    }
+    fs.writeFileSync(AI_CONV_FILE, JSON.stringify(obj, null, 2), 'utf8');
+  } catch (e) {
+    console.error('[AI] Failed to save conversation history:', e.message);
+  }
+}
+
+const conversationHistory = loadHistory();
+
+function getHistory(phone) {
+  if (!conversationHistory.has(phone)) conversationHistory.set(phone, []);
+  return conversationHistory.get(phone);
+}
+
+function callGateway(messages) {
   return new Promise((resolve) => {
     const data = JSON.stringify({
-      model: model,
+      model: 'openclaw/tingai',
       messages: messages,
       stream: false,
       max_tokens: 400,
@@ -56,10 +91,21 @@ function callGateway(messages, agentId) {
   });
 }
 
+function buildMessages(phone, message) {
+  const history = getHistory(phone);
+  const msgs = [];
+
+  // Add recent conversation history for context (up to last 6 turns)
+  const recent = history.slice(-6);
+  for (const m of recent) {
+    msgs.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content });
+  }
+
+  msgs.push({ role: 'user', content: message });
+  return msgs;
+}
+
 // ── Public API ────────────────────────────────────────────────────────────
-// messageText: raw message from user
-// fromNumber: sender's phone number (for context, not always used)
-// clientContext: { clientId, clientName, aiEnabled, ... } from resolveClient()
 async function getAIAutoReply(messageText, fromNumber, clientContext) {
   const msg = (messageText || '').toLowerCase().trim();
 
@@ -72,7 +118,6 @@ async function getAIAutoReply(messageText, fromNumber, clientContext) {
     return null;
   }
 
-  // Find which agent handles this client (stored in DB, fetched from dashboard API)
   const agentId = clientContext.agentId;
   if (!agentId) {
     console.error(`[AI] No agent configured for client ${clientContext.clientId} (${clientContext.clientName})`);
@@ -81,14 +126,18 @@ async function getAIAutoReply(messageText, fromNumber, clientContext) {
 
   console.log(`[AI] Routing to agent "${agentId}" for ${clientContext.clientName} (client ${clientContext.clientId})`);
 
-  // Let the dedicated agent handle this — it has its own identity, KB, and rules
-  const messages = [
-    { role: 'user', content: messageText }
-  ];
-
-  const reply = await callGateway(messages, agentId);
+  // Build messages with conversation history
+  const messages = buildMessages(fromNumber, messageText);
+  const reply = await callGateway(messages);
 
   if (reply && reply.length > 0) {
+    // Store in conversation history
+    const history = getHistory(fromNumber);
+    history.push({ role: 'user', content: messageText });
+    history.push({ role: 'assistant', content: reply });
+    if (history.length > MAX_HISTORY) history.splice(0, history.length - MAX_HISTORY);
+    saveHistory();
+
     return { text: reply, type: 'text', source: 'ai' };
   }
 

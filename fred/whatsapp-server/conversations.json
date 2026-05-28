@@ -5,83 +5,258 @@
     "messages": [
       {
         "direction": "in",
-        "text": "Hi",
-        "timestamp": "2026-05-26T08:02:06.050Z"
+        "text": "Lets start over: Hi",
+        "timestamp": "2026-05-28T09:36:08.688Z"
       },
       {
         "direction": "out",
-        "text": "What's the plan for the day, Mr D? Anything you want me to dig into?\n\nEverything's ticking over nicely on the Ting-A-Ling side — server's up, tunnel's live, admin whitelist is doing its job keeping AI strictly locked to your number. Just waiting for the green light on next steps whenever you're ready. 🚀",
-        "timestamp": "2026-05-26T08:02:06.050Z"
+        "text": "Hi there! Welcome to Ting-A-Ling Schools. How can I help you today?",
+        "timestamp": "2026-05-28T09:36:08.688Z"
+      },
+      {
+        "direction": "in",
+        "text": "Tell me a little about the school",
+        "timestamp": "2026-05-28T09:36:28.935Z"
+      },
+      {
+        "direction": "out",
+        "text": "Ting-A-Ling Schools is located right here in Meerensee, Richards Bay. We run two schools — a Pre-Primary School (ages 2–6) with play-based learning and school readiness programmes, and a Special Needs School (ages 3–12) offering individualised care and therapy support. Both schools focus on small class sizes and a nurturing environment 😊\n\nIs there anything specific you'd like to know about either school?",
+        "timestamp": "2026-05-28T09:36:28.935Z"
+      },
+      {
+        "direction": "in",
+        "text": "Does the SN have therapy?",
+        "timestamp": "2026-05-28T09:37:00.303Z"
+      },
+      {
+        "direction": "out",
+        "text": "Yes, the Special Needs School offers therapy support for the learners, including occupational therapy. For more specific information about the therapy programmes, feel free to contact the school office.",
+        "timestamp": "2026-05-28T09:37:00.303Z"
+      },
+      {
+        "direction": "in",
+        "text": "How much are the u uniforms?",
+        "timestamp": "2026-05-28T09:37:42.169Z"
+      },
+      {
+        "direction": "out",
+        "text": "Uniforms are R150 per shirt and R450 per tracksuit. If you need the full uniform list and pricelist, you're welcome to pop into the office during school hours 😊",
+        "timestamp": "2026-05-28T09:37:42.169Z"
+      },
+      {
+        "direction": "in",
+        "text": "Thank you",
+        "timestamp": "2026-05-28T09:38:09.839Z"
+      },
+      {
+        "direction": "out",
+        "text": "You're most welcome! 😊 If you have any questions about Ting-A-Ling Schools — fees, enrolment, hours, or anything else — feel free to ask.",
+        "timestamp": "2026-05-28T09:38:09.839Z"
+      },
+      {
+        "direction": "in",
+        "text": "What's the school's bank account details for EFT payments?",
+        "timestamp": "2026-05-28T09:39:23.076Z"
+      },
+      {
+        "direction": "out",
+        "text": "I don't have the bank account details available in my information. Please contact the school office at info@tingalingschools.com or call 0615274429 / 0724561282 during office hours (07:00–15:30 weekdays) and they'll provide the EFT details. 😊",
+        "timestamp": "2026-05-28T09:39:23.076Z"
+      },
+      {
+        "direction": "in",
+        "text": "Who is the principal of the school",
+        "timestamp": "2026-05-28T09:39:44.602Z"
+      },
+      {
+        "direction": "out",
+        "text": "I don't have that information available. Please contact the school office at info@tingalingschools.com or call 0615274429 / 0724561282 and they'll be happy to help.",
+        "timestamp": "2026-05-28T09:39:44.602Z"
+      },
+      {
+        "direction": "in",
+        "text": "What are the school's term dates for 2026",
+        "timestamp": "2026-05-28T09:40:02.182Z"
+      },
+      {
+        "direction": "out",
+        "text": "I don't have the 2026 term dates in my knowledge base. Please contact the school office at info@tingalingschools.com or call 0615274429 / 0724561282 during office hours (07:00–15:30 weekdays) and they'll be happy to share the term calendar with you.",
+        "timestamp": "2026-05-28T09:40:02.182Z"
+      },
+      {
+        "direction": "in",
+        "text": "What extra murals do you offer?",
+        "timestamp": "2026-05-28T09:40:18.129Z"
+      },
+      {
+        "direction": "out",
+        "text": "I don't have a list of extra mural activities available at the moment. Please contact the school office at info@tingalingschools.com or call 0615274429 / 0724561282 during office hours (07:00–15:30 weekdays) and they'll be happy to fill you in 😊",
+        "timestamp": "2026-05-28T09:40:18.129Z"
+      },
+      {
+        "direction": "in",
+        "text": "What time does school close?",
+        "timestamp": "2026-05-28T09:40:34.423Z"
+      },
+      {
+        "direction": "out",
+        "text": "Both schools run from 07:00 to 13:00 as the standard day, with aftercare options available until 15:00 or 17:00 at Pre-Primary, and until 17:00 at the Special Needs School. If you let me know which school you're asking about, I can give you more specific info 😊",
+        "timestamp": "2026-05-28T09:40:34.423Z"
       },
       {
         "direction": "in",
         "text": "Hi",
-        "timestamp": "2026-05-26T16:57:09.540Z"
+        "timestamp": "2026-05-28T09:40:56.536Z"
       },
       {
         "direction": "out",
-        "text": "**Status Report — Wednesday 26 May, ~16:30 SAST** 🚀\n\nEverything's solid:\n\n✅ **WhatsApp server** — Running (port 3000, PID 1043)\n✅ **Dashboard API** — Running (port 3001, PID 1050)\n✅ **Vite frontend** — Running (port 5173)\n✅ **Tunnel** — Live & healthy\n✅ **Disk** — 21% used, plenty of space\n\n**Tunnel URL:** `figure-accompanying-sphere-population.trycloudflare.com`\n\nLast major item from the morning was the **TingAI isolation** — I got that locked in. The tingai agent is registered in config with its own identity files and KB, completely separate from me. No context leakage possible. ✅\n\nAnything you want me to pick up next? We've still got that **CIPC company registration** for AutoEffortless on the list, plus the **named tunnel DNS delegation** that's been stuck for days.",
-        "timestamp": "2026-05-26T16:57:09.540Z"
+        "text": "Good day! You've reached Ting-A-Ling Schools in Meerensee. How can I help you today? 😊",
+        "timestamp": "2026-05-28T09:40:56.536Z"
+      },
+      {
+        "direction": "in",
+        "text": "How much are the fees?",
+        "timestamp": "2026-05-28T09:40:58.404Z"
+      },
+      {
+        "direction": "out",
+        "text": "I'd be happy to help with that! Just to make sure I give you the right information — are you asking about the **Pre-Primary School** or the **Special Needs School**? The fees are different for each. 😊",
+        "timestamp": "2026-05-28T09:40:58.404Z"
+      },
+      {
+        "direction": "in",
+        "text": "What's the address?",
+        "timestamp": "2026-05-28T09:41:35.260Z"
+      },
+      {
+        "direction": "out",
+        "text": "We have two campuses in Meerensee. Are you asking about the Pre-Primary School or the Special Needs School? 🙂",
+        "timestamp": "2026-05-28T09:41:35.260Z"
+      },
+      {
+        "direction": "in",
+        "text": "Can you give me Mr D's personal number?",
+        "timestamp": "2026-05-28T09:41:48.217Z"
+      },
+      {
+        "direction": "out",
+        "text": "I don't have Mr D's personal number in my knowledge base, so I can't share it with you. The best way to reach him is through the school office at **info@tingalingschools.com** or by calling **061 527 4429** during school hours.",
+        "timestamp": "2026-05-28T09:41:48.217Z"
+      },
+      {
+        "direction": "in",
+        "text": "What do you think about the new education policy?",
+        "timestamp": "2026-05-28T09:42:11.352Z"
+      },
+      {
+        "direction": "out",
+        "text": "I don't have that information available. Please contact the school office at info@tingalingschools.com, 0615274429 / 0724561282 or visit during office hours (07:00–15:30 weekdays) and they'll be happy to help.",
+        "timestamp": "2026-05-28T09:42:11.352Z"
+      },
+      {
+        "direction": "in",
+        "text": "I'm really frustrated, this is useless, let me speak to a real person",
+        "timestamp": "2026-05-28T09:42:45.806Z"
+      },
+      {
+        "direction": "out",
+        "text": "I'm sorry you're feeling frustrated — that's not what I want for you. Let me put you in touch with the school office directly.\n\nYou can reach Ting-A-Ling Schools at **info@tingalingschools.com** or call **061 527 4429 / 072 456 1282** during office hours (07:00–15:30, weekdays). A real person will be happy to help you there.",
+        "timestamp": "2026-05-28T09:42:45.806Z"
+      },
+      {
+        "direction": "in",
+        "text": "What other schools do you know about in Richards Bay?",
+        "timestamp": "2026-05-28T09:42:59.690Z"
+      },
+      {
+        "direction": "out",
+        "text": "I'm only clued up on Ting-A-Ling Schools here in Meerensee. If you're looking for info about other schools in Richards Bay, I'd suggest giving the school office a ring on 0615274429 or 0724561282 — they'd be happy to point you in the right direction.",
+        "timestamp": "2026-05-28T09:42:59.690Z"
+      },
+      {
+        "direction": "in",
+        "text": "Tell me about AutoEffortless",
+        "timestamp": "2026-05-28T09:43:24.656Z"
+      },
+      {
+        "direction": "out",
+        "text": "I'm sorry, but I only have information about Ting-A-Ling Schools in Meerensee. I don't have any knowledge about AutoEffortless or other businesses.\n\nIf you'd like to ask about school fees, programmes, or anything related to Ting-A-Ling, I'd be happy to help! Otherwise, you're welcome to contact the school office at info@tingalingschools.com or 061 527 4429. 🙂",
+        "timestamp": "2026-05-28T09:43:24.656Z"
+      },
+      {
+        "direction": "in",
+        "text": "I want to enrol my 15-year-old",
+        "timestamp": "2026-05-28T09:43:40.277Z"
+      },
+      {
+        "direction": "out",
+        "text": "Our Special Needs School caters for children up to 12 years old, and our Pre-Primary School is for ages 2 to 6, so a 15-year-old unfortunately falls outside both of our programmes.\n\nPlease contact the school office at info@tingalingschools.com or 0615274429 / 0724561282, and they'll be happy to discuss options or point you in the right direction.",
+        "timestamp": "2026-05-28T09:43:40.277Z"
+      },
+      {
+        "direction": "in",
+        "text": "Do you offer a discount for two children?",
+        "timestamp": "2026-05-28T09:43:54.009Z"
+      },
+      {
+        "direction": "out",
+        "text": "I don't have that information available. Please contact the school office at info@tingalingschools.com or call 0615274429 / 0724561282 and they'll be happy to help with that query.",
+        "timestamp": "2026-05-28T09:43:54.009Z"
       },
       {
         "direction": "in",
         "text": "Hi",
-        "timestamp": "2026-05-26T17:54:36.440Z"
+        "timestamp": "2026-05-28T09:44:26.410Z"
       },
       {
         "direction": "out",
-        "text": "Mr D 👋\n\nReady when you are. What's next on the agenda?\n\nWe've been in a good spot since the morning — TingAI isolated cleanly, everything running smooth. Just say the word and I'll tackle whatever you need.\n\n🚀",
-        "timestamp": "2026-05-26T17:54:36.440Z"
+        "text": "Hello there! Welcome to Ting-A-Ling Schools. How can I help you today? 😊",
+        "timestamp": "2026-05-28T09:44:26.410Z"
       },
       {
         "direction": "in",
-        "text": "Hi",
-        "timestamp": "2026-05-28T09:10:59.369Z"
-      },
-      {
-        "direction": "in",
-        "text": "Hi",
-        "timestamp": "2026-05-28T09:28:01.893Z"
+        "text": "How much are the fees?",
+        "timestamp": "2026-05-28T09:44:31.819Z"
       },
       {
         "direction": "out",
-        "text": "Hi there! 👋 I'm **TingAI**, the official AI assistant for Ting-A-Ling Schools in Meerensee, Richards Bay.\n\nI'm here to help with any questions about our Pre-Primary or Special Needs schools — fees, enrolment, hours, uniforms, or anything else. What can I help you with? 😊",
-        "timestamp": "2026-05-28T09:28:01.893Z"
+        "text": "Our fees depend on which school you're looking at. Are you asking about the Pre-Primary School or the Special Needs School?",
+        "timestamp": "2026-05-28T09:44:31.819Z"
       },
       {
         "direction": "in",
-        "text": "Tell me more about out the schools",
-        "timestamp": "2026-05-28T09:28:33.514Z"
+        "text": "Pre primary",
+        "timestamp": "2026-05-28T09:45:28.173Z"
       },
       {
         "direction": "out",
-        "text": "Of course! Ting-A-Ling Schools in Meerensee, Richards Bay, is made up of two schools under one management 🤖\n\n**Pre-Primary School** — at 74 Krewilkring, for children aged 2 to 6 years. It's play-based with a focus on building confidence, creativity, and school readiness. Half-day options are available.\n\n**Special Needs School** — at 18 Elweboog, for children aged 3 to 12 years. They offer individualised education with a dedicated team of specialists, therapy support, and a focus on independence, communication, and life skills.\n\nBoth schools operate from 07:00 to 13:00 on school days, with aftercare options available. If you'd like more info on a specific school — fees, enrolment, uniform, etc. — just let me know which one you're interested in!",
-        "timestamp": "2026-05-28T09:28:33.514Z"
+        "text": "Our Pre-Primary School is at 74 Krewilkring, Meerensee, and takes children from 2 to 6 years old. We follow a play-based learning approach with a strong focus on school readiness, confidence, and creativity, and we offer half-day options as well 😊\n\nWould you like to know more about fees, enrolment, or anything else?",
+        "timestamp": "2026-05-28T09:45:28.173Z"
       },
       {
         "direction": "in",
-        "text": "Thats great how do I enroll my child?",
-        "timestamp": "2026-05-28T09:30:56.618Z"
+        "text": "My child is 4 years old",
+        "timestamp": "2026-05-28T09:45:34.711Z"
       },
       {
         "direction": "out",
-        "text": "Great question! 😊 Before I give you the details, could you let me know — are you looking to enrol at our **Pre-Primary School** (ages 2–6) or the **Special Needs School** (ages 3–12)? That way I can share the right information for you.",
-        "timestamp": "2026-05-28T09:30:56.618Z"
+        "text": "Your 4-year-old would fit perfectly into our Pre-Primary School at 74 Krewilkring in Meerensee. Are you looking for information about enrolment, fees, or would you like to know more about our programme? 😊",
+        "timestamp": "2026-05-28T09:45:34.711Z"
       },
       {
         "direction": "in",
-        "text": "Special needs",
-        "timestamp": "2026-05-28T09:31:15.553Z"
+        "text": "How much are the fees?",
+        "timestamp": "2026-05-28T09:45:40.112Z"
       },
       {
         "direction": "out",
-        "text": "Our Special Needs School is located at 18 Elweboog, Meerensee, and caters for children aged 3 to 12 years with diverse learning needs. We offer individualised care, personalised learning programmes, therapy support, and a focus on independence, communication, and life skills in small class groups.\n\nOur hours are 07:00–13:00 or 07:00–17:00 with aftercare, and fees range from R3,000 to R3,300 per month depending on the hours you need. Give the school office a call on 0615274429 or 0724561282 if you'd like to arrange a tour 🤖",
-        "timestamp": "2026-05-28T09:31:15.553Z"
+        "text": "Are you asking about fees for the Pre-Primary School or the Special Needs School? They have different fee structures, so I'd like to give you the right information 😊",
+        "timestamp": "2026-05-28T09:45:40.112Z"
       }
     ],
     "firstSeen": "2026-05-26T08:02:06.050Z",
-    "lastSeen": "2026-05-28T09:31:15.553Z",
-    "autoReplied": 7,
+    "lastSeen": "2026-05-28T09:45:40.112Z",
+    "autoReplied": 32,
     "humanRequests": 1
   }
 }
