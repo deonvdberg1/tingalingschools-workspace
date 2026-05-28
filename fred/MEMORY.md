@@ -35,7 +35,8 @@ This is where I keep what matters.
 - **DNS routes:** `whatsapp.autoeffortless.com` + `tingaling.autoeffortless.com` → tunnel
 - **LaunchAgent:** `com.tingaling.cloudflared-named` (auto-starts on boot)
 - **Old trycloudflare:** Fully removed (plists deleted, scripts disabled)
-- **Auto-reply:** Fees, hours, uniform, absentee, events, contact, enrolment, greetings ✅
+- **Auto-reply:** TingAI dedicated agent — natural tone, no AI self-ID ✅
+- **Conversation persistence:** Per-phone history, saved to disk ✅
 - **PDF statements:** Built and tested ✅
 - **Display name:** "Tingaling" — ✅ APPROVED (2026-05-21)
 - **Quality:** GREEN | Limit: LIMITED (250/day)
@@ -183,13 +184,32 @@ Each client agent has:
 ### Note
 - `tingai` agent was set up as a prototype but has issues — not to be used as reference
 
+## 🛠️ Improvements Deployed (2026-05-28)
+- Rate limiting on webhook (20 req/s window)
+- .env validation at startup (crash early, not mysteriously)
+- Structured logging with timestamps + levels (INFO/WARN/ERROR)
+- Named tunnel live on permanent URL (no more ephemeral trycloudflare)
+- DNS delegation propagated (Ionos→Cloudflare, ~7 days)
+- Old v2 dashboard removed (only SPA remains)
+- AI conversation memory persisted to disk (no context loss on restart)
+- Real-time SSE endpoint for live dashboard updates
+- Client health monitoring page (/health)
+- Unit tests (26/26 passing) — keyword matching, opt-out, rate limiter, phone formatting
+- 3 digital product PDFs generated
+- Multi-client architecture: phone→client resolution via dashboard API
+- Per-client AI agents (TingAI dedicated agent, isolated identity + KB)
+- AI-first flow: TingAI is primary responder, templates are emergency fallback only
+- Natural tone: agent doesn't identify as AI, bot, or assistant
+- Conversation persistence: per-phone history maintained across messages
+
 ## What's Next
 
-1. ~~Named tunnel~~ ✅ RESOLVED — DNS delegation propagated, tunnel on permanent URL
-2. **Company registration** — Register AutoEffortless at CIPC
-3. Parent opt-in campaign — need parent contact list from Ting-A-Ling
-4. Demo video polish
-5. Real client onboarding (walk Ting-A-Ling through wizard)
+1. ~~Named tunnel~~ ✅ RESOLVED
+2. ~~Multi-client refactor~~ ✅ RESOLVED
+3. **Company registration** — CIPC lodged, waiting on approval
+4. **UPS purchase** — R1,293 APC 650VA (Takealot)
+5. Parent opt-in campaign — need parent contact list from Ting-A-Ling
+6. **Client #2 onboarding** — when Mr D brings in next client
 
 ---
 
