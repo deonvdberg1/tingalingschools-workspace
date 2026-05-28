@@ -65,3 +65,9 @@ memory/.dreams/
 # Logs
 *.log
 tmp/
+
+# WhatsApp AI conversations (auto-generated, persists context)
+fred/whatsapp-server/ai-conversations.json
+
+# Digital product PDFs (generated from .md source)
+fred/products/*.pdf

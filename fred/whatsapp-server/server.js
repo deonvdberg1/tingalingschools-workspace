@@ -3,9 +3,34 @@ const express = require('express');
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-const { generateDashboard } = require('./dashboard-v2.js');
 const { getAIAutoReply } = require('./ai-assistant.js');
 const app = express();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STARTUP VALIDATION — Crash early, not mysteriously
+// ═══════════════════════════════════════════════════════════════════════════
+const REQUIRED_ENV = ['WHATSAPP_TOKEN', 'PHONE_NUMBER_ID', 'APP_ID', 'APP_SECRET'];
+const missing = REQUIRED_ENV.filter(k => !process.env[k]);
+if (missing.length > 0) {
+  console.error(`[FATAL] Missing required environment variables: ${missing.join(', ')}`);
+  console.error('[FATAL] Check whatsapp-server/.env has all required fields');
+  process.exit(1);
+}
+
+// ── Structured Logger ────────────────────────────────────────────────────
+const LOG_LEVELS = { DEBUG: 0, INFO: 1, WARN: 2, ERROR: 3 };
+const CURRENT_LEVEL = LOG_LEVELS[process.env.LOG_LEVEL] || LOG_LEVELS.INFO;
+
+function log(level, component, message, data) {
+  if (LOG_LEVELS[level] < CURRENT_LEVEL) return;
+  const ts = new Date().toISOString().replace('T', ' ').substring(0, 19);
+  const prefix = `[${ts}] [${level.padEnd(5)}] [${component}]`;
+  if (data) {
+    console.log(`${prefix} ${message}`, typeof data === 'object' ? JSON.stringify(data).substring(0, 200) : data);
+  } else {
+    console.log(`${prefix} ${message}`);
+  }
+}
 
 // ── Config ─────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
@@ -18,7 +43,27 @@ const ADMIN_NUMBERS = new Set([
   '27615274429',  // Mr D
 ]);
 
-const META_API = `https://graph.facebook.com/v21.0/${PHONE_NUMBER_ID}/messages`;
+const META_API = `https://graph.facebook.com/v22.0/${PHONE_NUMBER_ID}/messages`;
+
+// ── Simple Rate Limiter (per-window, in-memory) ──────────────────────────
+const RATE_WINDOW_MS = 1000;   // 1 second window
+const RATE_MAX_REQS = 20;      // max 20 requests per window
+
+const rateBuckets = {};
+setInterval(() => {
+  // Clean up old buckets every 60 seconds
+  const cutoff = Date.now() - 60000;
+  for (const key of Object.keys(rateBuckets)) {
+    if (rateBuckets[key] < cutoff) delete rateBuckets[key];
+  }
+}, 60000);
+
+function checkRateLimit() {
+  const windowKey = Math.floor(Date.now() / RATE_WINDOW_MS);
+  rateBuckets[windowKey] = (rateBuckets[windowKey] || 0) + 1;
+  rateBuckets[windowKey + 1] = rateBuckets[windowKey + 1] || 0; // ensure next window exists
+  return rateBuckets[windowKey] <= RATE_MAX_REQS;
+}
 
 // ── Persistent conversation storage ───────────────────────────────────────
 const CONV_FILE = path.join(__dirname, 'conversations.json');
@@ -31,7 +76,7 @@ function loadConversations() {
       return JSON.parse(data);
     }
   } catch (e) {
-    console.error('[PERSIST] Failed to load conversations:', e.message);
+    log('ERROR', 'PERSIST', 'Failed to load conversations:', e.message);
   }
   return {};
 }
@@ -52,7 +97,7 @@ function saveConversations() {
     }
     fs.writeFileSync(CONV_FILE, JSON.stringify(toSave, null, 2), 'utf8');
   } catch (e) {
-    console.error('[PERSIST] Failed to save conversations:', e.message);
+    log('ERROR', 'PERSIST', 'Failed to save conversations:', e.message);
   }
 }
 
@@ -112,7 +157,7 @@ function matchKeywords(message, keywordsStr) {
   return score;
 }
 
-// ── Smart auto-reply: AI-first, falls back to templates ────────────────────
+// ── Smart auto-reply: Template-first, AI-fallback ─────────────────────────
 async function getAutoReply(messageText, fromNumber) {
   const msg = (messageText || '').toLowerCase().trim();
 
@@ -148,7 +193,6 @@ async function getAutoReply(messageText, fromNumber) {
   }
 
   // Step 2: Try AI assistant for nuanced queries
-  // Uses DeepSeek with KB-only system prompt
   const aiReply = await getAIAutoReply(messageText, fromNumber);
   if (aiReply) {
     return aiReply;
@@ -175,10 +219,10 @@ async function sendWhatsAppMessage(to, messageObj) {
       }
     });
 
-    console.log(`[SENT] To: ${to} | Type: ${messageObj.type}`);
+    log('INFO', 'SEND', `To: ${to} | Type: ${messageObj.type}`);
     return response.data;
   } catch (error) {
-    console.error(`[SEND ERROR] To: ${to} |`, error.response?.data || error.message);
+    log('ERROR', 'SEND', `To: ${to} | Failed`, error.response?.data || error.message);
     return null;
   }
 }
@@ -233,19 +277,23 @@ app.get('/webhooks/whatsapp', (req, res) => {
   const token = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
 
-  console.log('[WEBHOOK VERIFY] Mode:', mode, 'Token:', token);
-
   if (mode === 'subscribe' && token === VERIFY_TOKEN) {
-    console.log('[WEBHOOK] Verified successfully');
+    log('INFO', 'WEBHOOK', 'Verified successfully');
     return res.status(200).send(challenge);
   }
 
-  console.warn('[WEBHOOK] Verification failed — token mismatch');
+  log('WARN', 'WEBHOOK', `Verification failed — token mismatch (mode=${mode})`);
   return res.sendStatus(403);
 });
 
 // ── Webhook: POST (Incoming messages) ─────────────────────────────────────
 app.post('/webhooks/whatsapp', express.json(), async (req, res) => {
+  // Rate limit check
+  if (!checkRateLimit()) {
+    log('WARN', 'RATE', 'Rate limit exceeded — returning 429');
+    return res.status(429).send('Too many requests — please slow down');
+  }
+
   // Acknowledge receipt immediately
   res.sendStatus(200);
 
@@ -259,54 +307,54 @@ app.post('/webhooks/whatsapp', express.json(), async (req, res) => {
   const statuses = value?.statuses;
   if (statuses && statuses.length > 0) {
     for (const st of statuses) {
-      console.log(`[STATUS] ${st.status} | To: ${st.recipient_id} | Msg: ${(st.id || '').substring(0, 30)}`);
+      log('INFO', 'STATUS', `${st.status} | To: ${st.recipient_id} | Msg: ${(st.id || '').substring(0, 30)}`);
     }
     return;
   }
 
   if (!messages || messages.length === 0) {
-    console.log('[WEBHOOK] No messages or statuses in this update');
+    log('DEBUG', 'WEBHOOK', 'No messages or statuses in this update');
     return;
   }
 
   for (const msg of messages) {
-    const from = msg.from; // sender phone number
+    const from = msg.from;
     const contact = contacts?.[0];
     const name = contact?.profile?.name || 'Unknown';
 
-    // Only handle text messages for now
     if (msg.type === 'text') {
       if (processed_messages.has(msg.id)) { continue; }
       processed_messages.add(msg.id);
-      if (processed_messages.size > 1000) { processed_messages.clear(); }      const text = msg.text.body;
+      if (processed_messages.size > 1000) { processed_messages.clear(); }
+
+      const text = msg.text.body;
       const reply = await getAutoReply(text, from);
 
       logConversation(from, name, text, reply);
 
-      console.log(`[IN] From: ${name} (${from}) | "${text.substring(0, 60)}"` + (reply ? ' → Auto-replied' : ' → Needs human'));
+      const action = reply ? '→ Auto-replied' : '→ Needs human';
+      log('INFO', 'IN', `${name} (${from}) | "${text.substring(0, 60)}" ${action}`);
 
       if (reply) {
         await sendWhatsAppMessage(from, reply);
       } else {
-        // Send "we'll get back to you" for complex queries
         await sendWhatsAppMessage(from, {
-          text: `Thank you for your message, ${name} 🙏\n\nYour enquiry has been noted and a member of the Ting-A-Ling team will get back to you during office hours (07:00 - 15:30, weekdays).\n\nFor urgent matters, please call the office on 035 XXX XXXX.`,
+          text: `Thank you for your message, ${name} 🙏\n\nYour enquiry has been noted and a member of the Ting-A-Ling team will get back to you during office hours (07:00 - 15:30, weekdays).\n\nFor urgent matters, please call the office.`,
           type: 'text'
         });
-        console.log(`[HUMAN] Forwarding ${from} to manual handling`);
+        log('INFO', 'HUMAN', `Forwarding ${from} to manual handling`);
       }
     }
   }
 });
 
-// ── Dashboard: View + Send messages ──────────────────────────────────────
+// ── Dashboard: Send messages ─────────────────────────────────────────────
 app.post('/send', express.json(), async (req, res) => {
   const { to, text } = req.body;
   if (!to || !text) {
     return res.json({ success: false, error: 'Missing phone or message' });
   }
   
-  // Clean the phone number
   let cleanNumber = to.replace(/[^0-9]/g, '');
   if (cleanNumber.startsWith('0')) {
     cleanNumber = '27' + cleanNumber.slice(1);
@@ -316,7 +364,6 @@ app.post('/send', express.json(), async (req, res) => {
   
   const result = await sendWhatsAppMessage(cleanNumber, { text, type: 'text' });
   if (result) {
-    // Log the sent message
     logConversation(cleanNumber, 'Mr D (Dashboard)', text, null);
     res.json({ success: true, id: result.messages?.[0]?.id });
   } else {
@@ -324,18 +371,7 @@ app.post('/send', express.json(), async (req, res) => {
   }
 });
 
-// ── Dashboard v2 — Professional Redesign ──
-app.get('/dashboard', (req, res) => {
-  const convList = Object.values(conversations);
-  convList.sort((a, b) => new Date(b.lastSeen) - new Date(a.lastSeen));
-
-  const totalMsgs = convList.reduce((s, c) => s + c.messages.length, 0);
-  const humanReqs = convList.reduce((s, c) => s + c.humanRequests, 0);
-
-  const html = generateDashboard(convList, totalMsgs, humanReqs);
-  res.send(html);
-});
-
+// ── Static Pages ──────────────────────────────────────────────────────────
 app.get('/privacy-policy', (req, res) => {
   res.sendFile(path.join(__dirname, 'privacy-policy.html'));
 });
@@ -361,7 +397,7 @@ app.get('/sw.js', (req, res) => {
   res.sendFile(path.join(__dirname, 'sw.js'));
 });
 
-// ── Dashboard data API (for background polling) ──────────────────────────
+// ── Dashboard data API (for polling) ─────────────────────────────────────
 app.get('/dashboard-data', (req, res) => {
   const convList = Object.values(conversations);
   res.json({
@@ -371,7 +407,7 @@ app.get('/dashboard-data', (req, res) => {
   });
 });
 
-// ── Conversations API (for SPA dashboard) ────────────────────────────────
+// ── Conversations API ─────────────────────────────────────────────────────
 app.get('/api/conversations', (req, res) => {
   const convList = Object.values(conversations);
   convList.sort((a, b) => new Date(b.lastSeen) - new Date(a.lastSeen));
@@ -395,17 +431,16 @@ app.get('/status', (req, res) => {
   });
 });
 
-// ── SPA Dashboard (TailAdmin React build) — catch-all for non-API routes ──
+// ── SPA Dashboard — catch-all for non-API routes ──────────────────────────
 app.use(express.static(path.join(__dirname, 'spa-dashboard')));
-app.get(/^\/(?!api\/|dashboard|status|send|privacy|terms|data|logo|manifest|sw|webhooks).*/, (req, res) => {
+app.get(/^\/(?!api\/|status|send|privacy|terms|data|logo|manifest|sw|webhooks).*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'spa-dashboard', 'index.html'));
 });
 
 // ── Start server ──────────────────────────────────────────────────────────
 app.listen(PORT, '127.0.0.1', () => {
-  console.log(`🚀 Ting-A-Ling WhatsApp Server running on port ${PORT}`);
-  console.log(`📞 Phone Number ID: ${PHONE_NUMBER_ID}`);
-  console.log(`🔗 Webhook URL: http://YOUR_IP:${PORT}/webhooks/whatsapp`);
-  console.log(`📊 Dashboard: http://localhost:${PORT}/dashboard`);
-  console.log(`ℹ️  Status: http://localhost:${PORT}/status`);
+  log('INFO', 'INIT', `Server running on port ${PORT}`);
+  log('INFO', 'INIT', `Phone Number ID: ${PHONE_NUMBER_ID}`);
+  log('INFO', 'INIT', `Webhook: https://whatsapp.autoeffortless.com/webhooks/whatsapp`);
+  log('INFO', 'INIT', `Status: http://localhost:${PORT}/status`);
 });

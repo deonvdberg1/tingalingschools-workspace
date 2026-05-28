@@ -29,7 +29,12 @@ This is where I keep what matters.
 - **WABA:** D&S Comp (ID: 1124652154068427 / real: 996583169477166)
 - **App:** Ting-A-Ling Connect (ID: 1771774490471649)
 - **Server:** Mac mini M4, port 3000 ✅
-- **Tunnel:** Cloudflare trycloudflare — auto-updates webhook ✅
+- **Tunnel:** Cloudflare **named tunnel** (tingaling) — permanent URL ✅
+- **Tunnel URL:** `https://whatsapp.autoeffortless.com` (no more ephemeral trycloudflare)
+- **DNS:** Ionos→Cloudflare delegation propagated ✅ (May 28, ~7 days)
+- **DNS routes:** `whatsapp.autoeffortless.com` + `tingaling.autoeffortless.com` → tunnel
+- **LaunchAgent:** `com.tingaling.cloudflared-named` (auto-starts on boot)
+- **Old trycloudflare:** Fully removed (plists deleted, scripts disabled)
 - **Auto-reply:** Fees, hours, uniform, absentee, events, contact, enrolment, greetings ✅
 - **PDF statements:** Built and tested ✅
 - **Display name:** "Tingaling" — ✅ APPROVED (2026-05-21)
@@ -38,7 +43,7 @@ This is where I keep what matters.
 ## Infrastructure
 
 - WhatsApp server LaunchAgent: ✅ (auto-starts)
-- Tunnel auto-setup script: ✅ (auto-updates Meta webhook)
+- Tunnel auto-start: ✅ Named LaunchAgent (com.tingaling.cloudflared-named)
 - Auto-restart after power loss: ✅ Enabled
 - Log rotation: ✅ Set
 - Dedup webhook: ✅ Added
@@ -112,13 +117,13 @@ Cloudflare tunnel token  → secrets/cert.pem + 41e8685d-...json
 ## Risks
 
 - ~~Display name PENDING_REVIEW~~ ✅ Approved
-- **Named tunnel:** DNS delegation stuck (Ionos→Cloudflare nameservers not propagating, Day 5+)
+- ~~Named tunnel: DNS delegation~~ ✅ RESOLVED (propagated May 28)
+- ~~Ephemeral tunnel URL~~ ✅ RESOLVED (permanent named tunnel)
 - Domains API: returns 500 (product not provisioned for this account)
 - Primary Business Location greyed out in Meta
 - No UPS for load shedding
 - No payment method set in Meta
 - Messaging limit: LIMITED (250/day)
-- Tunnel URL changes on every restart (trycloudflare ephemeral)
 
 ## 🔒 Security: Admin Whitelist Deployed (2026-05-26)
 
@@ -138,7 +143,7 @@ Cloudflare tunnel token  → secrets/cert.pem + 41e8685d-...json
 
 ## What's Next
 
-1. **Named tunnel** — Mr D to check Ionos web portal for NS delegation
+1. ~~Named tunnel~~ ✅ RESOLVED — DNS delegation propagated, tunnel on permanent URL
 2. **Company registration** — Register AutoEffortless at CIPC
 3. Parent opt-in campaign — need parent contact list from Ting-A-Ling
 4. Demo video polish
@@ -146,4 +151,4 @@ Cloudflare tunnel token  → secrets/cert.pem + 41e8685d-...json
 
 ---
 
-*Last updated 2026-05-26 09:50 SAST — Security upgrade: admin whitelist + template-only replies for non-admin WhatsApp users. 17 templates seeded.*
+*Last updated 2026-05-28 09:23 SAST — Named tunnel live on permanent URL. DNS propagated. trycloudflare fully removed.*

@@ -73,9 +73,41 @@ function buildSystemPrompt() {
 ${KNOWLEDGE}`;
 }
 
-// ── Conversation memory ───────────────────────────────────────────────────
-const conversations = new Map();
+// ── Conversation memory (persisted to disk) ──────────────────────────────────
+const AI_CONV_FILE = path.join(__dirname, 'ai-conversations.json');
 const MAX_HISTORY = 20;
+
+function loadAIConversations() {
+  try {
+    if (fs.existsSync(AI_CONV_FILE)) {
+      const data = fs.readFileSync(AI_CONV_FILE, 'utf8');
+      const parsed = JSON.parse(data);
+      // Convert back to Map
+      const map = new Map();
+      for (const [key, val] of Object.entries(parsed)) {
+        map.set(key, val);
+      }
+      return map;
+    }
+  } catch (e) {
+    console.error('[TINGAI] Failed to load conversation history:', e.message);
+  }
+  return new Map();
+}
+
+function saveAIConversations() {
+  try {
+    const obj = {};
+    for (const [key, val] of conversations) {
+      obj[key] = val;
+    }
+    fs.writeFileSync(AI_CONV_FILE, JSON.stringify(obj, null, 2), 'utf8');
+  } catch (e) {
+    console.error('[TINGAI] Failed to save conversation history:', e.message);
+  }
+}
+
+const conversations = loadAIConversations();
 
 function getHistory(phone) {
   if (!conversations.has(phone)) conversations.set(phone, []);
@@ -159,6 +191,8 @@ async function getAIAutoReply(messageText, fromNumber) {
     history.push({ role: 'user', content: messageText });
     history.push({ role: 'assistant', content: reply });
     if (history.length > MAX_HISTORY) history.splice(0, history.length - MAX_HISTORY);
+    // Persist after every AI response
+    saveAIConversations();
     return { text: reply, type: 'text', source: 'ai' };
   }
 
