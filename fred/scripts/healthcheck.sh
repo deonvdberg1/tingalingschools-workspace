@@ -3,8 +3,8 @@
 # Checks: server, tunnel, API, webhook, disk
 # Exits: 0 = all good, 1 = warning, 2 = critical
 
+PERMANENT_URL="https://whatsapp.autoeffortless.com"
 ENV_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/.env"
-TUNNEL_URL_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/tunnel-url.txt"
 LOG_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/healthcheck.log"
 
 # Extract token safely
@@ -17,30 +17,29 @@ echo "[$(date)] Health check running..." >> "$LOG_FILE"
 
 # 1. Server check
 if curl -sf http://localhost:3000/status > /dev/null 2>&1; then
-  echo "  [OK] Server running" >> "$LOG_FILE"
+  echo "  [OK] WhatsApp server running" >> "$LOG_FILE"
 else
-  echo "  [FAIL] Server DOWN" >> "$LOG_FILE"
+  echo "  [FAIL] WhatsApp server DOWN" >> "$LOG_FILE"
   FAILURES="$FAILURES server"
 fi
 
-# 2. Tunnel check
-TUNNEL_URL=$(cat "$TUNNEL_URL_FILE" 2>/dev/null)
-if [ -n "$TUNNEL_URL" ]; then
-  # Try normal DNS first, fall back to direct Cloudflare IP resolve (DNS cache can be stale)
-  if curl -sf --connect-timeout 5 "$TUNNEL_URL/status" > /dev/null 2>&1; then
-    echo "  [OK] Tunnel live: $TUNNEL_URL" >> "$LOG_FILE"
-  elif curl -sf --connect-timeout 8 --resolve "$(echo $TUNNEL_URL | sed 's|https://||;s|/.*||'):443:104.16.231.132" "$TUNNEL_URL/status" > /dev/null 2>&1; then
-    echo "  [OK] Tunnel live (via alt DNS): $TUNNEL_URL" >> "$LOG_FILE"
-  else
-    echo "  [FAIL] Tunnel DOWN: $TUNNEL_URL" >> "$LOG_FILE"
-    FAILURES="$FAILURES tunnel"
-  fi
+# 2. Named tunnel via permanent URL
+if curl -sf --connect-timeout 10 "$PERMANENT_URL/status" > /dev/null 2>&1; then
+  echo "  [OK] Named tunnel live: $PERMANENT_URL" >> "$LOG_FILE"
 else
-  echo "  [FAIL] No tunnel URL file" >> "$LOG_FILE"
+  echo "  [FAIL] Named tunnel DOWN: $PERMANENT_URL" >> "$LOG_FILE"
   FAILURES="$FAILURES tunnel"
 fi
 
-# 3. API check — test Meta API
+# 3. Dashboard API
+if curl -sf http://localhost:3001/api/health > /dev/null 2>&1; then
+  echo "  [OK] Dashboard API running" >> "$LOG_FILE"
+else
+  echo "  [FAIL] Dashboard API DOWN" >> "$LOG_FILE"
+  FAILURES="$FAILURES dashboard-api"
+fi
+
+# 4. Meta API check
 if [ -n "$TOKEN" ]; then
   API_RESULT=$(curl -s -X GET \
     -H "Authorization: Bearer $TOKEN" \
@@ -48,18 +47,27 @@ if [ -n "$TOKEN" ]; then
 
   if echo "$API_RESULT" | grep -q '"quality_rating"'; then
     Q_RATING=$(echo "$API_RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('quality_rating','?'))" 2>/dev/null)
-    echo "  [OK] API responding — Quality: $Q_RATING" >> "$LOG_FILE"
+    echo "  [OK] Meta API — Quality: $Q_RATING" >> "$LOG_FILE"
   else
     ERROR_MSG=$(echo "$API_RESULT" | python3 -c "import sys,json; print(json.load(sys.stdin).get('error',{}).get('message','unknown'))" 2>/dev/null)
-    echo "  [FAIL] API error: $ERROR_MSG" >> "$LOG_FILE"
-    FAILURES="$FAILURES api"
+    echo "  [FAIL] Meta API error: $ERROR_MSG" >> "$LOG_FILE"
+    FAILURES="$FAILURES meta-api"
   fi
 else
   echo "  [FAIL] No token found in .env" >> "$LOG_FILE"
   FAILURES="$FAILURES token"
 fi
 
-# 4. Disk check
+# 5. Webhook challenge test
+WEBHOOK_CHALLENGE=$(curl -s -o /dev/null -w "%{http_code}" "$PERMANENT_URL/webhooks/whatsapp?hub.mode=subscribe&hub.verify_token=tingaling-schools-verify-2026&hub.challenge=ok" 2>/dev/null)
+if [ "$WEBHOOK_CHALLENGE" = "200" ]; then
+  echo "  [OK] Webhook challenge passed" >> "$LOG_FILE"
+else
+  echo "  [FAIL] Webhook challenge failed (HTTP $WEBHOOK_CHALLENGE)" >> "$LOG_FILE"
+  FAILURES="$FAILURES webhook"
+fi
+
+# 6. Disk check
 DISK=$(df -h / | tail -1 | awk '{print $5}' | sed 's/%//')
 if [ "$DISK" -gt 85 ]; then
   echo "  [FAIL] Disk critical at ${DISK}%" >> "$LOG_FILE"
@@ -69,6 +77,14 @@ elif [ "$DISK" -gt 75 ]; then
   WARNINGS="$WARNINGS disk"
 else
   echo "  [OK] Disk at ${DISK}%" >> "$LOG_FILE"
+fi
+
+# 7. LaunchAgent check
+if launchctl list | grep -q "com.tingaling.cloudflared-named"; then
+  echo "  [OK] Named tunnel LaunchAgent loaded" >> "$LOG_FILE"
+else
+  echo "  [FAIL] Named tunnel LaunchAgent not loaded" >> "$LOG_FILE"
+  FAILURES="$FAILURES launchagent"
 fi
 
 # Keep last 500 lines in log
@@ -84,6 +100,6 @@ elif [ -n "$WARNINGS" ]; then
   echo "WARNING:$WARNINGS"
   exit 1
 else
-  echo "[$(date)] STATUS: OK — All checks passed" >> "$LOG_FILE"
+  echo "[$(date)] STATUS: OK — All 7 checks passed" >> "$LOG_FILE"
   exit 0
 fi

@@ -603,6 +603,44 @@ app.put('/api/clients/:id/knowledge', requireAuth, (req, res) => {
   res.json({ success: true });
 });
 
+// ── Realtime SSE endpoint ──
+app.get('/api/realtime', (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    'Access-Control-Allow-Origin': '*',
+  });
+  
+  const interval = setInterval(async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/conversations');
+      if (!response.ok) { throw new Error('Not OK'); }
+      
+      const conversations = await response.json();
+      
+      const totalMsgs = conversations.reduce((s, c) => s + (c.messages?.length || 0), 0);
+      const totalAuto = conversations.reduce((s, c) => s + (c.autoReplied || 0), 0);
+      const recentChanges = conversations.filter(c => new Date(c.lastSeen) > Date.now() - 30000).length;
+      
+      res.write('data: ' + JSON.stringify({
+        conversations: conversations.length,
+        total_messages: totalMsgs,
+        auto_reply_rate: totalMsgs > 0 ? Math.round((totalAuto / totalMsgs) * 100) : 0,
+        recent_activity: recentChanges,
+        server_status: 'online',
+        timestamp: new Date().toISOString(),
+      }) + '\n\n');
+    } catch (e) {
+      // Silently retry on next tick — no need to notify client of transient errors
+    }
+  }, 5000);
+  
+  req.on('close', () => {
+    clearInterval(interval);
+  });
+});
+
 // ── Health ──
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', db: db ? 'connected' : 'disconnected' });
