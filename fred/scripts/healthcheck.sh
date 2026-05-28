@@ -88,6 +88,20 @@ else
 fi
 
 # Keep last 500 lines in log
+# Send WhatsApp alert on failures
+if [ -n "$FAILURES" ]; then
+  ADMIN_NUMBER="27615274429"
+  TOKEN=$(grep -E "^WHATSAPP_TOKEN=" "$ENV_FILE" 2>/dev/null | sed "s/WHATSAPP_TOKEN=//")
+  PHONE_ID=$(grep -E "^PHONE_NUMBER_ID=" "$ENV_FILE" 2>/dev/null | sed "s/PHONE_NUMBER_ID=//")
+  if [ -n "$TOKEN" ] && [ -n "$PHONE_ID" ]; then
+    ALERT_MSG="🚨 *AutoEffortless Alert*\nService(s) DOWN:$FAILURES\nTime: $(date)"
+    curl -s -X POST "https://graph.facebook.com/v22.0/$PHONE_ID/messages" 
+      -H "Authorization: Bearer $TOKEN" 
+      -H "Content-Type: application/json" 
+      -d "{"messaging_product":"whatsapp","to":"$ADMIN_NUMBER","type":"text","text":{"body":"$ALERT_MSG"}}" > /dev/null 2>&1
+    echo "  [ALERT] WhatsApp sent to $ADMIN_NUMBER" >> "$LOG_FILE"
+  fi
+fi
 tail -n 500 "$LOG_FILE" > "${LOG_FILE}.tmp" 2>/dev/null && mv "${LOG_FILE}.tmp" "$LOG_FILE"
 
 # Report summary

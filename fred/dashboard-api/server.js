@@ -627,7 +627,12 @@ app.put('/api/clients/:id/knowledge', requireAuth, (req, res) => {
   try {
     const kbFile = path.join(__dirname, '..', 'whatsapp-server', 'tingaling-knowledge-base.md');
     fs.writeFileSync(kbFile, knowledge_base, 'utf8');
-    console.log(`[KB] Saved to file for client ${req.params.id}`);
+    console.log(`[KB] Saved to whatsapp-server for client ${req.params.id}`);
+    
+    // 4. KB sync: also write to the TingAI agent's workspace
+    const agentKbFile = path.join(__dirname, '..', '..', 'tingai', 'tingaling-knowledge-base.md');
+    fs.writeFileSync(agentKbFile, knowledge_base, 'utf8');
+    console.log(`[KB] Synced to agent workspace for client ${req.params.id}`);
   } catch (e) {
     console.error(`[KB] Failed to write file: ${e.message}`);
   }

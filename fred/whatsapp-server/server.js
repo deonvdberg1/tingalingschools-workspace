@@ -38,10 +38,13 @@ const TOKEN = process.env.WHATSAPP_TOKEN;
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 const VERIFY_TOKEN = process.env.VERIFY_TOKEN || 'tingaling-verify';
 
-// Admin numbers (reserved for future selective features)
+// Admin numbers
 const ADMIN_NUMBERS = new Set([
   '27615274429',  // Mr D
 ]);
+
+// Handoff forwarding — who gets notified when AI can't answer
+const HANDOFF_NUMBER = '27615274429'; // Mr D (configurable)
 
 const META_API = `https://graph.facebook.com/v22.0/${PHONE_NUMBER_ID}/messages`;
 
@@ -391,14 +394,30 @@ app.post('/webhooks/whatsapp', express.json(), async (req, res) => {
       if (reply) {
         await sendWhatsAppMessage(from, reply);
       } else {
-        // Try to get contact info from the resolved client
+        // 3. Human handoff — notify admin when AI can't answer
         const clientForFallback = await resolveClient((from || '').replace(/[^0-9]/g, ''));
         const fallbackMsg = clientForFallback
           ? `Thank you for your message 🙏\n\nYour enquiry has been noted and a member of the ${clientForFallback.clientName} team will get back to you during office hours.\n\nFor urgent matters, please call ${clientForFallback.contactPhone || 'the office'}.`
           : `Thank you for your message 🙏\n\nYour enquiry has been noted. A team member will get back to you shortly.`;
         await sendWhatsAppMessage(from, { text: fallbackMsg, type: 'text' });
         log('INFO', 'HUMAN', `Forwarding ${from} to manual handling`);
+        
+        // Forward the parent's message to the handoff number
+        await sendWhatsAppMessage(HANDOFF_NUMBER, {
+          text: `🔔 *Human handoff required*\n\nFrom: ${name} (${from})\nMessage: "${text.substring(0, 200)}"\n\nReply to this number to respond to the parent.`,
+          type: 'text'
+        });
+        log('INFO', 'HANDOFF', `Forwarded ${from} to ${HANDOFF_NUMBER}`);
       }
+    } else {
+      // Non-text message types — reply with a friendly hint
+      const typeLabels = { image: 'an image', audio: 'a voice note', voice: 'a voice note', video: 'a video', document: 'a document' };
+      const typeLabel = typeLabels[msg.type] || 'a message';
+      log('INFO', 'IN', `${name} (${from}) sent ${typeLabel} — hint sent`);
+      await sendWhatsAppMessage(from, {
+        text: `Thanks for sending ${typeLabel} 😊 I can only read text messages at the moment. If you have a question, please type it out and I'll be happy to help!`,
+        type: 'text'
+      });
     }
   }
 });
