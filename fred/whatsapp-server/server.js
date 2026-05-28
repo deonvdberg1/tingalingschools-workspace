@@ -338,10 +338,12 @@ app.post('/webhooks/whatsapp', express.json(), async (req, res) => {
       if (reply) {
         await sendWhatsAppMessage(from, reply);
       } else {
-        await sendWhatsAppMessage(from, {
-          text: `Thank you for your message, ${name} 🙏\n\nYour enquiry has been noted and a member of the Ting-A-Ling team will get back to you during office hours (07:00 - 15:30, weekdays).\n\nFor urgent matters, please call the office.`,
-          type: 'text'
-        });
+        // Try to get contact info from the resolved client
+        const clientForFallback = await resolveClient((from || '').replace(/[^0-9]/g, ''));
+        const fallbackMsg = clientForFallback
+          ? `Thank you for your message 🙏\n\nYour enquiry has been noted and a member of the ${clientForFallback.clientName} team will get back to you during office hours.\n\nFor urgent matters, please call ${clientForFallback.contactPhone || 'the office'}.`
+          : `Thank you for your message 🙏\n\nYour enquiry has been noted. A team member will get back to you shortly.`;
+        await sendWhatsAppMessage(from, { text: fallbackMsg, type: 'text' });
         log('INFO', 'HUMAN', `Forwarding ${from} to manual handling`);
       }
     }

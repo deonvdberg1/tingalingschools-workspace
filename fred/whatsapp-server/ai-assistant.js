@@ -1,6 +1,6 @@
-// Ting-A-Ling AI Assistant v5
-// Uses DeepSeek via OpenClaw Gateway with light-context isolation
-// Prevents Fred's agent context from leaking into school responses
+// AutoEffortless AI Assistant v6 — Multi-Client
+// Uses DeepSeek via OpenClaw Gateway with per-client knowledge bases
+// Accepts client context so each business gets its own AI personality
 
 const http = require('http');
 const fs = require('fs');
@@ -9,69 +9,6 @@ const path = require('path');
 const GATEWAY_URL = 'http://localhost:18789/v1/chat/completions';
 const MODEL = 'openclaw/default';
 const BACKEND_MODEL = 'deepseek/deepseek-v4-flash';
-
-// ═══════════════════════════════════════════════════════════════════════════
-// KNOWLEDGE BASE — loaded from external file for easy editing
-// Edit: tingaling-knowledge-base.md
-// ═══════════════════════════════════════════════════════════════════════════
-
-let KNOWLEDGE = '';
-
-function loadKnowledgeBase() {
-  const kbPath = path.join(__dirname, 'tingaling-knowledge-base.md');
-  try {
-    const content = fs.readFileSync(kbPath, 'utf8');
-    // Extract the knowledge content (everything except the AI rules section at the bottom)
-    const match = content.match(/## ⚙️ AI ASSISTANT RULES/);
-    if (match) {
-      KNOWLEDGE = content.substring(0, match.index);
-    } else {
-      KNOWLEDGE = content;
-    }
-    console.log(`[TINGAI] Knowledge base loaded (${KNOWLEDGE.length} chars from ${kbPath})`);
-  } catch (e) {
-    console.error(`[TINGAI] Failed to load knowledge base: ${e.message}`);
-    KNOWLEDGE = `Ting-A-Ling Schools in Meerensee, Richards Bay.
-Contact: info@tingalingschools.com`;
-  }
-}
-
-// Load on startup
-loadKnowledgeBase();
-
-// Watch for changes to the knowledge base file
-try {
-  fs.watchFile(path.join(__dirname, 'tingaling-knowledge-base.md'), (curr, prev) => {
-    if (curr.mtime !== prev.mtime) {
-      console.log('[TINGAI] Knowledge base changed — reloading...');
-      loadKnowledgeBase();
-    }
-  });
-} catch (e) {
-  // File watching not critical
-}
-
-// ── System prompt with embedded KB ────────────────────────────────────────
-// Built fresh every call so KB changes take effect immediately
-function buildSystemPrompt() {
-  return `You are TingAI, the official AI assistant for Ting-A-Ling Schools in Meerensee, Richards Bay, South Africa.
-
-## ABSOLUTE RULES (every response MUST follow these):
-1. You have NO knowledge other than what is written below in the KNOWLEDGE section.
-2. READ the KNOWLEDGE section for EVERY response. Only answer from the text below.
-3. Never add commentary like "I wish I had" or "unfortunately" or "I hear you" or "I understand".
-4. If the KNOWLEDGE section does not contain the answer, say: "I don't have that specific information. Please contact the school office at info@tingalingschools.com, 0615274429 / 0724561282, or visit during office hours (07:00-15:30 weekdays) and they'll be happy to help."
-5. Whenever the answer differs between the Pre-Primary School and the Special Needs School, first ask which school.
-6. Keep responses brief — 2 to 3 sentences maximum.
-7. Use South African English.
-8. Never make up phone numbers, addresses, amounts, or any details.
-9. If a parent asks to speak to a person or sounds frustrated: give them the office contact info.
-10. Use emojis sparingly (one per message maximum).
-11. Never address anyone by name unless they tell you their name first.
-
-## KNOWLEDGE
-${KNOWLEDGE}`;
-}
 
 // ── Conversation memory (persisted to disk) ──────────────────────────────────
 const AI_CONV_FILE = path.join(__dirname, 'ai-conversations.json');
@@ -82,7 +19,6 @@ function loadAIConversations() {
     if (fs.existsSync(AI_CONV_FILE)) {
       const data = fs.readFileSync(AI_CONV_FILE, 'utf8');
       const parsed = JSON.parse(data);
-      // Convert back to Map
       const map = new Map();
       for (const [key, val] of Object.entries(parsed)) {
         map.set(key, val);
@@ -90,7 +26,7 @@ function loadAIConversations() {
       return map;
     }
   } catch (e) {
-    console.error('[TINGAI] Failed to load conversation history:', e.message);
+    console.error('[AI] Failed to load conversation history:', e.message);
   }
   return new Map();
 }
@@ -103,7 +39,7 @@ function saveAIConversations() {
     }
     fs.writeFileSync(AI_CONV_FILE, JSON.stringify(obj, null, 2), 'utf8');
   } catch (e) {
-    console.error('[TINGAI] Failed to save conversation history:', e.message);
+    console.error('[AI] Failed to save conversation history:', e.message);
   }
 }
 
@@ -112,6 +48,36 @@ const conversations = loadAIConversations();
 function getHistory(phone) {
   if (!conversations.has(phone)) conversations.set(phone, []);
   return conversations.get(phone);
+}
+
+// ── System prompt builder — fully dynamic per client ──────────────────────
+function buildSystemPrompt(clientContext) {
+  const name = clientContext?.clientName || 'our business';
+  const email = clientContext?.contactEmail || '';
+  const phone = clientContext?.contactPhone || '';
+  const kb = clientContext?.knowledge_base || '';
+  const type = clientContext?.clientType || 'business';
+
+  // Extract just the knowledge content (exclude AI rules section if present)
+  const kbMatch = kb.match(/## ⚙️ AI ASSISTANT RULES/);
+  const cleanKb = kbMatch ? kb.substring(0, kbMatch.index) : kb;
+
+  return `You are the AI assistant for ${name}.
+
+## ABSOLUTE RULES (every response MUST follow these):
+1. You have NO knowledge other than what is written below in the KNOWLEDGE section below.
+2. READ the KNOWLEDGE section for EVERY response. Only answer from the text below.
+3. Never add commentary like "I wish I had" or "unfortunately" or "I hear you" or "I understand".
+4. If the KNOWLEDGE section does not contain the answer, say: "I don't have that specific information. Please contact ${name} at ${email || 'the office'}, ${phone || ''} during office hours and they'll be happy to help."
+5. Keep responses brief — 2 to 3 sentences maximum.
+6. Use South African English.
+7. Never make up phone numbers, addresses, amounts, or any details.
+8. If a person asks to speak to a human or sounds frustrated: give them the contact info.
+9. Use emojis sparingly (one per message maximum).
+10. Never address anyone by name unless they tell you their name first.
+
+## KNOWLEDGE
+${cleanKb || 'No specific knowledge base provided. Please direct queries to the contact information above.'}`;
 }
 
 function callDeepSeek(messages) {
@@ -133,7 +99,7 @@ function callDeepSeek(messages) {
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(data),
         'x-openclaw-model': BACKEND_MODEL,
-        'x-openclaw-light-context': 'true'  // Prevents Fred context leakage
+        'x-openclaw-light-context': 'true'
       }
     }, res => {
       let body = '';
@@ -144,13 +110,13 @@ function callDeepSeek(messages) {
           const content = j.choices?.[0]?.message?.content;
           resolve(content || null);
         } catch(e) {
-          console.error('[TINGAI] Parse error:', e.message);
+          console.error('[AI] Parse error:', e.message);
           resolve(null);
         }
       });
     });
     req.on('error', (e) => {
-      console.error('[TINGAI] Request error:', e.message);
+      console.error('[AI] Request error:', e.message);
       resolve(null);
     });
     req.write(data);
@@ -158,11 +124,10 @@ function callDeepSeek(messages) {
   });
 }
 
-function buildMessages(phone, message) {
+function buildMessages(phone, message, clientContext) {
   const history = getHistory(phone);
-  const msgs = [{ role: 'system', content: buildSystemPrompt() }];
+  const msgs = [{ role: 'system', content: buildSystemPrompt(clientContext) }];
 
-  // Add recent conversation history for context
   const recent = history.slice(-6);
   for (const m of recent) {
     msgs.push({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content });
@@ -173,17 +138,19 @@ function buildMessages(phone, message) {
 }
 
 // ── Public API ────────────────────────────────────────────────────────────
-async function getAIAutoReply(messageText, fromNumber) {
+async function getAIAutoReply(messageText, fromNumber, clientContext) {
   const msg = (messageText || '').toLowerCase().trim();
 
   // Opt-out handled by server, but just in case
   if (/^stop$|^unsubscribe$|^opt.?out$|^cancel$/.test(msg)) return null;
   if (/^start$|^resubscribe$|^opt.?in$/i.test(msg)) return null;
 
-  // Always reload knowledge base from file before every response
-  loadKnowledgeBase();
+  if (!clientContext) {
+    console.error('[AI] No client context provided — cannot generate response');
+    return null;
+  }
 
-  const messages = buildMessages(fromNumber, messageText);
+  const messages = buildMessages(fromNumber, messageText, clientContext);
   const reply = await callDeepSeek(messages);
 
   if (reply && reply.length > 0) {
@@ -191,7 +158,6 @@ async function getAIAutoReply(messageText, fromNumber) {
     history.push({ role: 'user', content: messageText });
     history.push({ role: 'assistant', content: reply });
     if (history.length > MAX_HISTORY) history.splice(0, history.length - MAX_HISTORY);
-    // Persist after every AI response
     saveAIConversations();
     return { text: reply, type: 'text', source: 'ai' };
   }

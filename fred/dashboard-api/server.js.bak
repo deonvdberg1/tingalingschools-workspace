@@ -158,12 +158,12 @@ app.get('/api/clients/:id', requireAuth, (req, res) => {
 });
 
 app.post('/api/clients', requireAuth, requireRole('overlord'), (req, res) => {
-  const { name, phone, email, status, notes, whatsapp_number, client_type, ai_enabled } = req.body;
+  const { name, phone, email, status, notes, whatsapp_number, client_type } = req.body;
   if (!name) return res.status(400).json({ error: 'Name is required' });
   
   run(
-    'INSERT INTO clients (name, phone, email, status, notes, whatsapp_number, client_type, ai_enabled) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-    [name, phone || '', email || '', status || 'active', notes || '', whatsapp_number || '', client_type || 'school', ai_enabled ? 1 : 0]
+    'INSERT INTO clients (name, phone, email, status, notes, whatsapp_number, client_type) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    [name, phone || '', email || '', status || 'active', notes || '', whatsapp_number || '', client_type || 'school']
   );
   saveDb();
   
@@ -195,7 +195,6 @@ app.put('/api/clients/:id', (req, res) => {
   if (onboarding_opt_in !== undefined) { fields.push('onboarding_opt_in = ?'); values.push(onboarding_opt_in); }
   if (onboarding_website !== undefined) { fields.push('onboarding_website = ?'); values.push(onboarding_website); }
   if (health_status !== undefined) { fields.push('health_status = ?'); values.push(health_status); }
-  if (ai_enabled !== undefined) { fields.push('ai_enabled = ?'); values.push(ai_enabled ? 1 : 0); }
   
   if (fields.length === 0) return res.status(400).json({ error: 'No fields to update' });
   
@@ -314,36 +313,6 @@ app.get('/api/stats', async (req, res) => {
     total_clients: total,
     active_clients: active,
     ...wa,
-  });
-});
-
-// ── PHONE LOOKUP — resolve a phone number to a client ──
-app.get("/api/phone-lookup/:number", (req, res) => {
-  const clean = req.params.number.replace(/[^0-9]/g, "");
-  if (!clean || clean.length < 6) {
-    return res.status(400).json({ error: "Invalid phone number" });
-  }
-  
-  const clients = query("SELECT * FROM clients WHERE status = 'active'");
-  const match = clients.find(c => {
-    const wa = (c.whatsapp_number || "").replace(/[^0-9]/g, "");
-    const ph = (c.phone || "").replace(/[^0-9]/g, "");
-    return wa === clean || ph === clean;
-  });
-  
-  if (!match) {
-    return res.status(404).json({ error: "No client found for this number" });
-  }
-  
-  res.json({
-    client_id: match.id,
-    client_name: match.name,
-    client_type: match.client_type || "school",
-    health_status: match.health_status || "pending",
-    ai_enabled: match.ai_enabled || false,
-    knowledge_base: match.knowledge_base || "",
-    contact_phone: match.phone || "",
-    contact_email: match.email || "",
   });
 });
 
