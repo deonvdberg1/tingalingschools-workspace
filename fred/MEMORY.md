@@ -140,7 +140,8 @@ Cloudflare tunnel token  → secrets/cert.pem + 41e8685d-...json
 - **Mr D agreed:** Registering AutoEffortless as a Pty Ltd is the path forward
 - **Why:** Meta WABA verification — AutoEffortless as a managed services provider can display client brand names under its own WABA
 - **Alternative rejected:** Using D&S Comp WABA for all clients (Meta may reject display names not matching the business)
-- **Next step:** CIPC registration + new Meta WABA under AutoEffortless
+- **Status:** ✅ CIPC approved — AutoEffortless (Pty) Ltd registered
+- **Next step:** Open Meta WABA under AutoEffortless
 
 ## 🏗️ Architecture Decision: Per-Client AI Agents (2026-05-28)
 
@@ -206,11 +207,11 @@ Each client agent has:
 
 1. ~~Named tunnel~~ ✅ RESOLVED
 2. ~~Multi-client refactor~~ ✅ RESOLVED
-3. **Company registration** — CIPC lodged, waiting on approval
+3. ~~Company registration~~ ✅ CIPC APPROVED — AutoEffortless (Pty) Ltd registered
 4. **UPS purchase** — R1,293 APC 650VA (Takealot)
 5. Parent opt-in campaign — need parent contact list from Ting-A-Ling
 6. **Client #2 onboarding** — when Mr D brings in next client
 
 ---
 
-*Last updated 2026-05-28 09:23 SAST — Named tunnel live on permanent URL. DNS propagated. trycloudflare fully removed.*
+*Last updated 2026-05-28 18:45 SAST — CIPC approved. AutoEffortless registered. POPIA docs drafted.*
