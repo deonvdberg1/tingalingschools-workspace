@@ -216,6 +216,72 @@ app.delete('/api/clients/:id', requireAuth, requireRole('overlord'), (req, res) 
   res.json({ success: true });
 });
 
+// ── MESSAGE SYNC (from WhatsApp server) ──
+app.post('/api/messages/sync', (req, res) => {
+  const { client_id, phone, name, direction, text, timestamp } = req.body;
+  
+  if (!phone || !direction || !timestamp) {
+    return res.status(400).json({ error: 'phone, direction, and timestamp are required' });
+  }
+  
+  run(
+    'INSERT INTO messages (client_id, phone, name, direction, text, timestamp) VALUES (?, ?, ?, ?, ?, ?)',
+    [client_id || null, phone, name || 'Unknown', direction, text || '', timestamp]
+  );
+  saveDb();
+  
+  res.json({ success: true });
+});
+
+// ── SYNCED CONVERSATIONS (read from dashboard DB) ──
+app.get('/api/messages/conversations', (req, res) => {
+  const rows = query(
+    `SELECT phone, name, direction, text, timestamp, client_id
+     FROM messages
+     ORDER BY timestamp DESC
+     LIMIT 10000`
+  );
+  
+  // Group by phone number
+  const grouped = {};
+  for (const row of rows) {
+    if (!grouped[row.phone]) {
+      grouped[row.phone] = {
+        name: row.name,
+        phone: row.phone,
+        client_id: row.client_id,
+        messages: [],
+        autoReplied: 0,
+        humanRequests: 0,
+        firstSeen: row.timestamp,
+        lastSeen: row.timestamp
+      };
+    }
+    const conv = grouped[row.phone];
+    conv.messages.push({
+      direction: row.direction,
+      text: row.text,
+      timestamp: row.timestamp
+    });
+    if (row.direction === 'out') conv.autoReplied++;
+    else conv.humanRequests++;
+    if (row.timestamp < conv.firstSeen) conv.firstSeen = row.timestamp;
+    if (row.timestamp > conv.lastSeen) conv.lastSeen = row.timestamp;
+  }
+  
+  // Sort conversations by lastSeen descending
+  const result = Object.values(grouped);
+  result.sort((a, b) => new Date(b.lastSeen) - new Date(a.lastSeen));
+  
+  // Cap messages per conversation at 500
+  for (const conv of result) {
+    conv.messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    conv.messages = conv.messages.slice(-500);
+  }
+  
+  res.json(result);
+});
+
 // ── PROFILE ──
 
 app.get('/api/profile', (req, res) => {

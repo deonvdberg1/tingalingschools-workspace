@@ -1,6 +1,15 @@
 # Heartbeat Monitor
 # Fred checks these on every session start
 
+## 2026-05-29 08:50 SAST — Inbound Monitoring + Chat Persistence + Crontab
+✅ Message cap raised 50→500
+✅ SQLite sync live — messages persist in dashboard DB
+✅ Inbound Watchman running every 5 min (alerts if silent >10 min)
+✅ Health check speedup: every 15 min (was 2h)
+✅ Hourly backup via crontab
+✅ Still needed: Better Uptime signup (requires browser)
+✅ Still needed: AutoEffortless email setup
+
 ## 2026-05-28 10:47 SAST — Multi-Client Refactor Complete
 ✅ WhatsApp server running (PID 33959, port 3000)
 ✅ Dashboard API running (port 3001)

@@ -89,6 +89,31 @@ export async function initDb() {
   try { db.run("ALTER TABLE clients ADD COLUMN health_status TEXT DEFAULT 'pending'"); } catch {}
   try { db.run('ALTER TABLE clients ADD COLUMN user_id INTEGER'); } catch {}
   
+  // ── Messages table (synced from WhatsApp server) ──
+  db.run(`
+    CREATE TABLE IF NOT EXISTS messages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id INTEGER,
+      phone TEXT NOT NULL,
+      name TEXT DEFAULT 'Unknown',
+      direction TEXT NOT NULL CHECK(direction IN ('in', 'out')),
+      text TEXT DEFAULT '',
+      timestamp TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (client_id) REFERENCES clients(id)
+    );
+  `);
+  
+  db.run(`
+    CREATE INDEX IF NOT EXISTS idx_messages_phone ON messages(phone);
+  `);
+  db.run(`
+    CREATE INDEX IF NOT EXISTS idx_messages_client ON messages(client_id);
+  `);
+  db.run(`
+    CREATE INDEX IF NOT EXISTS idx_messages_timestamp ON messages(timestamp);
+  `);
+
   // ── Users table ──
   db.run(`
     CREATE TABLE IF NOT EXISTS users (
