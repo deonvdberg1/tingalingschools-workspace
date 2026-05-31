@@ -62,7 +62,8 @@ export default function setupTrackingRoutes(app, { query, run, saveDb }) {
       });
     }
 
-    const ts = timestamp || Date.now();
+    // Always use server timestamp to avoid phone clock skew issues
+    const ts = Date.now();
     const spd = speed || 0;
     const acc = accuracy || 0;
 
@@ -89,15 +90,14 @@ export default function setupTrackingRoutes(app, { query, run, saveDb }) {
   // ── GET /api/tracking/location/:client_id/:driver_id — Latest location + recent path ──
   app.get('/api/tracking/location/:client_id/:driver_id', (req, res) => {
     const { client_id, driver_id } = req.params;
-    const fiveMinAgo = Date.now() - (5 * 60 * 1000);
-
-    // Get all points from last 5 minutes (ordered by time)
+    // Get all points from last 10 minutes (±5 min tolerance for clock skew)
+    const tenMinAgo = Date.now() - (10 * 60 * 1000);
     const pathPoints = query(
       `SELECT lat, lng, speed, accuracy, timestamp
        FROM driver_locations
        WHERE client_id = ? AND driver_id = ? AND timestamp >= ?
        ORDER BY timestamp ASC`,
-      [client_id, driver_id, fiveMinAgo]
+      [client_id, driver_id, tenMinAgo]
     );
 
     // Get latest point
@@ -124,7 +124,8 @@ export default function setupTrackingRoutes(app, { query, run, saveDb }) {
     const { client_id } = req.params;
     const fiveMinAgo = Date.now() - (5 * 60 * 1000);
 
-    // Get distinct drivers who have reported in last 5 minutes, with their latest position
+    // Get distinct drivers who have reported in last 10 minutes (±5 min tolerance for clock skew)
+    const tenMinAgo = Date.now() - (10 * 60 * 1000);
     const drivers = query(
       `SELECT d.driver_id, d.lat, d.lng, d.speed, d.accuracy, d.timestamp
        FROM driver_locations d
@@ -135,7 +136,7 @@ export default function setupTrackingRoutes(app, { query, run, saveDb }) {
          GROUP BY driver_id
        ) latest ON d.driver_id = latest.driver_id AND d.timestamp = latest.max_ts
        WHERE d.client_id = ?`,
-      [client_id, fiveMinAgo, client_id]
+      [client_id, tenMinAgo, client_id]
     );
 
     // Get delivery counts per driver
