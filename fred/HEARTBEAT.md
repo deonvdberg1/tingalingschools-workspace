@@ -1,14 +1,16 @@
 # Heartbeat Monitor
 # Fred checks these on every session start
 
-## 2026-05-29 08:50 SAST — Inbound Monitoring + Chat Persistence + Crontab
+## 2026-05-29 11:41 SAST — Email Live + Monitoring Complete
 ✅ Message cap raised 50→500
 ✅ SQLite sync live — messages persist in dashboard DB
-✅ Inbound Watchman running every 5 min (alerts if silent >10 min)
-✅ Health check speedup: every 15 min (was 2h)
+✅ Inbound Watchman running every hour (alerts if silent >10 min)
+✅ Health check every 15 min
 ✅ Hourly backup via crontab
-✅ Still needed: Better Uptime signup (requires browser)
-✅ Still needed: AutoEffortless email setup
+✅ Better Stack monitors active (3-min checks on tunnel + status)
+✅ AutoEffortless email live (info@autoeffortless.com — gog configured)
+✅ Log flushing fix (fs.writeSync, no more silent buffering)
+🟡 VPS uptime solution deferred — revisit after paying clients
 
 ## 2026-05-28 10:47 SAST — Multi-Client Refactor Complete
 ✅ WhatsApp server running (PID 33959, port 3000)
