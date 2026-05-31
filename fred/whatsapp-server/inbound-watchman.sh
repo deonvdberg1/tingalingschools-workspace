@@ -1,47 +1,47 @@
 #!/bin/bash
-# ── Inbound Watchman ──────────────────────────────────────────────────────
-# Runs every 5 minutes via cron.
-# If no inbound WhatsApp message received in the last 10 minutes while the
-# server is running, something is wrong at Meta's end — alert immediately.
+# ── Inbound Watchman (v2) ─────────────────────────────────────────────────
+# Runs every 5 minutes via LaunchAgent.
+# Alerts ONLY on state transition: when silence first crosses 10 min,
+# and then every 30 min as a reminder (no spam).
+# Resets automatically when a new inbound arrives.
 # ──────────────────────────────────────────────────────────────────────────
 
 ENV_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/.env"
 CONV_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/conversations.json"
 LOG_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/watchman.log"
+STATE_FILE="/tmp/watchman-state.json"
 SERVER_URL="http://localhost:3000/status"
 
 now=$(date +%s)
+
+# ── Log helper (always show in log, but only alert on state change) ──
+log_info() { echo "  [INFO] $1" >> "$LOG_FILE"; }
+log_alert() { echo "  [ALERT] $1" >> "$LOG_FILE"; }
+log_ok() { echo "  [OK] $1" >> "$LOG_FILE"; }
+
 echo "[$(date)] Watchman check..." >> "$LOG_FILE"
 
 # 1. Is the server up?
-server_ok=$(curl -sf "$SERVER_URL" > /dev/null 2>&1; echo $?)
-if [ "$server_ok" != "0" ]; then
-  echo "  [ALERT] Server DOWN — not a Meta issue, but escalating" >> "$LOG_FILE"
-  # Don't alert for server down — the health check already handles that
-  # We're watching for Meta-side failures specifically
-  tail -n 500 "$LOG_FILE" > "${LOG_FILE}.tmp" 2>/dev/null && mv "${LOG_FILE}.tmp" "$LOG_FILE"
+if ! curl -sf "$SERVER_URL" > /dev/null 2>&1; then
+  log_alert "Server DOWN — health check handles this"
   exit 0
 fi
 
-# 2. Does the conversations file exist?
+# 2-3. Conversations file check
 if [ ! -f "$CONV_FILE" ]; then
-  echo "  [OK] No conversations yet — skipping (new install)" >> "$LOG_FILE"
-  tail -n 500 "$LOG_FILE" > "${LOG_FILE}.tmp" 2>/dev/null && mv "${LOG_FILE}.tmp" "$LOG_FILE"
+  log_ok "No conversations yet — skipping"
   exit 0
 fi
 
-# 3. Check conversation file size
 file_size=$(stat -f%z "$CONV_FILE" 2>/dev/null)
 if [ "$file_size" -lt 5 ]; then
-  echo "  [OK] Conversations file empty — no activity expected" >> "$LOG_FILE"
-  tail -n 500 "$LOG_FILE" > "${LOG_FILE}.tmp" 2>/dev/null && mv "${LOG_FILE}.tmp" "$LOG_FILE"
+  log_ok "Conversations file empty — no activity expected"
   exit 0
 fi
 
-# 4. Find the most recent inbound message across ALL conversations
-# We use python3 for reliable JSON parsing
+# 4. Find the most recent inbound message
 latest_inbound=$(python3 -c "
-import json, os, sys
+import json, os, sys, math
 try:
     with open('$CONV_FILE', 'r') as f:
         data = json.load(f)
@@ -62,54 +62,87 @@ for phone, conv in data.items():
                         latest = epoch
                 except:
                     pass
-print(latest)
+print(latest or 0)
 " 2>/dev/null)
 
 if [ -z "$latest_inbound" ] || [ "$latest_inbound" = "0" ]; then
-  echo "  [OK] No inbound messages in history yet" >> "$LOG_FILE"
-  tail -n 500 "$LOG_FILE" > "${LOG_FILE}.tmp" 2>/dev/null && mv "${LOG_FILE}.tmp" "$LOG_FILE"
+  log_ok "No inbound messages in history yet"
   exit 0
 fi
 
-# 5. Calculate silence duration
+# 5. Calculate silence
 elapsed=$(( now - latest_inbound ))
 elapsed_min=$(( elapsed / 60 ))
-elapsed_max=$(( elapsed_min > 1 ? elapsed_min : 1 ))
+[ "$elapsed_min" -lt 1 ] && elapsed_min=1
 
-echo "  [INFO] Last inbound: ${elapsed_max} min ago ($(date -r $latest_inbound '+%Y-%m-%d %H:%M'))" >> "$LOG_FILE"
+log_info "Last inbound: ${elapsed_min} min ago ($(date -r $latest_inbound '+%Y-%m-%d %H:%M'))"
 
-# 6. Alert if silent for 10+ minutes
-SILENCE_THRESHOLD=600  # 10 minutes
+# ── State management ─────────────────────────────────────────────────
+# Track: last_inbound_timestamp, last_alerted_at_epoch, silence_alerted
+SILENCE_THRESHOLD=600   # 10 min
+REMINDER_INTERVAL=1800  # 30 min between reminders
+
+# Read previous state
+last_seen_ts=0
+last_alerted=0
+if [ -f "$STATE_FILE" ]; then
+  state=$(cat "$STATE_FILE")
+  last_seen_ts=$(echo "$state" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('last_inbound',0))" 2>/dev/null)
+  last_alerted=$(echo "$state" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('last_alerted',0))" 2>/dev/null)
+fi
+
+# Has a new inbound arrived since our last check? If so, clear alert state.
+if [ "$latest_inbound" -gt "$last_seen_ts" ]; then
+  last_alerted=0
+  log_info "New inbound detected — resetting alert state"
+fi
+
+# ── Decision logic ──────────────────────────────────────────────────
+should_alert=0
 if [ "$elapsed" -gt "$SILENCE_THRESHOLD" ]; then
-  echo "  [ALERT] No inbound messages for ${elapsed_max} minutes! Sending alert..." >> "$LOG_FILE"
+  # We're in silence territory
+  if [ "$last_alerted" -eq 0 ]; then
+    # First time crossing threshold — ALERT
+    should_alert=1
+  else
+    # Already alerted — only re-alert if enough time has passed
+    time_since_last_alert=$(( now - last_alerted ))
+    if [ "$time_since_last_alert" -gt "$REMINDER_INTERVAL" ]; then
+      should_alert=1
+    fi
+  fi
+fi
 
-  # Load env vars
+# ── Alert ────────────────────────────────────────────────────────────
+if [ "$should_alert" -eq 1 ]; then
+  log_alert "No inbound messages for ${elapsed_min} minutes! Sending alert..."
+
   TOKEN=$(grep -E "^WHATSAPP_TOKEN=" "$ENV_FILE" 2>/dev/null | sed 's/WHATSAPP_TOKEN=//')
   PHONE_ID=$(grep -E "^PHONE_NUMBER_ID=" "$ENV_FILE" 2>/dev/null | sed 's/PHONE_NUMBER_ID=//')
   ADMIN_NUMBER="27615274429"
 
   if [ -n "$TOKEN" ] && [ -n "$PHONE_ID" ]; then
-    ALERT_MSG="🚨 *AutoEffortless Alert* — Inbound Silence\\n\\nNo WhatsApp messages received for ${elapsed_max} minutes.\\nServer: ✅ Running\\nMeta routing: ❌ SUSPECTED FAILURE\\n\\nCheck: https://whatsapp.autoeffortless.com\\nTime: $(date '+%Y-%m-%d %H:%M SAST')"
+    ALERT_MSG="🚨 *AutoEffortless Alert* — Inbound Silence\\n\\nNo WhatsApp messages received for ${elapsed_min} minutes.\\nServer: ✅ Running\\nMeta routing: ❌ SUSPECTED FAILURE\\n\\nCheck: https://whatsapp.autoeffortless.com\\nTime: $(date '+%Y-%m-%d %H:%M SAST')"
 
     curl -s -X POST "https://graph.facebook.com/v22.0/$PHONE_ID/messages" \
       -H "Authorization: Bearer $TOKEN" \
       -H "Content-Type: application/json" \
       -d "{\"messaging_product\":\"whatsapp\",\"to\":\"$ADMIN_NUMBER\",\"type\":\"text\",\"text\":{\"body\":\"$ALERT_MSG\"}}" > /dev/null 2>&1
 
-    echo "  [ALERT] WhatsApp alert sent to $ADMIN_NUMBER" >> "$LOG_FILE"
+    log_alert "WhatsApp alert sent to $ADMIN_NUMBER"
   else
-    echo "  [FAIL] Cannot send alert — missing TOKEN or PHONE_ID" >> "$LOG_FILE"
+    log_alert "Cannot send — missing TOKEN or PHONE_ID"
   fi
 
-  # Also write a critical timestamp so the health check can pick it up
-  echo "$(date '+%s')" > /tmp/inbound-watchman-critical
+  # Save alert time as last_alerted
+  echo "{\"last_inbound\":$latest_inbound,\"last_alerted\":$now}" > "$STATE_FILE"
 else
-  # Clear any previous critical flag
-  rm -f /tmp/inbound-watchman-critical
+  # No alert needed. Still save state so we know latest inbound.
+  echo "{\"last_inbound\":$latest_inbound,\"last_alerted\":$last_alerted}" > "$STATE_FILE"
 fi
 
 # Keep log trimmed
 tail -n 500 "$LOG_FILE" > "${LOG_FILE}.tmp" 2>/dev/null && mv "${LOG_FILE}.tmp" "$LOG_FILE"
 
-echo "[$(date)] STATUS: OK — Last inbound ${elapsed_max} min ago" >> "$LOG_FILE"
+echo "[$(date)] STATUS: OK — Last inbound ${elapsed_min} min ago" >> "$LOG_FILE"
 exit 0

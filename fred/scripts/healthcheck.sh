@@ -1,14 +1,18 @@
 #!/bin/bash
-# WhatsApp API Health Check — runs on cron
-# Checks: server, tunnel, API, webhook, disk
-# Exits: 0 = all good, 1 = warning, 2 = critical
+# ── Health Check (v2) ────────────────────────────────────────────────────
+# Runs every 15 min via LaunchAgent.
+# Sends WhatsApp alert ONLY on state transitions (OK→FAIL or FAIL→OK).
+# No spam for repeated same-state checks.
+# ─────────────────────────────────────────────────────────────────────────
 
 PERMANENT_URL="https://whatsapp.autoeffortless.com"
 ENV_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/.env"
 LOG_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/healthcheck.log"
+STATE_FILE="/tmp/healthcheck-state.json"
 
-# Extract token safely
 TOKEN=$(grep -E '^WHATSAPP_TOKEN=' "$ENV_FILE" 2>/dev/null | sed 's/WHATSAPP_TOKEN=//')
+PHONE_ID=$(grep -E '^PHONE_NUMBER_ID=' "$ENV_FILE" 2>/dev/null | sed 's/PHONE_NUMBER_ID=//')
+ADMIN_NUMBER="27615274429"
 
 FAILURES=""
 WARNINGS=""
@@ -87,31 +91,48 @@ else
   FAILURES="$FAILURES launchagent"
 fi
 
-# Keep last 500 lines in log
-# Send WhatsApp alert on failures
-if [ -n "$FAILURES" ]; then
-  ADMIN_NUMBER="27615274429"
-  TOKEN=$(grep -E "^WHATSAPP_TOKEN=" "$ENV_FILE" 2>/dev/null | sed "s/WHATSAPP_TOKEN=//")
-  PHONE_ID=$(grep -E "^PHONE_NUMBER_ID=" "$ENV_FILE" 2>/dev/null | sed "s/PHONE_NUMBER_ID=//")
-  if [ -n "$TOKEN" ] && [ -n "$PHONE_ID" ]; then
-    ALERT_MSG="🚨 *AutoEffortless Alert*\nService(s) DOWN:$FAILURES\nTime: $(date)"
-    curl -s -X POST "https://graph.facebook.com/v22.0/$PHONE_ID/messages" 
-      -H "Authorization: Bearer $TOKEN" 
-      -H "Content-Type: application/json" 
-      -d "{"messaging_product":"whatsapp","to":"$ADMIN_NUMBER","type":"text","text":{"body":"$ALERT_MSG"}}" > /dev/null 2>&1
-    echo "  [ALERT] WhatsApp sent to $ADMIN_NUMBER" >> "$LOG_FILE"
+# ── State transition logic ──────────────────────────────────────────
+# Determine current status: "ok", "warning", or "critical"
+current_status="ok"
+[ -n "$WARNINGS" ] && current_status="warning"
+[ -n "$FAILURES" ] && current_status="critical"
+
+# Read previous status
+previous_status=""
+[ -f "$STATE_FILE" ] && previous_status=$(cat "$STATE_FILE" 2>/dev/null | grep -o '"status":"[^"]*"' | cut -d'"' -f4)
+
+# Only alert if status CHANGED (ok→fail or fail→ok)
+if [ "$current_status" != "$previous_status" ]; then
+  if [ -n "$FAILURES" ] && [ -n "$TOKEN" ] && [ -n "$PHONE_ID" ]; then
+    if [ "$current_status" = "critical" ]; then
+      ALERT_MSG="🔴 *AutoEffortless Alert* — Services DOWN\\n\\nFailures:$FAILURES\\nTime: $(date '+%Y-%m-%d %H:%M SAST')"
+    elif [ "$current_status" = "warning" ]; then
+      ALERT_MSG="🟡 *AutoEffortless Alert* — Service Warnings\\n\\nWarnings:$WARNINGS\\nFailures:$FAILURES\\nTime: $(date '+%Y-%m-%d %H:%M SAST')"
+    else
+      ALERT_MSG="🟢 *AutoEffortless* — All Services Restored\\n\\n$([ -n "$previous_status" ] && echo 'Previous failures resolved.')\\nTime: $(date '+%Y-%m-%d %H:%M SAST')"
+    fi
+
+    curl -s -X POST "https://graph.facebook.com/v22.0/$PHONE_ID/messages" \
+      -H "Authorization: Bearer $TOKEN" \
+      -H "Content-Type: application/json" \
+      -d "{\"messaging_product\":\"whatsapp\",\"to\":\"$ADMIN_NUMBER\",\"type\":\"text\",\"text\":{\"body\":\"$ALERT_MSG\"}}" > /dev/null 2>&1
+
+    echo "  [ALERT] State change ($previous_status→$current_status): WhatsApp sent to $ADMIN_NUMBER" >> "$LOG_FILE"
   fi
 fi
+
+# Save current status
+echo "{\"status\":\"$current_status\",\"updated\":\"$(date '+%Y-%m-%d %H:%M SAST')\"}" > "$STATE_FILE"
+
+# Keep log trimmed
 tail -n 500 "$LOG_FILE" > "${LOG_FILE}.tmp" 2>/dev/null && mv "${LOG_FILE}.tmp" "$LOG_FILE"
 
 # Report summary
 if [ -n "$FAILURES" ]; then
   echo "[$(date)] STATUS: CRITICAL — Failures:$FAILURES" >> "$LOG_FILE"
-  echo "CRITICAL:$FAILURES"
   exit 2
 elif [ -n "$WARNINGS" ]; then
   echo "[$(date)] STATUS: WARNING — Warnings:$WARNINGS" >> "$LOG_FILE"
-  echo "WARNING:$WARNINGS"
   exit 1
 else
   echo "[$(date)] STATUS: OK — All 7 checks passed" >> "$LOG_FILE"

@@ -1,0 +1,32 @@
+{
+  "27615274429": {
+    "name": "Deon",
+    "phone": "27615274429",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-29T07:42:41.367Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! How can I help you with Ting-A-Ling Schools today? 😊",
+        "timestamp": "2026-05-29T07:42:41.367Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-31T12:08:35.310Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello again! What can I help you with at Ting-A-Ling Schools today? 😊",
+        "timestamp": "2026-05-31T12:08:35.310Z"
+      }
+    ],
+    "firstSeen": "2026-05-29T07:42:41.367Z",
+    "lastSeen": "2026-05-31T12:08:35.310Z",
+    "autoReplied": 2,
+    "humanRequests": 0
+  }
+}
