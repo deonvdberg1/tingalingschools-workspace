@@ -228,11 +228,15 @@
 
       let etaHtml = '';
       if (data.eta && data.status === 'en_route') {
-        const etaText = data.eta <= 1 ? 'Less than a minute' : `~${data.eta} minutes`;
+        const etaMinutes = typeof data.eta === 'object' ? data.eta.minutes : data.eta;
+        const etaText = typeof data.eta === 'object' ? data.eta.text : (etaMinutes <= 1 ? 'Less than a minute' : `~${etaMinutes} min`);
+        const distText = typeof data.eta === 'object' && data.eta.distance_text ? data.eta.distance_text : '';
         etaHtml = `
           <div class="eta-display">
-            <span class="eta-number">${data.eta <= 1 ? '&lt;1' : data.eta}</span>
-            <span class="eta-label">minutes away</span>
+            <div>
+              <span class="eta-number">${etaText}</span>
+            </div>
+            ${distText ? `<div style="font-size:11px;color:#64748b;margin-top:2px;">${distText} away</div>` : ''}
           </div>
         `;
       } else if (data.status === 'pending') {

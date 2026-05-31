@@ -7,6 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { initDb, getDb, saveDb } from './db.js';
 import setupTrackingRoutes from './tracking-routes.js';
+import setupGoogleRoutes from './google-api.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -80,6 +81,9 @@ function requireRole(...roles) {
 
 // ── Tracking routes (GPS, deliveries) ──
 setupTrackingRoutes(app, { query, run, saveDb });
+
+// ── Google API proxy routes ──
+setupGoogleRoutes(app);
 
 // ── Static serving ──
 

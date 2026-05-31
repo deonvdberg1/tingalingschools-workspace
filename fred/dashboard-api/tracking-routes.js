@@ -15,6 +15,7 @@
  */
 
 const WHATSAPP_SERVER = 'http://localhost:3000';
+const GOOGLE_API_KEY = '***';
 
 /**
  * Send a WhatsApp notification when a delivery status changes
@@ -253,7 +254,7 @@ export default function setupTrackingRoutes(app, { query, run, saveDb }) {
   });
 
   // ── GET /api/tracking/delivery/:id — Public customer tracking page data (no auth) ──
-  app.get('/api/tracking/delivery/:id', (req, res) => {
+  app.get('/api/tracking/delivery/:id', async (req, res) => {
     const { id } = req.params;
 
     const deliveries = query(
@@ -284,14 +285,22 @@ export default function setupTrackingRoutes(app, { query, run, saveDb }) {
       if (locs.length > 0) {
         driverLocation = locs[0];
         
-        // Simple ETA: calculate distance and estimate time
-        if (delivery.lat && delivery.lng && driverLocation.speed > 1) {
-          const distance = haversineDistance(
-            driverLocation.lat, driverLocation.lng,
-            delivery.lat, delivery.lng
-          );
-          const timeMinutes = (distance / driverLocation.speed) * 60;
-          eta = Math.round(Math.max(1, timeMinutes));
+        // Real ETA via Google Distance Matrix (with traffic)
+        if (delivery.lat && delivery.lng) {
+          try {
+            const origin = `${driverLocation.lat},${driverLocation.lng}`;
+            const dest = `${delivery.lat},${delivery.lng}`;
+            const dmRes = await fetch(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(dest)}&key=${GOOGLE_API_KEY}&traffic_model=best_guess&departure_time=now&units=metric`);
+            const dmData = await dmRes.json();
+            if (dmData.status === 'OK' && dmData.rows[0]?.elements[0]?.status === 'OK') {
+              const el = dmData.rows[0].elements[0];
+              eta = {
+                minutes: Math.round((el.duration_in_traffic?.value || el.duration?.value) / 60),
+                text: el.duration_in_traffic?.text || el.duration?.text,
+                distance_text: el.distance?.text,
+              };
+            }
+          } catch {}
         }
       }
     }
