@@ -63,28 +63,25 @@ export function setupTrackingTables(db) {
     ON deliveries(driver_id, status);
   `);
 
-  // ── Seed stub deliveries for existing clients ──
-  const clients = db.exec('SELECT id, name FROM clients');
-  if (clients.length > 0) {
-    for (const row of clients[0].values) {
-      const clientId = row[0];
-      const clientName = row[1];
-
-      // Check if this client already has deliveries seeded
-      const existing = db.exec(`SELECT COUNT(*) as c FROM deliveries WHERE client_id = ${clientId}`);
-      if (existing[0]?.values[0][0] > 0) continue;
-
-      // Seed 3-5 deliveries per client
-      const stubDeliveries = generateStubDeliveries(clientId, clientName);
-      for (const d of stubDeliveries) {
-        db.run(
-          `INSERT INTO deliveries (client_id, driver_id, customer_name, customer_phone, customer_address, lat, lng, status)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-          [d.client_id, d.driver_id, d.customer_name, d.customer_phone, d.customer_address, d.lat, d.lng, d.status]
-        );
-      }
-    }
-  }
+  // ── Seed stub deliveries for existing clients ── COMMENTED OUT —
+  // Seed data was auto-generated during initial build. To re-enable, uncomment below.
+  // const clients = db.exec('SELECT id, name FROM clients');
+  // if (clients.length > 0) {
+  //   for (const row of clients[0].values) {
+  //     const clientId = row[0];
+  //     const clientName = row[1];
+  //     const existing = db.exec(`SELECT COUNT(*) as c FROM deliveries WHERE client_id = ${clientId}`);
+  //     if (existing[0]?.values[0][0] > 0) continue;
+  //     const stubDeliveries = generateStubDeliveries(clientId, clientName);
+  //     for (const d of stubDeliveries) {
+  //       db.run(
+  //         `INSERT INTO deliveries (client_id, driver_id, customer_name, customer_phone, customer_address, lat, lng, status)
+  //          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+  //         [d.client_id, d.driver_id, d.customer_name, d.customer_phone, d.customer_address, d.lat, d.lng, d.status]
+  //       );
+  //     }
+  //   }
+  // }
 }
 
 function generateStubDeliveries(clientId, clientName) {

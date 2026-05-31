@@ -193,6 +193,26 @@ export default function setupTrackingRoutes(app, { query, run, saveDb }) {
     res.json(enriched);
   });
 
+  // ── POST /api/tracking/deliveries — Create a new delivery ──
+  app.post('/api/tracking/deliveries', (req, res) => {
+    const { client_id, driver_id, customer_name, customer_phone, customer_address, lat, lng, notes } = req.body;
+
+    if (!client_id || !customer_name) {
+      return res.status(400).json({ error: 'client_id and customer_name are required' });
+    }
+
+    run(
+      `INSERT INTO deliveries (client_id, driver_id, customer_name, customer_phone, customer_address, lat, lng, notes, status)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
+      [client_id, driver_id || null, customer_name, customer_phone || '', customer_address || '', lat || null, lng || null, notes || '']
+    );
+    saveDb();
+
+    const delivery = query('SELECT * FROM deliveries ORDER BY id DESC LIMIT 1')[0];
+    console.log(`[Tracking] Created delivery #${delivery.id} for ${customer_name} (client ${client_id})`);
+    res.status(201).json(delivery);
+  });
+
   // ── PUT /api/tracking/deliveries/:id/status — Update delivery status ──
   app.put('/api/tracking/deliveries/:id/status', (req, res) => {
     const { id } = req.params;
