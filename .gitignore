@@ -40,6 +40,9 @@ ig_cookies.json
 ._*
 Thumbs.db
 
+# Fred's secrets directory
+fred/secrets/
+
 # Environment
 .env
 .env.local
