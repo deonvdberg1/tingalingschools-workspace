@@ -107,6 +107,23 @@ app.get('/tracking/:id', (req, res) => {
   }
 });
 
+// ── Dashboard SPA (built version) — must be last to avoid catching API routes ──
+const dashboardDistPath = path.join(__dirname, '..', 'dashboard-temp', 'dist');
+if (fs.existsSync(dashboardDistPath)) {
+  app.use(express.static(dashboardDistPath));
+  console.log(`[Static] Serving built dashboard from /`);
+  
+  // SPA fallback for all non-API routes — serve index.html for client-side routing
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/') || req.path.startsWith('/driver/') || req.path.startsWith('/tracking/')) {
+      return next();
+    }
+    res.sendFile(path.join(dashboardDistPath, 'index.html'));
+  });
+} else {
+  console.log(`[Static] Dashboard dist not found at ${dashboardDistPath} — not serving dashboard`);
+}
+
 // ── Initialise ──
 app.listen(PORT, async () => {
   db = await initDb();
