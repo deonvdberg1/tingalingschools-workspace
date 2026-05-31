@@ -2,14 +2,17 @@ import express from 'express';
 import cors from 'cors';
 import crypto from 'crypto';
 import fs from 'fs';
+import https from 'https';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { initDb, getDb, saveDb } from './db.js';
+import setupTrackingRoutes from './tracking-routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const PORT = 3001;
+const HTTPS_PORT = 3443;
 const app = express();
 
 app.use(cors());
@@ -75,10 +78,52 @@ function requireRole(...roles) {
   };
 }
 
+// ── Tracking routes (GPS, deliveries) ──
+setupTrackingRoutes(app, { query, run, saveDb });
+
+// ── Static serving ──
+
+// Serve the built driver PWA at /driver/ (for production)
+const driverDistPath = path.join(__dirname, '..', 'tracking-driver', 'dist');
+if (fs.existsSync(driverDistPath)) {
+  app.use('/driver', express.static(driverDistPath));
+  console.log(`[Static] Serving driver PWA from /driver/`);
+}
+
+// Serve public static files (customer tracking page)
+const publicPath = path.join(__dirname, 'public');
+if (fs.existsSync(publicPath)) {
+  app.use(express.static(publicPath));
+}
+
+// Catch-all for /tracking/:id — serve the customer tracking page
+// This must come AFTER API routes to avoid conflict
+app.get('/tracking/:id', (req, res) => {
+  const htmlPath = path.join(__dirname, 'public', 'tracking.html');
+  if (fs.existsSync(htmlPath)) {
+    res.sendFile(htmlPath);
+  } else {
+    res.status(404).send('Tracking page not found');
+  }
+});
+
 // ── Initialise ──
 app.listen(PORT, async () => {
   db = await initDb();
   console.log(`🚀 AutoEffortless API running on port ${PORT}`);
+  
+  // Start HTTPS server for local testing from phone
+  const keyPath = path.join(__dirname, 'localhost-key.pem');
+  const certPath = path.join(__dirname, 'localhost.pem');
+  if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+    const httpsOptions = {
+      key: fs.readFileSync(keyPath),
+      cert: fs.readFileSync(certPath),
+    };
+    https.createServer(httpsOptions, app).listen(HTTPS_PORT, () => {
+      console.log(`🔒 HTTPS server running on port ${HTTPS_PORT} (mkcert local dev)`);
+    });
+  }
 });
 
 // ── AUTH ──

@@ -4,6 +4,8 @@ import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 
+import { setupTrackingTables } from './tracking-db.js';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = path.join(__dirname, 'data', 'autoeffortless.db');
 
@@ -175,6 +177,9 @@ export async function initDb() {
   if (settingsCount[0]?.values[0][0] === 0) {
     db.run('INSERT INTO settings (id) VALUES (1)');
   }
+  
+  // Setup delivery tracking tables
+  setupTrackingTables(db);
   
   saveDb();
   return db;

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Track Your Delivery</title>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header h1 { font-size: 18px; font-weight: 600; }
+    .header .badge {
+      margin-left: auto;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .badge.pending { background: #f59e0b; color: #1e293b; }
+    .badge.en_route { background: #3b82f6; }
+    .badge.delivered { background: #10b981; }
+    .badge.problem { background: #ef4444; }
+
+    #map {
+      width: 100%;
+      height: 50vh;
+      min-height: 300px;
+    }
+
+    .info-panel {
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .info-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-bottom: 16px;
+    }
+
+    .info-card h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #475569;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: #94a3b8; font-size: 14px; }
+    .info-value { font-weight: 500; font-size: 14px; }
+
+    .status-banner {
+      text-align: center;
+      padding: 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+    .status-banner.en_route { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .status-banner.pending { background: #fefce8; color: #92400e; border: 1px solid #fde68a; }
+    .status-banner.delivered { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .status-banner.problem { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+    .eta-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px;
+      background: #f0f9ff;
+      border-radius: 10px;
+      margin-top: 12px;
+    }
+    .eta-display .eta-number {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0369a1;
+    }
+    .eta-display .eta-label {
+      font-size: 14px;
+      color: #475569;
+    }
+
+    .refreshing {
+      text-align: center;
+      padding: 20px;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    .error-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      padding: 40px;
+      text-align: center;
+    }
+    .error-state .emoji { font-size: 48px; margin-bottom: 16px; }
+    .error-state h2 { font-size: 20px; margin-bottom: 8px; }
+    .error-state p { color: #64748b; }
+
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #e2e8f0;
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-state p { margin-top: 16px; color: #64748b; }
+
+    .driver-avatar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .driver-dot {
+      width: 8px;
+      height: 8px;
+      background: #3b82f6;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    @media (max-width: 480px) {
+      .header h1 { font-size: 15px; }
+      #map { height: 40vh; min-height: 250px; }
+      .info-panel { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="loading-state" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading your delivery info...</p>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.js"></script>
+  <script>
+    const API_BASE = window.location.origin;
+    const deliveryId = window.location.pathname.split('/').pop();
+    const REFRESH_INTERVAL = 15000; // 15 seconds
+
+    let map = null;
+    let driverMarker = null;
+    let deliveryMarker = null;
+    let refreshTimer = null;
+    let lastDeliveryData = null;
+
+    const STATUS_LABELS = {
+      'pending': 'Awaiting driver assignment',
+      'en_route': 'Driver is on the way! 🚚',
+      'delivered': 'Delivered ✓',
+      'problem': 'Delivery issue reported',
+    };
+
+    const STATUS_BADGES = {
+      'pending': '<span class="badge pending">Pending</span>',
+      'en_route': '<span class="badge en_route">En Route</span>',
+      'delivered': '<span class="badge delivered">Delivered</span>',
+      'problem': '<span class="badge problem">Problem</span>',
+    };
+
+    async function fetchDelivery() {
+      try {
+        const res = await fetch(`${API_BASE}/api/tracking/delivery/${deliveryId}`);
+        if (!res.ok) throw new Error('Not found');
+        return await res.json();
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function formatTime(ts) {
+      if (!ts) return '—';
+      const d = new Date(ts);
+      return d.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function renderUI(data) {
+      lastDeliveryData = data;
+      const app = document.getElementById('app');
+
+      const statusClass = data.status || 'pending';
+      const statusText = STATUS_LABELS[statusClass] || STATUS_LABELS.pending;
+      const badge = STATUS_BADGES[statusClass] || STATUS_BADGES.pending;
+
+      let etaHtml = '';
+      if (data.eta && data.status === 'en_route') {
+        const etaText = data.eta <= 1 ? 'Less than a minute' : `~${data.eta} minutes`;
+        etaHtml = `
+          <div class="eta-display">
+            <span class="eta-number">${data.eta <= 1 ? '&lt;1' : data.eta}</span>
+            <span class="eta-label">minutes away</span>
+          </div>
+        `;
+      } else if (data.status === 'pending') {
+        etaHtml = `
+          <div class="eta-display" style="background:#fefce8;">
+            <span style="color:#92400e;font-size:14px;">⏳ Waiting for driver assignment</span>
+          </div>
+        `;
+      }
+
+      let driverLocationHtml = '';
+      if (data.driver_location) {
+        driverLocationHtml = `
+          <div class="driver-avatar">
+            <div class="driver-dot"></div>
+            <span>Live GPS signal received ${data.driver_location.speed > 0 ? `— moving at ${Math.round(data.driver_location.speed * 3.6)} km/h` : ''}</span>
+          </div>
+        `;
+      }
+
+      app.innerHTML = `
+        <div class="header">
+          <span style="font-size:24px;">🚚</span>
+          <div>
+            <h1>Delivery from ${escapeHtml(data.client_name || 'AutoEffortless')}</h1>
+          </div>
+          ${badge}
+        </div>
+
+        <div id="map"></div>
+
+        <div class="info-panel">
+          <div class="status-banner ${statusClass}">
+            ${statusText}
+          </div>
+
+          ${etaHtml}
+
+          <div class="info-card">
+            <h2>Delivery Details</h2>
+            <div class="info-row">
+              <span class="info-label">Customer</span>
+              <span class="info-value">${escapeHtml(data.customer_name || '—')}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Address</span>
+              <span class="info-value">${escapeHtml(data.customer_address || '—')}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Last updated</span>
+              <span class="info-value">${data.updated_at ? formatTime(data.updated_at) : '—'}</span>
+            </div>
+            ${data.notes ? `
+            <div class="info-row">
+              <span class="info-label">Notes</span>
+              <span class="info-value">${escapeHtml(data.notes)}</span>
+            </div>
+            ` : ''}
+          </div>
+
+          ${data.driver_location ? `
+          <div class="info-card">
+            <h2>Driver Location</h2>
+            ${driverLocationHtml}
+          </div>
+          ` : ''}
+
+          <div class="refreshing">
+            Updating every 15 seconds • AutoEffortless Tracking
+          </div>
+        </div>
+      `;
+
+      // Initialize or update map
+      initMap(data);
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function initMap(data) {
+      if (!map) {
+        map = new maplibregl.Map({
+          container: 'map',
+          style: 'https://tiles.openfreemap.org/styles/liberty',
+          center: [data.delivery_lng || 32.0167, data.delivery_lat || -28.7833],
+          zoom: 13,
+        });
+        map.addControl(new maplibregl.NavigationControl(), 'top-right');
+      }
+
+      // Delivery destination marker
+      if (deliveryMarker) deliveryMarker.remove();
+      if (data.delivery_lat && data.delivery_lng) {
+        const el = document.createElement('div');
+        el.innerHTML = '📍';
+        el.style.fontSize = '32px';
+        el.style.textShadow = '0 1px 3px rgba(0,0,0,0.3)';
+        deliveryMarker = new maplibregl.Marker({ element: el })
+          .setLngLat([data.delivery_lng, data.delivery_lat])
+          .setPopup(new maplibregl.Popup().setHTML(`<strong>${escapeHtml(data.customer_name)}</strong><br/>${escapeHtml(data.customer_address)}`))
+          .addTo(map);
+      }
+
+      // Driver marker
+      if (driverMarker) driverMarker.remove();
+      if (data.driver_location && data.status !== 'delivered') {
+        const el = document.createElement('div');
+        el.innerHTML = '🚛';
+        el.style.fontSize = '32px';
+        el.style.textShadow = '0 1px 3px rgba(0,0,0,0.3)';
+        driverMarker = new maplibregl.Marker({ element: el })
+          .setLngLat([data.driver_location.lng, data.driver_location.lat])
+          .setPopup(new maplibregl.Popup().setHTML(`<strong>Driver</strong><br/>Speed: ${Math.round(data.driver_location.speed * 3.6)} km/h`))
+          .addTo(map);
+      }
+
+      // Fit bounds to show both markers
+      if (data.delivery_lat && data.delivery_lng) {
+        const bounds = new maplibregl.LngLatBounds();
+        bounds.extend([data.delivery_lng, data.delivery_lat]);
+        if (data.driver_location) {
+          bounds.extend([data.driver_location.lng, data.driver_location.lat]);
+        }
+        if (!map.getBounds().contains(bounds.getNorthWest()) || !map.getBounds().contains(bounds.getSouthEast())) {
+          map.fitBounds(bounds, { padding: 60, maxZoom: 15 });
+        }
+      }
+    }
+
+    function showError(title, message) {
+      document.getElementById('app').innerHTML = `
+        <div class="error-state">
+          <div class="emoji">😕</div>
+          <h2>${escapeHtml(title)}</h2>
+          <p>${escapeHtml(message)}</p>
+        </div>
+      `;
+    }
+
+    async function refresh() {
+      const data = await fetchDelivery();
+      if (!data) {
+        showError('Delivery Not Found', 'This tracking link could not be found. Please check the link or contact the sender.');
+        if (refreshTimer) clearInterval(refreshTimer);
+        return;
+      }
+      renderUI(data);
+    }
+
+    // Start
+    refresh();
+    refreshTimer = setInterval(refresh, REFRESH_INTERVAL);
+  </script>
+</body>
+</html>
