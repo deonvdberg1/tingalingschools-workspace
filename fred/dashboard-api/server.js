@@ -495,9 +495,15 @@ app.get('/api/stats', async (req, res) => {
   const active = query("SELECT COUNT(*) as c FROM clients WHERE status = 'active'")[0].c;
   const wa = await fetchWhatsAppStats();
   
+  // Product stats
+  const totalProducts = query('SELECT COUNT(*) as c FROM client_products WHERE status = "active"')[0].c;
+  const productBreakdown = query('SELECT product_key, product_name, COUNT(*) as c FROM client_products WHERE status = "active" GROUP BY product_key ORDER BY c DESC');
+  
   res.json({
     total_clients: total,
     active_clients: active,
+    total_products: totalProducts,
+    product_breakdown: productBreakdown,
     ...wa,
   });
 });
@@ -822,6 +828,47 @@ app.put('/api/clients/:id/knowledge', requireAuth, (req, res) => {
     console.error(`[KB] Failed to write file: ${e.message}`);
   }
   
+  res.json({ success: true });
+});
+
+// ── CLIENT PRODUCTS ──
+app.get('/api/clients/:id/products', requireAuth, (req, res) => {
+  const products = query('SELECT * FROM client_products WHERE client_id = ? ORDER BY created_at', [req.params.id]);
+  res.json(products);
+});
+
+app.post('/api/clients/:id/products', requireAuth, requireRole('overlord'), (req, res) => {
+  const { product_key, product_name } = req.body;
+  if (!product_key || !product_name) return res.status(400).json({ error: 'product_key and product_name required' });
+  try {
+    run('INSERT INTO client_products (client_id, product_key, product_name) VALUES (?, ?, ?)',
+      [req.params.id, product_key, product_name]);
+    saveDb();
+    const prods = query('SELECT * FROM client_products WHERE client_id = ? AND product_key = ?', [req.params.id, product_key]);
+    res.status(201).json(prods[0]);
+  } catch (e) {
+    res.status(400).json({ error: 'Product already exists for this client' });
+  }
+});
+
+app.put('/api/client-products/:id', requireAuth, requireRole('overlord'), (req, res) => {
+  const { status, config, product_name } = req.body;
+  const updates = [];
+  const params = [];
+  if (status) { updates.push('status = ?'); params.push(status); }
+  if (config) { updates.push('config = ?'); params.push(config); }
+  if (product_name) { updates.push('product_name = ?'); params.push(product_name); }
+  updates.push('updated_at = CURRENT_TIMESTAMP');
+  params.push(req.params.id);
+  run('UPDATE client_products SET ' + updates.join(', ') + ' WHERE id = ?', params);
+  saveDb();
+  const prod = query('SELECT * FROM client_products WHERE id = ?', [req.params.id]);
+  res.json(prod[0] || { error: 'Not found' });
+});
+
+app.delete('/api/client-products/:id', requireAuth, requireRole('overlord'), (req, res) => {
+  run('DELETE FROM client_products WHERE id = ?', [req.params.id]);
+  saveDb();
   res.json({ success: true });
 });
 
