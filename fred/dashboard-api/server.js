@@ -648,40 +648,54 @@ app.get('/api/clients/:id/health', async (req, res) => {
 
 // ── ANALYTICS ──
 
-app.get('/api/analytics/messages', async (req, res) => {
+app.get('/api/analytics/messages', (req, res) => {
   try {
-    const convRes = await fetch('http://localhost:3000/api/conversations').catch(() => null);
-    if (!convRes) {
-      return res.json({
-        daily: [],
-        total_messages: 0,
-        auto_reply_rate: 0,
-        avg_response_time: '—',
-      });
-    }
-    
-    const conversations = await convRes.json();
-    
-    // Compute daily message volume for the last 7 days
     const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const dailyTotals = Array(7).fill(0);
     const dailyAuto = Array(7).fill(0);
     
-    conversations.forEach(conv => {
-      (conv.messages || []).forEach(msg => {
-        const d = new Date(msg.timestamp);
-        // Only count last 7 days
-        const daysAgo = Math.floor((Date.now() - d.getTime()) / 86400000);
-        if (daysAgo >= 0 && daysAgo < 7) {
-          const idx = 6 - daysAgo;
-          dailyTotals[idx]++;
-          if (msg.direction === 'out') dailyAuto[idx]++;
-        }
-      });
-    });
+    // Optionally filter by client
+    let whereClause = '';
+    const params = [];
+    if (req.query.client_id) {
+      whereClause = 'WHERE client_id = ?';
+      params.push(parseInt(req.query.client_id));
+    }
     
-    const totalMessages = dailyTotals.reduce((s, v) => s + v, 0);
-    const totalAuto = dailyAuto.reduce((s, v) => s + v, 0);
+    const rows = query(
+      `SELECT direction, timestamp FROM messages ${whereClause} ORDER BY timestamp DESC LIMIT 10000`,
+      params
+    );
+    
+    let totalMessages = 0;
+    let totalAuto = 0;
+    let totalConversations = 0;
+    
+    // Track unique phone numbers for conversation count
+    const uniquePhones = new Set();
+    
+    for (const row of rows) {
+      const d = new Date(row.timestamp);
+      const daysAgo = Math.floor((Date.now() - d.getTime()) / 86400000);
+      if (daysAgo >= 0 && daysAgo < 7) {
+        const idx = 6 - daysAgo;
+        dailyTotals[idx]++;
+        if (row.direction === 'out') dailyAuto[idx]++;
+      }
+      // Count all messages regardless of date
+      totalMessages++;
+      if (row.direction === 'out') totalAuto++;
+    }
+    
+    // Count unique conversations (phones with messages)
+    const convQuery = req.query.client_id
+      ? 'SELECT DISTINCT phone FROM messages WHERE client_id = ?'
+      : 'SELECT DISTINCT phone FROM messages';
+    const convRows = query(convQuery, req.query.client_id ? [parseInt(req.query.client_id)] : []);
+    totalConversations = convRows.length;
+    
+    const recentTotal = dailyTotals.reduce((s, v) => s + v, 0);
+    const recentAuto = dailyAuto.reduce((s, v) => s + v, 0);
     
     res.json({
       daily: dayLabels.map((label, i) => ({
@@ -693,9 +707,11 @@ app.get('/api/analytics/messages', async (req, res) => {
       total_messages: totalMessages,
       auto_reply_rate: totalMessages > 0 ? Math.round((totalAuto / totalMessages) * 100) : 0,
       avg_response_time: totalMessages > 0 ? '< 1 min' : '—',
+      conversations: totalConversations,
     });
-  } catch {
-    res.json({ daily: [], total_messages: 0, auto_reply_rate: 0, avg_response_time: '—' });
+  } catch (e) {
+    console.error('[ANALYTICS] Error:', e.message);
+    res.json({ daily: [], total_messages: 0, auto_reply_rate: 0, avg_response_time: '—', conversations: 0 });
   }
 });
 
