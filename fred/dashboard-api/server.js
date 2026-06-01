@@ -349,6 +349,57 @@ app.get('/api/messages/conversations', (req, res) => {
   res.json(result);
 });
 
+// ── PER-CLIENT CONVERSATIONS ──
+app.get('/api/messages/conversations/:clientId', (req, res) => {
+  const clientId = parseInt(req.params.clientId);
+  if (!clientId) return res.status(400).json({ error: 'Invalid client ID' });
+  
+  const rows = query(
+    `SELECT phone, name, direction, text, timestamp, client_id
+     FROM messages
+     WHERE client_id = ?
+     ORDER BY timestamp DESC
+     LIMIT 10000`,
+    [clientId]
+  );
+  
+  const grouped = {};
+  for (const row of rows) {
+    if (!grouped[row.phone]) {
+      grouped[row.phone] = {
+        name: row.name,
+        phone: row.phone,
+        client_id: row.client_id,
+        messages: [],
+        autoReplied: 0,
+        humanRequests: 0,
+        firstSeen: row.timestamp,
+        lastSeen: row.timestamp
+      };
+    }
+    const conv = grouped[row.phone];
+    conv.messages.push({
+      direction: row.direction,
+      text: row.text,
+      timestamp: row.timestamp
+    });
+    if (row.direction === 'out') conv.autoReplied++;
+    else conv.humanRequests++;
+    if (row.timestamp < conv.firstSeen) conv.firstSeen = row.timestamp;
+    if (row.timestamp > conv.lastSeen) conv.lastSeen = row.timestamp;
+  }
+  
+  const result = Object.values(grouped);
+  result.sort((a, b) => new Date(b.lastSeen) - new Date(a.lastSeen));
+  
+  for (const conv of result) {
+    conv.messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    conv.messages = conv.messages.slice(-500);
+  }
+  
+  res.json(result);
+});
+
 // ── PROFILE ──
 
 app.get('/api/profile', (req, res) => {
