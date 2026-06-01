@@ -158,6 +158,7 @@ app.post('/api/auth/signin', (req, res) => {
   if (users.length === 0) return res.status(401).json({ error: 'Invalid credentials' });
   
   const user = users[0];
+
   if (user.password !== hashPassword(password)) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
