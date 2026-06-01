@@ -15,7 +15,7 @@
  */
 
 const WHATSAPP_SERVER = 'http://localhost:3000';
-const GOOGLE_API_KEY = '***';
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || '***';
 
 /**
  * Send a WhatsApp notification when a delivery status changes

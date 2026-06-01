@@ -10,7 +10,7 @@
  *   GET  /api/google/geocode    — Geocoding API (address → coordinates)
  */
 
-const GOOGLE_API_KEY = '***';
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || '***';
 
 export default function setupGoogleRoutes(app) {
 
