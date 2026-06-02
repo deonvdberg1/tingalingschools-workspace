@@ -115,7 +115,17 @@ app.get('/tracking/:id', (req, res) => {
 // ── Dashboard SPA (built version) — must be last to avoid catching API routes ──
 const dashboardDistPath = path.join(__dirname, '..', 'dashboard-temp', 'dist');
 if (fs.existsSync(dashboardDistPath)) {
-  app.use(express.static(dashboardDistPath));
+  // Serve static assets with caching (JS/CSS get unique hashed filenames)
+  app.use(express.static(dashboardDistPath, {
+    maxAge: '1y',
+    immutable: true,
+    setHeaders: (res, filePath) => {
+      // Don't cache HTML — always fresh for SPA routing
+      if (filePath.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      }
+    },
+  }));
   console.log(`[Static] Serving built dashboard from /`);
   
   // SPA fallback for all non-API routes — serve index.html for client-side routing
@@ -123,6 +133,14 @@ if (fs.existsSync(dashboardDistPath)) {
     if (req.path.startsWith('/api/') || req.path.startsWith('/driver/') || req.path.startsWith('/tracking/')) {
       return next();
     }
+    // Force browser to bypass any cached version with aggressive no-cache headers
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, private');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    // Cloudflare cache bypass: send unique ETag based on build time
+    const buildVersion = 'v1_' + Date.now();
+    res.setHeader('ETag', buildVersion);
     res.sendFile(path.join(dashboardDistPath, 'index.html'));
   });
 } else {
