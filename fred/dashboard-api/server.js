@@ -715,6 +715,219 @@ app.get('/api/analytics/messages', (req, res) => {
   }
 });
 
+// ── ANALYTICS: Hourly Trends ──
+app.get('/api/analytics/hourly', (req, res) => {
+  try {
+    let whereClause = '';
+    const params = [];
+    if (req.query.client_id) {
+      whereClause = 'WHERE client_id = ?';
+      params.push(parseInt(req.query.client_id));
+    }
+    
+    const rows = query(
+      `SELECT direction, timestamp FROM messages ${whereClause} ORDER BY timestamp`,
+      params
+    );
+    
+    // Aggregate by hour of day (0-23)
+    const hourlyTotals = Array(24).fill(0);
+    const hourlyAuto = Array(24).fill(0);
+    const hourlyHuman = Array(24).fill(0);
+    
+    for (const row of rows) {
+      const d = new Date(row.timestamp);
+      const hour = d.getHours();
+      hourlyTotals[hour]++;
+      if (row.direction === 'out') {
+        hourlyAuto[hour]++;
+      } else {
+        hourlyHuman[hour]++;
+      }
+    }
+    
+    res.json({
+      hourly: Array.from({ length: 24 }, (_, i) => ({
+        hour: i,
+        label: `${i.toString().padStart(2, '0')}:00`,
+        total: hourlyTotals[i],
+        auto: hourlyAuto[i],
+        human: hourlyHuman[i],
+      })),
+      busiest_hour: hourlyTotals.indexOf(Math.max(...hourlyTotals)),
+      peak_volume: Math.max(...hourlyTotals),
+    });
+  } catch (e) {
+    console.error('[ANALYTICS hourly] Error:', e.message);
+    res.json({ hourly: [], busiest_hour: 0, peak_volume: 0 });
+  }
+});
+
+// ── ANALYTICS: Response Times ──
+app.get('/api/analytics/response-times', (req, res) => {
+  try {
+    let whereClause = '';
+    const params = [];
+    if (req.query.client_id) {
+      whereClause = 'AND client_id = ?';
+      params.push(parseInt(req.query.client_id));
+    }
+    
+    // Get all messages ordered by phone then timestamp
+    const rows = query(
+      `SELECT phone, direction, timestamp FROM messages WHERE 1=1 ${whereClause} ORDER BY phone, timestamp ASC`,
+      params
+    );
+    
+    // Calculate response times: time between an 'in' message and the next 'out' message by same phone
+    let totalResponseMs = 0;
+    let responseCount = 0;
+    let fastestMs = Infinity;
+    let slowestMs = 0;
+    
+    // Daily average response times
+    const dayBuckets = {};  // 'YYYY-MM-DD' -> { total: 0, count: 0 }
+    
+    // Per-conversation pairs: for each phone, find in->out pairs
+    let currentPhone = null;
+    let lastInTime = null;
+    
+    for (const row of rows) {
+      if (row.phone !== currentPhone) {
+        currentPhone = row.phone;
+        lastInTime = null;
+      }
+      
+      if (row.direction === 'in') {
+        lastInTime = new Date(row.timestamp).getTime();
+      } else if (row.direction === 'out' && lastInTime !== null) {
+        const inTime = lastInTime;
+        const outTime = new Date(row.timestamp).getTime();
+        const diffMs = outTime - inTime;
+        
+        // Only count if response is within 24 hours (ignore edge cases)
+        if (diffMs > 0 && diffMs < 86400000) {
+          totalResponseMs += diffMs;
+          responseCount++;
+          if (diffMs < fastestMs) fastestMs = diffMs;
+          if (diffMs > slowestMs) slowestMs = diffMs;
+          
+          const day = new Date(row.timestamp).toISOString().slice(0, 10);
+          if (!dayBuckets[day]) dayBuckets[day] = { total: 0, count: 0 };
+          dayBuckets[day].total += diffMs;
+          dayBuckets[day].count++;
+        }
+        
+        lastInTime = null; // Reset to avoid pairing multiple outs to one in
+      }
+    }
+    
+    // Build daily trends
+    const dailyTrends = Object.entries(dayBuckets)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .slice(-14) // Last 14 days
+      .map(([date, data]) => ({
+        date,
+        avg_seconds: Math.round(data.total / data.count / 1000),
+        response_count: data.count,
+      }));
+    
+    const avgSeconds = responseCount > 0 ? Math.round(totalResponseMs / responseCount / 1000) : 0;
+    
+    res.json({
+      avg_response_seconds: avgSeconds,
+      avg_response_display: avgSeconds < 60 
+        ? `${avgSeconds}s` 
+        : avgSeconds < 3600 
+          ? `${Math.floor(avgSeconds / 60)}m ${avgSeconds % 60}s`
+          : `${Math.floor(avgSeconds / 3600)}h ${Math.floor((avgSeconds % 3600) / 60)}m`,
+      fastest_seconds: fastestMs === Infinity ? 0 : Math.round(fastestMs / 1000),
+      slowest_seconds: Math.round(slowestMs / 1000),
+      responses_measured: responseCount,
+      daily_trends: dailyTrends,
+    });
+  } catch (e) {
+    console.error('[ANALYTICS response-times] Error:', e.message);
+    res.json({ avg_response_seconds: 0, avg_response_display: '—', fastest_seconds: 0, slowest_seconds: 0, responses_measured: 0, daily_trends: [] });
+  }
+});
+
+// ── ANALYTICS: Product Stats ──
+app.get('/api/analytics/products', (req, res) => {
+  try {
+    const products = query(`
+      SELECT 
+        cp.product_key,
+        cp.product_name,
+        COUNT(DISTINCT cp.client_id) as client_count,
+        GROUP_CONCAT(c.name) as client_names
+      FROM client_products cp
+      LEFT JOIN clients c ON c.id = cp.client_id
+      WHERE cp.status = 'active'
+      GROUP BY cp.product_key
+      ORDER BY client_count DESC
+    `);
+    
+    // Get message counts per product/client
+    const productMessages = query(`
+      SELECT 
+        cp.product_key,
+        cp.product_name,
+        m.client_id,
+        COUNT(*) as msg_count
+      FROM messages m
+      JOIN client_products cp ON cp.client_id = m.client_id
+      WHERE cp.status = 'active'
+      GROUP BY cp.product_key, m.client_id
+    `);
+    
+    res.json({
+      products,
+      product_messages: productMessages,
+    });
+  } catch (e) {
+    console.error('[ANALYTICS products] Error:', e.message);
+    res.json({ products: [], product_messages: [] });
+  }
+});
+
+// ── ANALYTICS: CSV Export ──
+app.get('/api/analytics/export', (req, res) => {
+  try {
+    const format = req.query.format || 'csv';
+    let whereClause = '';
+    const params = [];
+    if (req.query.client_id) {
+      whereClause = 'WHERE client_id = ?';
+      params.push(parseInt(req.query.client_id));
+    }
+    
+    const rows = query(
+      `SELECT id, client_id, phone, name, direction, text, timestamp FROM messages ${whereClause} ORDER BY timestamp DESC LIMIT 50000`,
+      params
+    );
+    
+    if (format === 'csv') {
+      const headers = ['ID', 'Client ID', 'Phone', 'Name', 'Direction', 'Message', 'Timestamp'];
+      const csvRows = rows.map(r => {
+        const escaped = (r.text || '').replace(/"/g, '""');
+        return [r.id, r.client_id, r.phone, r.name, r.direction, `"${escaped}"`, r.timestamp].join(',');
+      });
+      
+      const csv = [headers.join(','), ...csvRows].join('\n');
+      
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename="analytics-export-${new Date().toISOString().slice(0, 10)}.csv"`);
+      res.send(csv);
+    } else {
+      res.json({ messages: rows, total: rows.length });
+    }
+  } catch (e) {
+    console.error('[ANALYTICS export] Error:', e.message);
+    res.status(500).json({ error: 'Export failed' });
+  }
+});
+
 // ── BROADCAST ──
 
 // Broadcast log (in-memory — persists across restarts via DB eventually)
