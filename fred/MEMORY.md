@@ -243,11 +243,13 @@ Each client agent has:
 
 ## 🗺️ Product Roadmap
 
-### Phase 1: Analytics & Reporting (IN PROGRESS)
-- Message analytics dashboard — volume trends, auto-reply rate, response times, busiest hours
-- Per-product stats — each product reports its own metrics automatically
-- Exportable reports — PDF/CSV for client visibility
-- Health score — green/yellow/red per client
+### Phase 1: Analytics & Reporting ✅ COMPLETE
+- ✅ Message analytics dashboard — volume trends, auto-reply rate, response times, busiest hours — live at /analytics/overview
+- ✅ Busiest hours page — 24h breakdown with peak hour — live at /analytics/messages
+- ✅ Response time trends — avg/fastest/slowest + daily trend — live at /analytics/compare
+- ✅ Per-product stats — per-product client counts and message volumes
+- ✅ CSV export — one-click download on analytics overview
+- ✅ Health score — green/yellow/red per client — live at /health
 
 ### Phase 2: Billing & Subscriptions
 - Stripe integration — automated client charging
@@ -272,8 +274,9 @@ Each client agent has:
 1. ✅ Named tunnel
 2. ✅ Multi-client refactor
 3. ✅ Company registration
-4. 🟡 **Phase 1: Analytics & Reporting** (building now)
+4. ✅ **Phase 1: Analytics & Reporting** (complete)
 5. 🟡 UPS purchase — R1,293 APC 650VA (Takealot)
+6. 🟡 **Phase 2: Billing & Subscriptions** (next)
 6. ❌ Parent opt-in campaign — need parent contact list
 7. ❌ Client #2 onboarding
 

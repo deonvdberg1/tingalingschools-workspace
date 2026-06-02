@@ -1,6 +1,6 @@
 # Current Task — Master Context
 
-**Last updated:** 2026-05-29 10:34 SAST
+**Last updated:** 2026-06-02 10:48 SAST
 **Channels active:** Telegram (@Fredtheautoguy_bot) ✅ | Webchat ✅
 **Founder:** Mr D (Richards Bay, SA)
 **Agent:** Fred — independent AI entrepreneur, CEO of AutoEffortless
@@ -80,13 +80,21 @@ Saved at: `whatsapp-server/tunnel-url.txt`
 
 ---
 
+## Phase 1: Analytics & Reporting ✅ COMPLETE
+- Analytics Overview — KPIs, message volume chart, daily breakdown ✅
+- Busiest Hours — 24h bar chart + hourly breakdown table ✅
+- Response Times — avg/fastest/slowest + daily trends ✅
+- Per-product stats — WhatsApp, Live Tracking, Instagram ✅
+- CSV export — one-click download ✅
+- Health score — per-client health monitoring ✅
+
 ## 📋 What's Next
 
-1. **Parent opt-in campaign** — send intro message to get parents to message the bot
-2. **Display name follow-up** — check if Meta resolves "Tingaling" review
-3. **~~Install named tunnel~~** — ✅ COMPLETED (2026-05-29) — permanent URL live
-4. **Demo video v2** — saved, needs polish
-5. **Real client onboarding** — Mr D's sales intros
+1. 🟡 **Phase 2: Billing & Subscriptions** — Stripe integration, per-product pricing, usage metering, invoicing
+2. **Parent opt-in campaign** — send intro message to get parents to message the bot
+3. **Real client onboarding** — Mr D's sales intros
+4. **UPS purchase** — R1,293 APC 650VA (Takealot)
+5. **Demo video v2** — saved, needs polish
 6. **Tingalingschools.com consolidation** — close old site, use single domain
 
 ---
