@@ -1,6 +1,20 @@
 # Heartbeat Monitor
 # Fred checks these on every session start
 
+## 2026-06-02 09:40 SAST — Full Restart After Shutdown — All Clear ✅
+✅ Clean restart from power-off
+✅ WhatsApp server (PID 1211, port 3000) — responding 200
+✅ Dashboard API (PID 1218, port 3001) — DB connected
+✅ Dashboard SPA (PID 1215, port 5173) — running
+✅ Cloudflare tingaling tunnel — 2 connections via JNB03 (QUIC)
+✅ Cloudflare tracking tunnel — running, 111 connections
+✅ Tunnel URL: whatsapp.autoeffortless.com — HTTP 200
+✅ All 8 LaunchAgents loaded (server, api, dashboard, tunnels, caffeinate, healthcheck, watchman, tracking)
+✅ Crontab intact: watchman (5min), healthcheck (15min), backup (hourly)
+✅ All cron jobs running
+✅ Disk: 60Gi free / 228Gi (23% used)
+✅ GitHub: all pre-shutdown changes pushed
+
 ## 2026-05-29 11:41 SAST — Email Live + Monitoring Complete
 ✅ Message cap raised 50→500
 ✅ SQLite sync live — messages persist in dashboard DB

@@ -103,7 +103,7 @@ previous_status=""
 
 # Only alert if status CHANGED (ok→fail or fail→ok)
 if [ "$current_status" != "$previous_status" ]; then
-  if [ -n "$FAILURES" ] && [ -n "$TOKEN" ] && [ -n "$PHONE_ID" ]; then
+  if [ -n "$TOKEN" ] && [ -n "$PHONE_ID" ]; then
     if [ "$current_status" = "critical" ]; then
       ALERT_MSG="🔴 *AutoEffortless Alert* — Services DOWN\\n\\nFailures:$FAILURES\\nTime: $(date '+%Y-%m-%d %H:%M SAST')"
     elif [ "$current_status" = "warning" ]; then
