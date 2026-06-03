@@ -552,6 +552,10 @@ app.get("/api/phone-lookup/:number", (req, res) => {
     return res.status(404).json({ error: "No client found for this number" });
   }
   
+  // Look up the WABA config for this client (phone number they're assigned to)
+  const wabaConfigs = query('SELECT * FROM waba_configs WHERE client_id = ?', [match.id]);
+  const wabaConfig = wabaConfigs[0] || null;
+  
   res.json({
     client_id: match.id,
     client_name: match.name,
@@ -562,6 +566,9 @@ app.get("/api/phone-lookup/:number", (req, res) => {
     knowledge_base: match.knowledge_base || "",
     contact_phone: match.phone || "",
     contact_email: match.email || "",
+    phone_number_id: wabaConfig?.phone_number_id || "",
+    waba_id: wabaConfig?.waba_id || "",
+    waba_status: wabaConfig?.status || "",
   });
 });
 
@@ -1083,6 +1090,86 @@ app.put('/api/clients/:id/knowledge', requireAuth, (req, res) => {
     console.error(`[KB] Failed to write file: ${e.message}`);
   }
   
+  res.json({ success: true });
+});
+
+// ── WABA CONFIG (Option 3: BSP multi-tenant) ──
+
+// GET /api/waba/configs — list all WABA configurations (overlord only)
+app.get('/api/waba/configs', requireAuth, requireRole('overlord'), (req, res) => {
+  const configs = query(
+    `SELECT w.*, c.name as client_name
+     FROM waba_configs w
+     LEFT JOIN clients c ON c.id = w.client_id
+     ORDER BY w.created_at DESC`
+  );
+  res.json(configs);
+});
+
+// GET /api/waba/configs/unassigned — list unassigned phone numbers (not yet linked to a client)
+app.get('/api/waba/configs/unassigned', requireAuth, requireRole('overlord'), (req, res) => {
+  const configs = query('SELECT * FROM waba_configs WHERE client_id IS NULL ORDER BY created_at DESC');
+  res.json(configs);
+});
+
+// GET /api/clients/:id/waba — get WABA config for a specific client
+app.get('/api/clients/:id/waba', requireAuth, (req, res) => {
+  const configs = query('SELECT * FROM waba_configs WHERE client_id = ?', [req.params.id]);
+  res.json(configs[0] || null);
+});
+
+// POST /api/waba/configs — register a new phone number (overlord only)
+app.post('/api/waba/configs', requireAuth, requireRole('overlord'), (req, res) => {
+  const { waba_id, phone_number_id, display_name, business_name, notes } = req.body;
+  if (!waba_id || !phone_number_id) {
+    return res.status(400).json({ error: 'waba_id and phone_number_id are required' });
+  }
+  
+  try {
+    run(
+      'INSERT INTO waba_configs (waba_id, phone_number_id, display_name, business_name, notes) VALUES (?, ?, ?, ?, ?)',
+      [waba_id, phone_number_id, display_name || '', business_name || '', notes || '']
+    );
+    saveDb();
+    const config = query('SELECT * FROM waba_configs ORDER BY id DESC LIMIT 1')[0];
+    res.status(201).json(config);
+  } catch (e) {
+    if (e.message?.includes('UNIQUE')) {
+      return res.status(400).json({ error: 'Phone number ID already registered' });
+    }
+    res.status(500).json({ error: 'Failed to create config' });
+  }
+});
+
+// PUT /api/waba/configs/:id — update WABA config (assign to client, update status, etc.)
+app.put('/api/waba/configs/:id', requireAuth, requireRole('overlord'), (req, res) => {
+  const { client_id, display_name, business_name, status, meta_verified, notes } = req.body;
+  const fields = [];
+  const values = [];
+  
+  if (client_id !== undefined) { fields.push('client_id = ?'); values.push(client_id); }
+  if (display_name !== undefined) { fields.push('display_name = ?'); values.push(display_name); }
+  if (business_name !== undefined) { fields.push('business_name = ?'); values.push(business_name); }
+  if (status !== undefined) { fields.push('status = ?'); values.push(status); }
+  if (meta_verified !== undefined) { fields.push('meta_verified = ?'); values.push(meta_verified ? 1 : 0); }
+  if (notes !== undefined) { fields.push('notes = ?'); values.push(notes); }
+  
+  if (fields.length === 0) return res.status(400).json({ error: 'No fields to update' });
+  
+  fields.push("updated_at = datetime('now')");
+  values.push(req.params.id);
+  
+  run('UPDATE waba_configs SET ' + fields.join(', ') + ' WHERE id = ?', values);
+  saveDb();
+  
+  const config = query('SELECT * FROM waba_configs WHERE id = ?', [req.params.id]);
+  res.json(config[0] || { error: 'Not found' });
+});
+
+// DELETE /api/waba/configs/:id — remove a WABA config
+app.delete('/api/waba/configs/:id', requireAuth, requireRole('overlord'), (req, res) => {
+  run('DELETE FROM waba_configs WHERE id = ?', [req.params.id]);
+  saveDb();
   res.json({ success: true });
 });
 
