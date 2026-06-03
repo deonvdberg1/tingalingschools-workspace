@@ -1,12 +1,23 @@
 import React, { useEffect, useRef } from 'react';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
 
-// Use OpenFreeMap style JSON directly — the tile URL approach doesn't work
-const STYLE_URL = 'https://tiles.openfreemap.org/styles/liberty';
+const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || 'AIzaSyAiq6cnKih8GmQCTXzAW0qu71u0ks';
 
-const DEFAULT_CENTER = [32.0167, -28.7833]; // Richards Bay — MapLibre uses [lng, lat] order
-const DEFAULT_ZOOM = 14;
+// ── Google Maps script loader (singleton) ──
+let loadingPromise = null;
+function loadGoogleMaps() {
+  if (window.google?.maps) return Promise.resolve();
+  if (loadingPromise) return loadingPromise;
+
+  loadingPromise = new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=geometry&loading=async`;
+    script.async = true;
+    script.onload = () => resolve();
+    document.head.appendChild(script);
+  });
+
+  return loadingPromise;
+}
 
 export default function DriverMap({ position, accuracy, deliveries, driverId }) {
   const mapContainer = useRef(null);
@@ -14,23 +25,28 @@ export default function DriverMap({ position, accuracy, deliveries, driverId }) 
   const userMarker = useRef(null);
   const accuracyCircle = useRef(null);
   const deliveryMarkers = useRef([]);
+  const followRef = useRef(true);
 
   useEffect(() => {
     if (map.current || !mapContainer.current) return;
 
-    map.current = new maplibregl.Map({
-      container: mapContainer.current,
-      style: STYLE_URL,
-      center: DEFAULT_CENTER,
-      zoom: DEFAULT_ZOOM,
-      attributionControl: true,
+    loadGoogleMaps().then(() => {
+      map.current = new google.maps.Map(mapContainer.current, {
+        center: { lat: -28.7833, lng: 32.0167 },
+        zoom: 14,
+        disableDefaultUI: false,
+        zoomControl: true,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: true,
+        styles: [
+          { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+        ],
+      });
     });
-
-    map.current.addControl(new maplibregl.NavigationControl(), 'top-left');
 
     return () => {
       if (map.current) {
-        map.current.remove();
         map.current = null;
       }
     };
@@ -40,45 +56,52 @@ export default function DriverMap({ position, accuracy, deliveries, driverId }) 
   useEffect(() => {
     if (!map.current || !position) return;
 
-    const { lat, lng } = position;
+    const pos = { lat: position.lat, lng: position.lng };
 
     // Remove old accuracy circle
     if (accuracyCircle.current) {
-      accuracyCircle.current.remove();
+      accuracyCircle.current.setMap(null);
       accuracyCircle.current = null;
     }
 
     // Add accuracy circle
     if (accuracy && accuracy > 0) {
-      accuracyCircle.current = new maplibregl.Marker({
-        element: createAccuracyElement(accuracy),
-      })
-        .setLngLat([lng, lat])
-        .addTo(map.current);
+      accuracyCircle.current = new google.maps.Circle({
+        center: pos,
+        radius: accuracy,
+        map: map.current,
+        fillColor: '#2563eb',
+        fillOpacity: 0.08,
+        strokeColor: '#2563eb',
+        strokeOpacity: 0.2,
+        strokeWeight: 1,
+      });
     }
 
     // Update or create user marker
     if (userMarker.current) {
-      userMarker.current.setLngLat([lng, lat]);
+      userMarker.current.setPosition(pos);
     } else {
-      const el = document.createElement('div');
-      el.className = 'user-marker';
-      el.innerHTML = `
-        <div style="
-          width: 20px; height: 20px; 
-          background: #2563eb; 
-          border: 3px solid white; 
-          border-radius: 50%;
-          box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
-        "></div>
-      `;
-      userMarker.current = new maplibregl.Marker({ element: el })
-        .setLngLat([lng, lat])
-        .addTo(map.current);
+      userMarker.current = new google.maps.Marker({
+        position: pos,
+        map: map.current,
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 10,
+          fillColor: '#2563eb',
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 3,
+        },
+        zIndex: 1000,
+        title: 'You',
+      });
     }
 
-    // Smoothly pan to follow user
-    map.current.panTo([lng, lat], { duration: 500 });
+    // Follow user — smooth pan
+    if (followRef.current) {
+      map.current.panTo(pos);
+    }
   }, [position, accuracy]);
 
   // Update delivery markers
@@ -86,43 +109,45 @@ export default function DriverMap({ position, accuracy, deliveries, driverId }) 
     if (!map.current) return;
 
     // Clear old markers
-    deliveryMarkers.current.forEach(m => m.remove());
+    deliveryMarkers.current.forEach(m => m.setMap(null));
     deliveryMarkers.current = [];
 
     deliveries.forEach(d => {
       if (!d.lat || !d.lng) return;
 
       const color = statusColor(d.status);
-      const el = document.createElement('div');
-      el.innerHTML = `
-        <div style="
-          width: 24px; height: 24px;
-          background: ${color};
-          border: 2px solid white;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 11px;
-          font-weight: 700;
-          color: white;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        ">${d.id}</div>
-      `;
+      const pos = { lat: d.lat, lng: d.lng };
 
-      const marker = new maplibregl.Marker({ element: el })
-        .setLngLat([d.lng, d.lat])
-        .setPopup(
-          new maplibregl.Popup({ offset: 25 })
-            .setHTML(`
-              <strong>${d.customer_name}</strong><br/>
-              ${d.customer_address || ''}<br/>
-              <span style="font-size:11px;text-transform:uppercase;color:#666">
-                ${d.status.replace('_', ' ')}
-              </span>
-            `)
-        )
-        .addTo(map.current);
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28">
+        <circle cx="14" cy="14" r="11" fill="${color}" stroke="white" stroke-width="3"/>
+        <text x="14" y="19" text-anchor="middle" fill="white" font-size="12" font-weight="700">${d.id}</text>
+      </svg>`;
+
+      const marker = new google.maps.Marker({
+        position: pos,
+        map: map.current,
+        icon: {
+          url: 'data:image/svg+xml,' + encodeURIComponent(svg),
+          anchor: new google.maps.Point(14, 14),
+        },
+        title: d.customer_name,
+      });
+
+      const infoWindow = new google.maps.InfoWindow({
+        content: `
+          <div style="font-family:-apple-system,sans-serif;padding:4px;max-width:220px;">
+            <strong>${escapeHtml(d.customer_name)}</strong><br/>
+            ${escapeHtml(d.customer_address || '')}<br/>
+            <span style="font-size:11px;text-transform:uppercase;color:#666;">
+              ${d.status.replace('_', ' ')}
+            </span>
+          </div>
+        `,
+      });
+
+      marker.addListener('click', () => {
+        infoWindow.open(map.current, marker);
+      });
 
       deliveryMarkers.current.push(marker);
     });
@@ -141,15 +166,8 @@ function statusColor(status) {
   }
 }
 
-function createAccuracyElement(radius) {
-  const el = document.createElement('div');
-  const size = Math.min(Math.max(radius * 2, 20), 400);
-  el.style.width = `${size}px`;
-  el.style.height = `${size}px`;
-  el.style.borderRadius = '50%';
-  el.style.background = 'rgba(37, 99, 235, 0.1)';
-  el.style.border = '1px solid rgba(37, 99, 235, 0.3)';
-  el.style.pointerEvents = 'none';
-  el.style.transform = `translate(-50%, -50%)`;
-  return el;
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }

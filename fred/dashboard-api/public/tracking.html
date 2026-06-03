@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Track Your Delivery</title>
-  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css" />
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
@@ -176,9 +175,17 @@
     </div>
   </div>
 
-  <script src="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.js"></script>
+  <script>
+    (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+      key: 'AIzaSyAiq6cnKih8GmQCTXzAW0qu71u0ks',
+      v: 'weekly',
+      // Use the callback loading approach for the old API
+    });
+  </script>
+
   <script>
     const API_BASE = window.location.origin;
+    const GOOGLE_API_KEY = 'AIzaSyAiq6cnKih8GmQCTXzAW0qu71u0ks';
     const deliveryId = window.location.pathname.split('/').pop();
     const REFRESH_INTERVAL = 15000; // 15 seconds
 
@@ -320,53 +327,138 @@
       return div.innerHTML;
     }
 
+    // ── Google Maps Loader ──
+    let mapsLoaded = false;
+    const mapLoadQueue = [];
+
+    function loadGoogleMaps() {
+      return new Promise((resolve) => {
+        if (window.google && window.google.maps) {
+          resolve();
+          return;
+        }
+        mapLoadQueue.push(resolve);
+        if (mapsLoaded) return;
+
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&loading=async`;
+        script.async = true;
+        script.onload = () => {
+          mapsLoaded = true;
+          mapLoadQueue.forEach(fn => fn());
+          mapLoadQueue.length = 0;
+        };
+        document.head.appendChild(script);
+      });
+    }
+
     function initMap(data) {
+      if (!data.delivery_lat || !data.delivery_lng) return;
+
+      const deliveryPos = { lat: data.delivery_lat, lng: data.delivery_lng };
+
       if (!map) {
-        map = new maplibregl.Map({
-          container: 'map',
-          style: 'https://tiles.openfreemap.org/styles/liberty',
-          center: [data.delivery_lng || 32.0167, data.delivery_lat || -28.7833],
-          zoom: 13,
+        loadGoogleMaps().then(() => {
+          map = new google.maps.Map(document.getElementById('map'), {
+            center: deliveryPos,
+            zoom: 13,
+            mapTypeControl: true,
+            streetViewControl: true,
+            fullscreenControl: true,
+            zoomControl: true,
+          });
+
+          // Delivery marker
+          deliveryMarker = new google.maps.Marker({
+            position: deliveryPos,
+            map: map,
+            icon: {
+              url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
+              labelOrigin: new google.maps.Point(16, 12),
+            },
+            title: data.customer_name,
+          });
+
+          const deliveryInfo = new google.maps.InfoWindow({
+            content: `<strong>${escapeHtml(data.customer_name)}</strong><br/>${escapeHtml(data.customer_address)}`,
+          });
+          deliveryMarker.addListener('click', () => deliveryInfo.open(map, deliveryMarker));
+
+          // Driver marker if en route
+          if (data.driver_location && data.status !== 'delivered') {
+            const driverPos = { lat: data.driver_location.lat, lng: data.driver_location.lng };
+            driverMarker = new google.maps.Marker({
+              position: driverPos,
+              map: map,
+              icon: {
+                url: 'https://maps.google.com/mapfiles/ms/icons/truck.png',
+                labelOrigin: new google.maps.Point(16, 12),
+              },
+              title: 'Driver',
+              zIndex: 100,
+            });
+
+            const driverInfo = new google.maps.InfoWindow({
+              content: `<strong>Driver</strong><br/>Speed: ${Math.round(data.driver_location.speed * 3.6)} km/h`,
+            });
+            driverMarker.addListener('click', () => driverInfo.open(map, driverMarker));
+          }
+
+          // Fit bounds
+          fitMapBounds(data);
         });
-        map.addControl(new maplibregl.NavigationControl(), 'top-right');
-      }
+      } else {
+        // Update existing markers
+        if (deliveryMarker) {
+          deliveryMarker.setPosition(deliveryPos);
+        } else {
+          deliveryMarker = new google.maps.Marker({
+            position: deliveryPos,
+            map: map,
+            icon: { url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' },
+            title: data.customer_name,
+          });
+        }
 
-      // Delivery destination marker
-      if (deliveryMarker) deliveryMarker.remove();
+        if (driverMarker) {
+          if (data.driver_location && data.status !== 'delivered') {
+            driverMarker.setPosition({ lat: data.driver_location.lat, lng: data.driver_location.lng });
+            driverMarker.setMap(map);
+          } else {
+            driverMarker.setMap(null);
+          }
+        } else if (data.driver_location && data.status !== 'delivered') {
+          driverMarker = new google.maps.Marker({
+            position: { lat: data.driver_location.lat, lng: data.driver_location.lng },
+            map: map,
+            icon: { url: 'https://maps.google.com/mapfiles/ms/icons/truck.png' },
+            title: 'Driver',
+            zIndex: 100,
+          });
+        }
+
+        fitMapBounds(data);
+      }
+    }
+
+    function fitMapBounds(data) {
+      if (!map) return;
+
+      const bounds = new google.maps.LatLngBounds();
+      let hasPoint = false;
+
       if (data.delivery_lat && data.delivery_lng) {
-        const el = document.createElement('div');
-        el.innerHTML = '📍';
-        el.style.fontSize = '32px';
-        el.style.textShadow = '0 1px 3px rgba(0,0,0,0.3)';
-        deliveryMarker = new maplibregl.Marker({ element: el })
-          .setLngLat([data.delivery_lng, data.delivery_lat])
-          .setPopup(new maplibregl.Popup().setHTML(`<strong>${escapeHtml(data.customer_name)}</strong><br/>${escapeHtml(data.customer_address)}`))
-          .addTo(map);
+        bounds.extend({ lat: data.delivery_lat, lng: data.delivery_lng });
+        hasPoint = true;
       }
 
-      // Driver marker
-      if (driverMarker) driverMarker.remove();
       if (data.driver_location && data.status !== 'delivered') {
-        const el = document.createElement('div');
-        el.innerHTML = '🚛';
-        el.style.fontSize = '32px';
-        el.style.textShadow = '0 1px 3px rgba(0,0,0,0.3)';
-        driverMarker = new maplibregl.Marker({ element: el })
-          .setLngLat([data.driver_location.lng, data.driver_location.lat])
-          .setPopup(new maplibregl.Popup().setHTML(`<strong>Driver</strong><br/>Speed: ${Math.round(data.driver_location.speed * 3.6)} km/h`))
-          .addTo(map);
+        bounds.extend({ lat: data.driver_location.lat, lng: data.driver_location.lng });
+        hasPoint = true;
       }
 
-      // Fit bounds to show both markers
-      if (data.delivery_lat && data.delivery_lng) {
-        const bounds = new maplibregl.LngLatBounds();
-        bounds.extend([data.delivery_lng, data.delivery_lat]);
-        if (data.driver_location) {
-          bounds.extend([data.driver_location.lng, data.driver_location.lat]);
-        }
-        if (!map.getBounds().contains(bounds.getNorthWest()) || !map.getBounds().contains(bounds.getSouthEast())) {
-          map.fitBounds(bounds, { padding: 60, maxZoom: 15 });
-        }
+      if (hasPoint) {
+        map.fitBounds(bounds, { top: 60, bottom: 60, left: 60, right: 60 });
       }
     }
 
