@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import { initDb, getDb, saveDb } from './db.js';
 import setupTrackingRoutes from './tracking-routes.js';
 import setupGoogleRoutes from './google-api.js';
+import setupBillingRoutes from './billing-routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,6 +19,10 @@ const HTTPS_PORT = 3443;
 const app = express();
 
 app.use(cors());
+
+// ── Special raw body parser for Stripe webhook ──
+app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
+
 app.use(express.json());
 
 let db;
@@ -82,6 +87,9 @@ function requireRole(...roles) {
 
 // ── Tracking routes (GPS, deliveries) ──
 setupTrackingRoutes(app, { query, run, saveDb });
+
+// ── Billing routes (subscriptions, invoices, usage, Stripe) ──
+setupBillingRoutes(app, { query, run, saveDb });
 
 // ── Google API proxy routes ──
 setupGoogleRoutes(app);
