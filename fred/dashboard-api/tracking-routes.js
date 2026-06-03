@@ -285,19 +285,19 @@ export default function setupTrackingRoutes(app, { query, run, saveDb }) {
       if (locs.length > 0) {
         driverLocation = locs[0];
         
-        // Real ETA via Google Distance Matrix (with traffic)
+        // Real ETA via server-side Google proxy (Routes API v2)
         if (delivery.lat && delivery.lng) {
           try {
             const origin = `${driverLocation.lat},${driverLocation.lng}`;
             const dest = `${delivery.lat},${delivery.lng}`;
-            const dmRes = await fetch(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(dest)}&key=${GOOGLE_API_KEY}&traffic_model=best_guess&departure_time=now&units=metric`);
+            const dmRes = await fetch(`http://localhost:3001/api/google/distance?origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(dest)}`);
             const dmData = await dmRes.json();
             if (dmData.status === 'OK' && dmData.rows[0]?.elements[0]?.status === 'OK') {
               const el = dmData.rows[0].elements[0];
               eta = {
-                minutes: Math.round((el.duration_in_traffic?.value || el.duration?.value) / 60),
-                text: el.duration_in_traffic?.text || el.duration?.text,
-                distance_text: el.distance?.text,
+                minutes: Math.round((el.duration_seconds || 0) / 60),
+                text: el.duration || `${Math.round((el.duration_seconds || 0) / 60)} mins`,
+                distance_text: el.distance,
               };
             }
           } catch {}

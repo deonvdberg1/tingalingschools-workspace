@@ -1,84 +1,153 @@
 /**
- * google-api.js — Google Maps API proxy routes
+ * google-api.js — Google Maps API proxy routes (v2 - New APIs)
  * 
- * Proxies Google API calls through the server so the API key 
- * stays server-side and isn't exposed to the browser.
- * 
- * Routes:
- *   GET  /api/google/directions — Directions API (driving route polyline)
- *   GET  /api/google/distance   — Distance Matrix API (real ETA with traffic)
- *   GET  /api/google/geocode    — Geocoding API (address → coordinates)
+ * Uses the newer Google APIs instead of legacy REST endpoints:
+ *   Directions  → Routes API v2 (computeRoutes)
+ *   Distance    → Routes API v2 (computeRouteMatrix)  
+ *   Geocoding   → Places API (New) (searchText)
  */
 
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || '***';
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || 'AIzaSy…DnP0';
 
 export default function setupGoogleRoutes(app) {
 
-  // ── Directions API — driving route between two points ──
+  // ── Directions API via Routes API v2 ──
   app.get('/api/google/directions', async (req, res) => {
     const { origin, destination, waypoints } = req.query;
     if (!origin || !destination) {
       return res.status(400).json({ error: 'origin and destination are required' });
     }
 
+    const parseLatLng = (str) => {
+      const parts = str.split(',');
+      if (parts.length === 2) {
+        const lat = parseFloat(parts[0]);
+        const lng = parseFloat(parts[1]);
+        if (!isNaN(lat) && !isNaN(lng)) return { latitude: lat, longitude: lng };
+      }
+      return null;
+    };
+
+    const originLoc = parseLatLng(origin);
+    const destLoc = parseLatLng(destination);
+
+    if (!originLoc || !destLoc) {
+      return res.status(400).json({ error: 'origin and destination must be lat,lng format' });
+    }
+
     try {
-      let url = `https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&key=${GOOGLE_API_KEY}&traffic_model=best_guess&departure_time=now`;
+      const body = {
+        origin: { location: { latLng: originLoc } },
+        destination: { location: { latLng: destLoc } },
+        travelMode: 'DRIVE',
+        routingPreference: 'TRAFFIC_AWARE',
+        computeAlternativeRoutes: false,
+        polylineQuality: 'HIGH_QUALITY',
+        languageCode: 'en',
+        units: 'METRIC',
+      };
 
-      if (waypoints) url += `&waypoints=${encodeURIComponent(waypoints)}`;
+      const response = await fetch('https://routes.googleapis.com/directions/v2:computeRoutes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Goog-Api-Key': GOOGLE_API_KEY,
+          'X-Goog-FieldMask': 'routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline,routes.legs.steps,routes.legs.startLocation,routes.legs.endLocation,routes.legs.distanceMeters,routes.legs.duration,routes.legs.polyline',
+        },
+        body: JSON.stringify(body),
+      });
 
-      const response = await fetch(url);
       const data = await response.json();
-      
-      if (data.status !== 'OK') {
-        return res.json({ status: data.status, error_message: data.error_message, routes: [] });
+
+      if (!data.routes || data.routes.length === 0) {
+        return res.json({ status: 'NOT_FOUND', error: data.error?.message || 'No routes found', routes: [] });
       }
 
-      // Extract the polyline and duration for the first route
       const route = data.routes[0];
-      const leg = route.legs[0];
-      
+      const leg = route.legs?.[0] || {};
+
+      // Convert duration from seconds to readable
+      const durationSec = parseInt(route.duration?.replace('s', '') || '0');
+      const durationText = durationSec > 3600 
+        ? `${Math.floor(durationSec / 3600)}h ${Math.floor((durationSec % 3600) / 60)}min`
+        : `${Math.floor(durationSec / 60)} mins`;
+
       res.json({
         status: 'OK',
-        polyline: route.overview_polyline?.points || null,
-        distance: leg.distance?.text || null,
-        distance_meters: leg.distance?.value || null,
-        duration: leg.duration_in_traffic?.text || leg.duration?.text || null,
-        duration_seconds: leg.duration_in_traffic?.value || leg.duration?.value || null,
-        start_location: leg.start_location,
-        end_location: leg.end_location,
-        summary: route.summary,
+        polyline: route.polyline?.encodedPolyline || null,
+        distance: leg.distanceMeters ? `${(leg.distanceMeters / 1000).toFixed(1)} km` : null,
+        distance_meters: leg.distanceMeters || null,
+        duration: durationText,
+        duration_seconds: durationSec,
+        start_location: leg.startLocation?.latLng || null,
+        end_location: leg.endLocation?.latLng || null,
+        summary: '',
       });
     } catch (e) {
       res.status(500).json({ error: e.message });
     }
   });
 
-  // ── Distance Matrix — ETA between multiple origins and destinations ──
+  // ── Distance Matrix via Routes API v2 ──
   app.get('/api/google/distance', async (req, res) => {
     const { origins, destinations } = req.query;
     if (!origins || !destinations) {
       return res.status(400).json({ error: 'origins and destinations are required' });
     }
 
-    try {
-      const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${encodeURIComponent(origins)}&destinations=${encodeURIComponent(destinations)}&key=${GOOGLE_API_KEY}&traffic_model=best_guess&departure_time=now&units=metric`;
+    const parseLatLng = (str) => {
+      const parts = str.split(',');
+      if (parts.length === 2) {
+        const lat = parseFloat(parts[0]);
+        const lng = parseFloat(parts[1]);
+        if (!isNaN(lat) && !isNaN(lng)) return { latitude: lat, longitude: lng };
+      }
+      return null;
+    };
 
-      const response = await fetch(url);
+    const originLoc = parseLatLng(origins);
+    const destLoc = parseLatLng(destinations);
+
+    if (!originLoc || !destLoc) {
+      return res.status(400).json({ error: 'origins and destinations must be lat,lng format' });
+    }
+
+    try {
+      const body = {
+        origins: [{ waypoint: { location: { latLng: originLoc } } }],
+        destinations: [{ waypoint: { location: { latLng: destLoc } } }],
+        travelMode: 'DRIVE',
+        routingPreference: 'TRAFFIC_AWARE',
+      };
+
+      const response = await fetch('https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Goog-Api-Key': GOOGLE_API_KEY,
+          'X-Goog-FieldMask': 'originIndex,destinationIndex,duration,distanceMeters,status,condition',
+        },
+        body: JSON.stringify(body),
+      });
+
       const data = await response.json();
 
-      if (data.status !== 'OK') {
-        return res.json({ status: data.status, rows: [] });
+      if (!Array.isArray(data)) {
+        return res.json({ status: 'ERROR', error: data.error?.message || 'Unknown error', results: [] });
       }
 
-      // Simplify the response
-      const elements = data.rows[0]?.elements || [];
-      const results = elements.map(e => ({
-        status: e.status,
-        distance: e.distance?.text || null,
-        distance_meters: e.distance?.value || null,
-        duration: e.duration_in_traffic?.text || e.duration?.text || null,
-        duration_seconds: e.duration_in_traffic?.value || e.duration?.value || null,
-      }));
+      const results = data.map(e => {
+        const durationSec = parseInt(e.duration?.replace('s', '') || '0');
+        return {
+          status: e.condition === 'ROUTE_EXISTS' ? 'OK' : 'NOT_FOUND',
+          distance: e.distanceMeters ? `${(e.distanceMeters / 1000).toFixed(1)} km` : null,
+          distance_meters: e.distanceMeters || null,
+          duration: durationSec > 3600 
+            ? `${Math.floor(durationSec / 3600)}h ${Math.floor((durationSec % 3600) / 60)}min`
+            : `${Math.floor(durationSec / 60)} mins`,
+          duration_seconds: durationSec,
+        };
+      });
 
       res.json({ status: 'OK', results });
     } catch (e) {
@@ -86,7 +155,7 @@ export default function setupGoogleRoutes(app) {
     }
   });
 
-  // ── Geocoding — address → lat/lng ──
+  // ── Geocoding via Places API (New) ──
   app.get('/api/google/geocode', async (req, res) => {
     const { address } = req.query;
     if (!address) {
@@ -94,27 +163,39 @@ export default function setupGoogleRoutes(app) {
     }
 
     try {
-      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_API_KEY}&region=za`;
+      const response = await fetch('https://places.googleapis.com/v1/places:searchText', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Goog-Api-Key': GOOGLE_API_KEY,
+          'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.location,places.id',
+        },
+        body: JSON.stringify({
+          textQuery: address,
+          languageCode: 'en',
+          maxResultCount: 1,
+          regionCode: 'ZA',
+        }),
+      });
 
-      const response = await fetch(url);
       const data = await response.json();
 
-      if (data.status !== 'OK' || !data.results?.length) {
-        return res.json({ status: data.status, results: [] });
+      if (!data.places || data.places.length === 0) {
+        return res.json({ status: 'NOT_FOUND', results: [] });
       }
 
-      const result = data.results[0];
+      const place = data.places[0];
       res.json({
         status: 'OK',
-        formatted_address: result.formatted_address,
-        lat: result.geometry.location.lat,
-        lng: result.geometry.location.lng,
-        place_id: result.place_id,
+        formatted_address: place.formattedAddress || place.displayName?.text || address,
+        lat: place.location?.latitude || null,
+        lng: place.location?.longitude || null,
+        place_id: place.id || null,
       });
     } catch (e) {
       res.status(500).json({ error: e.message });
     }
   });
 
-  console.log('[Google API] Routes loaded (Directions, Distance Matrix, Geocoding)');
+  console.log('[Google API] Routes loaded (Routes API v2, Places API)');
 }
