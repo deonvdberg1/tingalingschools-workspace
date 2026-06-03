@@ -322,28 +322,22 @@
     }
 
     // ── Google Maps Loader ──
-    let mapsLoaded = false;
-    const mapLoadQueue = [];
+    let mapsLoadPromise = null;
 
     function loadGoogleMaps() {
-      return new Promise((resolve) => {
-        if (window.google && window.google.maps) {
-          resolve();
-          return;
-        }
-        mapLoadQueue.push(resolve);
-        if (mapsLoaded) return;
+      if (mapsLoadPromise) return mapsLoadPromise;
+      if (window.google?.maps?.Map) return Promise.resolve();
 
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&loading=async`;
-        script.async = true;
-        script.onload = () => {
-          mapsLoaded = true;
-          mapLoadQueue.forEach(fn => fn());
-          mapLoadQueue.length = 0;
-        };
-        document.head.appendChild(script);
+      mapsLoadPromise = new Promise((resolve) => {
+        const s = document.createElement('script');
+        s.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&callback=__aeMapsReady`;
+        s.async = true;
+        s.onload = () => setTimeout(resolve, 500);
+        s.onerror = () => resolve();
+        document.head.appendChild(s);
       });
+
+      return mapsLoadPromise;
     }
 
     function initMap(data) {

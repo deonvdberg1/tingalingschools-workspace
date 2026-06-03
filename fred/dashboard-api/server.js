@@ -25,6 +25,19 @@ app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
 
 app.use(express.json());
 
+// ── Global no-cache for HTML to prevent Cloudflare edge caching ──
+app.use((req, res, next) => {
+  if (req.path.endsWith('.html') || req.path === '/' || req.path.startsWith('/tracking') || req.path.startsWith('/driver')) {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, private, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
+    res.setHeader('CDN-Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Cloudflare-CDN-Cache-Control', 'no-cache, no-store, must-revalidate');
+  }
+  next();
+});
+
 let db;
 
 // ── Helper: parametrised query ──
@@ -127,7 +140,7 @@ if (fs.existsSync(dashboardDistPath)) {
   app.use(express.static(dashboardDistPath, {
     maxAge: '1y',
     immutable: true,
-    index: 'app.html',  // Serve app.html instead of index.html to bypass Cloudflare cache
+    index: 'app_v3.html',  // Serve app_v3.html instead of index.html to bypass Cloudflare cache
     setHeaders: (res, filePath) => {
       // Don't cache HTML — always fresh for SPA routing
       if (filePath.endsWith('.html')) {
@@ -147,9 +160,9 @@ if (fs.existsSync(dashboardDistPath)) {
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-    // Serve app.html for ALL SPA routes to bypass Cloudflare's cached index.html
+    // Serve app_v3.html for ALL SPA routes to bypass Cloudflare's cached index.html
     // Once Cloudflare cache clears naturally, we revert to index.html
-    res.sendFile(path.join(dashboardDistPath, 'app.html'));
+    res.sendFile(path.join(dashboardDistPath, 'app_v3.html'));
   });
 } else {
   console.log(`[Static] Dashboard dist not found at ${dashboardDistPath} — not serving dashboard`);

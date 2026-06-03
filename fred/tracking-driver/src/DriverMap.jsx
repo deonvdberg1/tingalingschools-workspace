@@ -3,20 +3,21 @@ import React, { useEffect, useRef } from 'react';
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || 'AIzaSyB51Khe3T_6W5ECKk0fEWE3GhrrqfnDnP0';
 
 // ── Google Maps script loader (singleton) ──
-let loadingPromise = null;
+let loadPromise = null;
 function loadGoogleMaps() {
-  if (window.google?.maps) return Promise.resolve();
-  if (loadingPromise) return loadingPromise;
+  if (loadPromise) return loadPromise;
+  if (window.google?.maps?.Map) return Promise.resolve();
 
-  loadingPromise = new Promise((resolve) => {
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=geometry&loading=async`;
-    script.async = true;
-    script.onload = () => resolve();
-    document.head.appendChild(script);
+  loadPromise = new Promise((resolve) => {
+    const s = document.createElement('script');
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&libraries=geometry&callback=Function.prototype`;
+    s.async = true;
+    s.onload = () => setTimeout(resolve, 500);
+    s.onerror = () => resolve();
+    document.head.appendChild(s);
   });
 
-  return loadingPromise;
+  return loadPromise;
 }
 
 export default function DriverMap({ position, accuracy, deliveries, driverId }) {
@@ -58,13 +59,11 @@ export default function DriverMap({ position, accuracy, deliveries, driverId }) 
 
     const pos = { lat: position.lat, lng: position.lng };
 
-    // Remove old accuracy circle
     if (accuracyCircle.current) {
       accuracyCircle.current.setMap(null);
       accuracyCircle.current = null;
     }
 
-    // Add accuracy circle
     if (accuracy && accuracy > 0) {
       accuracyCircle.current = new google.maps.Circle({
         center: pos,
@@ -78,7 +77,6 @@ export default function DriverMap({ position, accuracy, deliveries, driverId }) 
       });
     }
 
-    // Update or create user marker
     if (userMarker.current) {
       userMarker.current.setPosition(pos);
     } else {
@@ -98,17 +96,14 @@ export default function DriverMap({ position, accuracy, deliveries, driverId }) 
       });
     }
 
-    // Follow user — smooth pan
     if (followRef.current) {
       map.current.panTo(pos);
     }
   }, [position, accuracy]);
 
-  // Update delivery markers
   useEffect(() => {
     if (!map.current) return;
 
-    // Clear old markers
     deliveryMarkers.current.forEach(m => m.setMap(null));
     deliveryMarkers.current = [];
 
