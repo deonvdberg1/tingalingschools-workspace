@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || 'AIzaSyCE-6gC-T9pdjDWA1EEhcSAaO8ntWZu0ks';
+const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY || 'AIzaSyB51Khe3T_6W5ECKk0fEWE3GhrrqfnDnP0';
 
 // ── Google Maps script loader (singleton) ──
 let loadingPromise = null;
