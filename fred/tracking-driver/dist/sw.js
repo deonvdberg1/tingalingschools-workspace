@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ae-driver-v1';
+const CACHE_NAME = 'ae-driver-v2';
 const ASSETS = [
   '/driver/',
   '/driver/index.html',

@@ -178,6 +178,9 @@
   <!-- Google Maps loaded via loadGoogleMaps() below -->
 
   <script>
+    // Define the callback Google Maps needs
+    window.__aeMapsReady = function() {};
+    
     const API_BASE = window.location.origin;
     const GOOGLE_API_KEY = 'AIzaSyB51Khe3T_6W5ECKk0fEWE3GhrrqfnDnP0';
     const deliveryId = window.location.pathname.split('/').pop();
@@ -330,7 +333,7 @@
 
       mapsLoadPromise = new Promise((resolve) => {
         const s = document.createElement('script');
-        s.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&callback=__aeMapsReady`;
+        s.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_API_KEY}&callback=Function.prototype`;
         s.async = true;
         s.onload = () => setTimeout(resolve, 500);
         s.onerror = () => resolve();
