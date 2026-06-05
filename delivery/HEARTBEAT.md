@@ -1,28 +1,33 @@
 # Heartbeat Monitor
 # Check these on every session start
 
-## 2026-06-03 — Google Maps Swap Complete (v2)
-- All three surfaces swapped from MapLibre → Google Maps JS API:
-  - **Dashboard Live Tracking** (DeliveryMap.tsx) — Google Maps with driver markers, delivery pins, route polylines, office marker, pin placement
-  - **Driver PWA** (DriverMap.jsx) — Google Maps with user position, accuracy circle, numbered delivery pins
-  - **Customer Tracking Page** (tracking.html) — Google Maps with truck + 📍 markers, ETA display
-- **Places (New) API** — AddressSearch.tsx uses `google.maps.importLibrary('places')` with SessionTokens
-- **Key:** `AIzaSy…DnP0` — verified working with Maps JS API, Places (New) API, and Geocoding
-- **Server-side APIs** updated: google-api.js uses Routes API v2 + Places API (New) instead of legacy endpoints
-- **Fixed:** Maps API now uses `callback=` + `importLibrary()` instead of bare `loading=async` to ensure full API readiness
-- MapLibre dependency removed from both frontends
-- Server running on port 3001 (HTTP) and 3443 (HTTPS/mkcert)
-- Cloudflare tunnel active: tracking.autoeffortless.com → localhost:3001
+## 2026-06-05 — Demo Mode Live + Driver PWA Fix
+
+### Issues Found & Fixed
+
+1. **Dashboard 404 / Customer 502** — Transient error from server restart while seeding demo data. Launchd auto-restarted; everything green now.
+
+2. **Driver PWA blank map** — Built `index.html` had literal `***` as Google Maps API key instead of the actual key. Vite doesn't substitute env vars in raw HTML templates. Fixed by putting the actual key in `index.html` and rebuilding.
+
+### Demo Data Seeded
+- **Client:** Trackman Demo (ID: 7)
+- **Driver:** delivery-01 (active, last seen seconds ago)
+- **Deliveries:** 5 Richards Bay deliveries (1 en_route to Sipho Zulu, 4 pending)
+- **GPS:** 19-point path along Arboretum → Veldenvlei
 
 ### URLs
-- Dashboard: https://app.autoeffortless.com/tracking
-- Driver PWA: https://tracking.autoeffortless.com/driver
-- Customer Tracking: https://tracking.autoeffortless.com/tracking/{id}
+- Dashboard: https://app.autoeffortless.com (demo@autoeffortless.com / demo123)
+- Driver PWA: https://tracking.autoeffortless.com/driver/
+- Customer Tracking: https://tracking.autoeffortless.com/tracking/7
 - API Health: https://tracking.autoeffortless.com/api/tracking/health
 
 ### Status
-- 🟢 All endpoints return 200
-- 🟢 API key valid and in all builds
+- 🟢 API server running on port 3001/3443, all endpoints 200
+- 🟢 WhatsApp server running on port 3000
+- 🟢 Cloudflare tunnels active (both tingaling + tracking)
+- 🟢 Google Maps JS API loading correctly on all 3 surfaces
+- 🟢 Routes API returning ETA data
 - 🟢 Places (New) API working for geocoding
-- 🟢 Maps JS API loading with correct key
-- 🟡 Routes API needs to be enabled for server-side directions/ETA
+- 🟢 Demo user login working
+- 🟢 Driver PWA rebuilt with correct API key
+- 🟡 WhatsApp notifications wired but need a dedicated WABA number (deferred until first client)
