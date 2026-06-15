@@ -1,0 +1,597 @@
+{
+  "27615274429": {
+    "name": "Deon",
+    "phone": "27615274429",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-29T07:42:41.367Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! How can I help you with Ting-A-Ling Schools today? 😊",
+        "timestamp": "2026-05-29T07:42:41.367Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-05-31T12:08:35.310Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello again! What can I help you with at Ting-A-Ling Schools today? 😊",
+        "timestamp": "2026-05-31T12:08:35.310Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-01T06:42:57.207Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-01T06:54:14.027Z"
+      },
+      {
+        "direction": "in",
+        "text": "Good morning",
+        "timestamp": "2026-06-01T06:54:43.680Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-01T06:57:57.464Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-01T07:19:24.044Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! How can I help you with Ting-A-Ling Schools today? 😊",
+        "timestamp": "2026-06-01T07:19:24.044Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-01T08:13:53.482Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! 😊 What would you like to know about Ting-A-Ling Schools?",
+        "timestamp": "2026-06-01T08:13:53.482Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-01T08:24:31.653Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! 😊 What can I help you with at Ting-A-Ling Schools today?",
+        "timestamp": "2026-06-01T08:24:31.653Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-01T11:34:09.135Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! 😊 What can I help you with at Ting-A-Ling Schools today?",
+        "timestamp": "2026-06-01T11:34:09.135Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-02T07:44:12.998Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! 😊 What can I help you with at Ting-A-Ling Schools today?",
+        "timestamp": "2026-06-02T07:44:12.998Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-02T09:07:33.407Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! 😊 What can I help you with at Ting-A-Ling Schools today?",
+        "timestamp": "2026-06-02T09:07:33.407Z"
+      },
+      {
+        "direction": "in",
+        "text": "Good morning",
+        "timestamp": "2026-06-03T05:54:40.155Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! 😊 What can I help you with at Ting-A-Ling Schools today?",
+        "timestamp": "2026-06-03T05:54:40.155Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-03T09:13:52.913Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! 😊 What can I help you with at Ting-A-Ling Schools today?",
+        "timestamp": "2026-06-03T09:13:52.913Z"
+      },
+      {
+        "direction": "in",
+        "text": "Ho do you have space available?",
+        "timestamp": "2026-06-03T16:49:45.575Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! Yes, enrolment is currently open for both our Pre-Primary and Special Needs schools. 😊 \n\nIf you'd like, I can tell you more about either school — just let me know which one you're interested in, or feel free to call the office at **0615274429 / 0724561282** or email **info@tingalingschools.com** to arrange a tour.",
+        "timestamp": "2026-06-03T16:49:45.575Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-04T07:15:39.919Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! 😊 Anything you'd like to know about Ting-A-Ling Schools?",
+        "timestamp": "2026-06-04T07:15:39.919Z"
+      }
+    ],
+    "firstSeen": "2026-05-29T07:42:41.367Z",
+    "lastSeen": "2026-06-04T07:15:39.919Z",
+    "autoReplied": 12,
+    "humanRequests": 4
+  },
+  "27721234567": {
+    "name": "Mr D (Dashboard)",
+    "phone": "27721234567",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "🚚 Your delivery from Ting-A-Ling Schools is on its way!\n\nTrack live: http://localhost:3001/tracking/1",
+        "timestamp": "2026-05-31T13:31:39.558Z"
+      },
+      {
+        "direction": "in",
+        "text": "✅ Your delivery from Ting-A-Ling Schools has been delivered!\n\nThank you for your business. 🎉",
+        "timestamp": "2026-05-31T13:56:21.750Z"
+      }
+    ],
+    "firstSeen": "2026-05-31T13:31:39.558Z",
+    "lastSeen": "2026-05-31T13:56:21.750Z",
+    "autoReplied": 0,
+    "humanRequests": 2
+  },
+  "27729876543": {
+    "name": "Mr D (Dashboard)",
+    "phone": "27729876543",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "🚚 Your delivery from Ting-A-Ling Schools is on its way!\n\nTrack live: http://localhost:3001/tracking/2",
+        "timestamp": "2026-05-31T13:55:53.370Z"
+      },
+      {
+        "direction": "in",
+        "text": "✅ Your delivery from Ting-A-Ling Schools has been delivered!\n\nThank you for your business. 🎉",
+        "timestamp": "2026-05-31T13:56:23.523Z"
+      }
+    ],
+    "firstSeen": "2026-05-31T13:55:53.370Z",
+    "lastSeen": "2026-05-31T13:56:23.523Z",
+    "autoReplied": 0,
+    "humanRequests": 2
+  },
+  "27724443322": {
+    "name": "Mr D (Dashboard)",
+    "phone": "27724443322",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "✅ Your delivery from Ting-A-Ling Schools has been delivered!\n\nThank you for your business. 🎉",
+        "timestamp": "2026-05-31T13:56:24.695Z"
+      }
+    ],
+    "firstSeen": "2026-05-31T13:56:24.695Z",
+    "lastSeen": "2026-05-31T13:56:24.695Z",
+    "autoReplied": 0,
+    "humanRequests": 1
+  },
+  "27727778899": {
+    "name": "Mr D (Dashboard)",
+    "phone": "27727778899",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "✅ Your delivery from Ting-A-Ling Schools has been delivered!\n\nThank you for your business. 🎉",
+        "timestamp": "2026-05-31T13:56:25.380Z"
+      }
+    ],
+    "firstSeen": "2026-05-31T13:56:25.380Z",
+    "lastSeen": "2026-05-31T13:56:25.380Z",
+    "autoReplied": 0,
+    "humanRequests": 1
+  },
+  "27725556677": {
+    "name": "Mr D (Dashboard)",
+    "phone": "27725556677",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "🚚 Your delivery from Ting-A-Ling Schools is on its way!\n\nTrack live: http://localhost:3001/tracking/3",
+        "timestamp": "2026-05-31T13:57:43.661Z"
+      }
+    ],
+    "firstSeen": "2026-05-31T13:57:43.661Z",
+    "lastSeen": "2026-05-31T13:57:43.661Z",
+    "autoReplied": 0,
+    "humanRequests": 1
+  },
+  "27607606356": {
+    "name": "Bianca Pretorius",
+    "phone": "27607606356",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-01T07:52:37.194Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello there! Welcome to Ting-A-Ling Schools. How can I help you today? 😊",
+        "timestamp": "2026-06-01T07:52:37.194Z"
+      },
+      {
+        "direction": "in",
+        "text": "I would like to know what the school hours are ?",
+        "timestamp": "2026-06-01T07:56:24.881Z"
+      },
+      {
+        "direction": "out",
+        "text": "Great question! The hours do differ slightly between our two schools. Are you asking about the **Pre-Primary School** or the **Special Needs School**? 😊",
+        "timestamp": "2026-06-01T07:56:24.881Z"
+      },
+      {
+        "direction": "in",
+        "text": "Special needs school",
+        "timestamp": "2026-06-01T07:57:41.049Z"
+      },
+      {
+        "direction": "out",
+        "text": "The Special Needs School operates from **07:00 to 13:00** on school days. For those who need it, aftercare is available until **17:00** 😊",
+        "timestamp": "2026-06-01T07:57:41.049Z"
+      },
+      {
+        "direction": "in",
+        "text": "Thank you very much",
+        "timestamp": "2026-06-01T08:00:30.118Z"
+      },
+      {
+        "direction": "out",
+        "text": "You're most welcome! If you have any other questions about enrolments, fees, or anything else, feel free to ask. 😊",
+        "timestamp": "2026-06-01T08:00:30.118Z"
+      }
+    ],
+    "firstSeen": "2026-06-01T07:52:37.194Z",
+    "lastSeen": "2026-06-01T08:00:30.118Z",
+    "autoReplied": 4,
+    "humanRequests": 0
+  },
+  "27734397695": {
+    "name": "Sma",
+    "phone": "27734397695",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-01T07:57:21.107Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello and welcome to Ting-A-Ling Schools! How can I help you today? 😊",
+        "timestamp": "2026-06-01T07:57:21.107Z"
+      },
+      {
+        "direction": "in",
+        "text": "I would like to know about the tracksuits please",
+        "timestamp": "2026-06-01T07:59:11.106Z"
+      },
+      {
+        "direction": "out",
+        "text": "Our tracksuits are R450 each and are part of the school uniform. Uniforms are available during purchase windows that will be announced by the school, and the full list and pricelist is also available from the office if you need more details. 😊",
+        "timestamp": "2026-06-01T07:59:11.106Z"
+      },
+      {
+        "direction": "in",
+        "text": "Okay thank you very much",
+        "timestamp": "2026-06-01T07:59:38.351Z"
+      },
+      {
+        "direction": "out",
+        "text": "You're most welcome! If you ever need anything else, feel free to reach out — the office is always happy to help at info@tingalingschools.com or 0615274429 / 0724561282. 😊",
+        "timestamp": "2026-06-01T07:59:38.351Z"
+      }
+    ],
+    "firstSeen": "2026-06-01T07:57:21.107Z",
+    "lastSeen": "2026-06-01T07:59:38.351Z",
+    "autoReplied": 3,
+    "humanRequests": 0
+  },
+  "27764418937": {
+    "name": "Kirsten",
+    "phone": "27764418937",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-01T07:58:26.496Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hi there! Welcome to Ting-A-Ling Schools. How can I help you today?",
+        "timestamp": "2026-06-01T07:58:26.496Z"
+      },
+      {
+        "direction": "in",
+        "text": "What ages do Ting-A-Ling start from?",
+        "timestamp": "2026-06-01T07:59:43.159Z"
+      },
+      {
+        "direction": "out",
+        "text": "Great question! We have two schools, so it depends which one you're asking about:\n\n- **Pre-Primary School** takes children from **2 to 6 years old**\n- **Special Needs School** takes children from **3 to 12 years old**\n\nWhich one were you interested in? 😊",
+        "timestamp": "2026-06-01T07:59:43.159Z"
+      },
+      {
+        "direction": "in",
+        "text": "Pre-Primary School",
+        "timestamp": "2026-06-01T08:00:09.457Z"
+      },
+      {
+        "direction": "out",
+        "text": "Our Pre-Primary School welcomes children from **2 to 6 years old**. We use a play-based learning approach with English integrated into the daily programme, and we offer half-day options as well. You can find us at 74 Krewilkring, Meerensee — feel free to pop in for a tour! 🙂",
+        "timestamp": "2026-06-01T08:00:09.457Z"
+      },
+      {
+        "direction": "in",
+        "text": "What are the operating hours?",
+        "timestamp": "2026-06-01T08:14:59.251Z"
+      },
+      {
+        "direction": "out",
+        "text": "Our Pre-Primary School runs from **07:00 to 17:00** weekdays, with different time options to suit your needs. The office is open from 07:00 to 15:30 if you need to pop in or give us a call. 😊",
+        "timestamp": "2026-06-01T08:14:59.251Z"
+      },
+      {
+        "direction": "in",
+        "text": "How much are the school fees?",
+        "timestamp": "2026-06-01T08:15:31.455Z"
+      },
+      {
+        "direction": "out",
+        "text": "Here are the Pre-Primary School fees — they depend on which time slot you choose:\n\n| Hours | Fee per month |\n|-------|:-------------:|\n| 07:00 – 13:00 | **R1,900** |\n| 07:00 – 15:00 | **R2,000** |\n| 07:00 – 17:00 | **R2,200** |\n\nFees are due on the 2nd of each month and payable for 11 months (January to November). There's also a one-time registration fee of R1,300. 😊",
+        "timestamp": "2026-06-01T08:15:31.455Z"
+      },
+      {
+        "direction": "in",
+        "text": "Is the school open during june/july holidays",
+        "timestamp": "2026-06-01T08:16:14.735Z"
+      },
+      {
+        "direction": "out",
+        "text": "Yes, the school does offer holiday programmes during the school breaks, including the June/July holiday period. The specific dates and details do vary, so it's best to give the office a call closer to the time for exact dates and to secure your child's spot. 😊\n\nIf you'd like more details, you can contact the school office at **info@tingalingschools.com**, **0615274429** or **0724561282** during office hours (07:00–15:30 weekdays).",
+        "timestamp": "2026-06-01T08:16:14.735Z"
+      },
+      {
+        "direction": "in",
+        "text": "Does the school provide breakfast or lunch",
+        "timestamp": "2026-06-01T08:16:48.854Z"
+      },
+      {
+        "direction": "out",
+        "text": "That information isn't available in what I have. I'd suggest giving the school office a call — they'll be able to let you know what's included. 😊\n\nYou can reach them at **info@tingalingschools.com**, **0615274429** or **0724561282** during office hours (07:00–15:30 weekdays).",
+        "timestamp": "2026-06-01T08:16:48.854Z"
+      },
+      {
+        "direction": "in",
+        "text": "Where and how do i pay school fees monthly",
+        "timestamp": "2026-06-01T08:17:17.104Z"
+      },
+      {
+        "direction": "out",
+        "text": "School fees can be paid via **EFT, Debit Order, or Cash**, and they're due on the **2nd of each month** (January to November). If you'd like the school's banking details for EFT or to set up a debit order, it's best to contact the office and they'll assist you with everything. 😊\n\nYou can reach them at **info@tingalingschools.com**, **0615274429** or **0724561282** during office hours (07:00–15:30 weekdays).",
+        "timestamp": "2026-06-01T08:17:17.104Z"
+      },
+      {
+        "direction": "in",
+        "text": "Thank you",
+        "timestamp": "2026-06-01T11:36:39.296Z"
+      },
+      {
+        "direction": "out",
+        "text": "You're very welcome! If you ever have any other questions about Ting-A-Ling Schools, feel free to ask. 😊",
+        "timestamp": "2026-06-01T11:36:39.296Z"
+      }
+    ],
+    "firstSeen": "2026-06-01T07:58:26.496Z",
+    "lastSeen": "2026-06-01T11:36:39.296Z",
+    "autoReplied": 9,
+    "humanRequests": 0
+  },
+  "27632103003": {
+    "name": "Miss Nzama",
+    "phone": "27632103003",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "Hy, \nHow can i get enrollment form?",
+        "timestamp": "2026-06-01T08:00:28.007Z"
+      },
+      {
+        "direction": "out",
+        "text": "You're welcome to get an enrolment form online through the Ting-A-Ling Schools website parent portal, or you can pop into the school office for a registration pack. Feel free to call or email if you'd like more info first — info@tingalingschools.com, 0615274429 / 0724561282.",
+        "timestamp": "2026-06-01T08:00:28.007Z"
+      }
+    ],
+    "firstSeen": "2026-06-01T08:00:28.007Z",
+    "lastSeen": "2026-06-01T08:00:28.007Z",
+    "autoReplied": 1,
+    "humanRequests": 0
+  },
+  "27646441917": {
+    "name": "Thembelihle Nonto",
+    "phone": "27646441917",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "Morning teacher",
+        "timestamp": "2026-06-01T08:02:07.958Z"
+      },
+      {
+        "direction": "out",
+        "text": "Morning! 😊 What can I help you with today?",
+        "timestamp": "2026-06-01T08:02:07.958Z"
+      }
+    ],
+    "firstSeen": "2026-06-01T08:02:07.958Z",
+    "lastSeen": "2026-06-01T08:02:07.958Z",
+    "autoReplied": 1,
+    "humanRequests": 0
+  },
+  "27663290632": {
+    "name": "Qwabelihle❤️",
+    "phone": "27663290632",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "Hello how much is the school fees",
+        "timestamp": "2026-06-01T08:05:14.381Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hi there! Are you asking about fees for the Pre-Primary School or the Special Needs School? 😊",
+        "timestamp": "2026-06-01T08:05:14.381Z"
+      },
+      {
+        "direction": "in",
+        "text": "Yes",
+        "timestamp": "2026-06-01T08:05:34.188Z"
+      },
+      {
+        "direction": "out",
+        "text": "I'm happy to help! I just need to know — are you asking about fees for the **Pre-Primary School** (ages 2–6) or the **Special Needs School** (ages 3–12)? 😊",
+        "timestamp": "2026-06-01T08:05:34.188Z"
+      },
+      {
+        "direction": "in",
+        "text": "Pre primary  school",
+        "timestamp": "2026-06-01T08:06:18.998Z"
+      },
+      {
+        "direction": "out",
+        "text": "Our Pre-Primary fees are R1,900 (07:00–13:00), R2,000 (07:00–15:00), or R2,200 (07:00–17:00) per month, payable for 11 months. There's also a one-time registration fee of R1,300. 😊",
+        "timestamp": "2026-06-01T08:06:18.998Z"
+      }
+    ],
+    "firstSeen": "2026-06-01T08:05:14.381Z",
+    "lastSeen": "2026-06-01T08:06:18.998Z",
+    "autoReplied": 3,
+    "humanRequests": 0
+  },
+  "27637321679": {
+    "name": "The River Whisperer",
+    "phone": "27637321679",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "Hello wat moet ek down",
+        "timestamp": "2026-06-01T08:25:05.187Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hallo! Ek is nie heeltemal seker wat jy bedoel nie — is jy dalk op soek na iets om af te laai, soos die aansoekvorm vir inskrywing? Of is jy dalk besig om te vra wat jy moet doen? Laat weet gerus, dan help ek jou graag verder 😊",
+        "timestamp": "2026-06-01T08:25:05.187Z"
+      },
+      {
+        "direction": "in",
+        "text": "Aansoek corn",
+        "timestamp": "2026-06-01T08:42:35.307Z"
+      },
+      {
+        "direction": "out",
+        "text": "Goeie dag! Die aansoekvorm is beskikbaar op ons ouerportaal by tingalingschools.com — jy kan dit aanlyn voltooi. As jy liewers 'n papiersvorm wil hê, kan jy by die skoolkantoor inloop vir 'n registrasiepakket 😊",
+        "timestamp": "2026-06-01T08:42:35.307Z"
+      }
+    ],
+    "firstSeen": "2026-06-01T08:25:05.187Z",
+    "lastSeen": "2026-06-01T08:42:35.307Z",
+    "autoReplied": 2,
+    "humanRequests": 0
+  },
+  "27837161009": {
+    "name": "Renzo",
+    "phone": "27837161009",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-01T14:32:13.379Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! Welcome to Ting-A-Ling Schools. How can I help you today? 😊",
+        "timestamp": "2026-06-01T14:32:13.380Z"
+      }
+    ],
+    "firstSeen": "2026-06-01T14:32:13.379Z",
+    "lastSeen": "2026-06-01T14:32:13.379Z",
+    "autoReplied": 1,
+    "humanRequests": 0
+  },
+  "27672610783": {
+    "name": "kuben Moodley",
+    "phone": "27672610783",
+    "messages": [
+      {
+        "direction": "in",
+        "text": "Hi do you remember me",
+        "timestamp": "2026-06-13T21:41:41.503Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hi there! I'm afraid I don't have a record of our previous conversations at the moment — my memory index needs a refresh. So I'd love it if you could remind me who you are! 😊\n\nIs there something I can help you with regarding Ting-A-Ling Schools?",
+        "timestamp": "2026-06-13T21:41:41.503Z"
+      },
+      {
+        "direction": "in",
+        "text": "Is your name luyanda",
+        "timestamp": "2026-06-13T21:42:22.263Z"
+      },
+      {
+        "direction": "out",
+        "text": "My name is TingAI — I'm the school assistant for Ting-A-Ling Schools. Not Luyanda, but I'm happy to help you with whatever you need! 😊",
+        "timestamp": "2026-06-13T21:42:22.263Z"
+      },
+      {
+        "direction": "in",
+        "text": "Wrong number sorry",
+        "timestamp": "2026-06-13T21:42:43.035Z"
+      },
+      {
+        "direction": "out",
+        "text": "No problem at all — have a good day! 😊",
+        "timestamp": "2026-06-13T21:42:43.035Z"
+      }
+    ],
+    "firstSeen": "2026-06-13T21:41:41.503Z",
+    "lastSeen": "2026-06-13T21:42:43.035Z",
+    "autoReplied": 3,
+    "humanRequests": 0
+  }
+}
