@@ -140,7 +140,7 @@ if (fs.existsSync(dashboardDistPath)) {
   app.use(express.static(dashboardDistPath, {
     maxAge: '1y',
     immutable: true,
-    index: 'app_v3.html',  // Serve app_v3.html instead of index.html to bypass Cloudflare cache
+    index: 'index.html',
     setHeaders: (res, filePath) => {
       // Don't cache HTML — always fresh for SPA routing
       if (filePath.endsWith('.html')) {
@@ -160,9 +160,7 @@ if (fs.existsSync(dashboardDistPath)) {
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-    // Serve app_v3.html for ALL SPA routes to bypass Cloudflare's cached index.html
-    // Once Cloudflare cache clears naturally, we revert to index.html
-    res.sendFile(path.join(dashboardDistPath, 'app_v3.html'));
+    res.sendFile(path.join(dashboardDistPath, 'index.html'));
   });
 } else {
   console.log(`[Static] Dashboard dist not found at ${dashboardDistPath} — not serving dashboard`);
