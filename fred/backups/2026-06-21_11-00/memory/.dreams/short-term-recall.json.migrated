@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-05-21T07:21:07.138Z",
+  "updatedAt": "2026-05-22T00:00:18.123Z",
   "entries": {
     "memory:memory/2026-05-15.md:1:30": {
       "key": "memory:memory/2026-05-15.md:1:30",
@@ -9,18 +9,19 @@
       "endLine": 30,
       "source": "memory",
       "snippet": "# Daily Log — 2026-05-15 ## ✅ What Got Done Today - **New number +27 68 754 8390** added, SMS verified, registered via API — CLOUD_API ✅ - **Old number +27 78 836 3027** deregistered ✅ - **Server .env updated** to new phone number ID ✅ - **Server restarted** with proper logging ✅ - **Demo video v2** created (school branded, 34s, 1080x1920, 1.2MB) — kept for later polish - **MAC_HANDOVER.md** created — full system inventory - **Outbound messaging confirmed working** — Mr D received test messages - **Webhook re-verified** via WhatsApp Manager + API re-subscription - **App confirmed Live/Published** ## ❌ What's Blocked - **Inbound messages NOT hitting webhook** - **Root cause:** Display name",
-      "recallCount": 4,
+      "recallCount": 5,
       "dailyCount": 0,
       "groundedCount": 0,
-      "totalScore": 2.894200184449066,
+      "totalScore": 3.894200184449066,
       "maxScore": 1,
       "firstRecalledAt": "2026-05-18T05:41:03.752Z",
-      "lastRecalledAt": "2026-05-21T07:21:07.138Z",
+      "lastRecalledAt": "2026-05-21T09:23:57.222Z",
       "queryHashes": [
         "dd1f99729e6c",
         "0160f8448d5f",
         "22557c47eff9",
-        "41028ad10a2b"
+        "41028ad10a2b",
+        "02a7a9ac2aea"
       ],
       "recallDays": [
         "2026-05-18",
@@ -115,20 +116,22 @@
       "endLine": 15,
       "source": "memory",
       "snippet": "# Daily Log — 2026-05-19 ## Key Events - **06:54** — Mr D pinged via WebChat, asked to prep for Telegram handover - **06:54** — Heartbeat check: WhatsApp server ✅, Tunnel ✅ - **07:03** — Mr D taking Mac mini with him today. Pre-shutdown save & backup executed. ## Status at Shutdown Preparation - **WhatsApp server:** Running ✅ (will be offline when Mac powers off) - **Tunnel:** Live — `creation-tel-draft-seq.trycloudflare.com` (ephemeral, will change on restart) - **Meta API:** Was blocked yesterday (OAuthException 200) — pending Mr D's check - **All workspace files:** Committed and pushed ✅ - **GitHub backup:** Up to date ✅ - **Auto-restart:** Configured — server, tunnel, and webhook updat",
-      "recallCount": 2,
+      "recallCount": 3,
       "dailyCount": 0,
       "groundedCount": 0,
-      "totalScore": 1.2647649744539535,
-      "maxScore": 0.6323824872269768,
+      "totalScore": 2.2647649744539535,
+      "maxScore": 1,
       "firstRecalledAt": "2026-05-20T07:06:16.851Z",
-      "lastRecalledAt": "2026-05-21T07:21:07.138Z",
+      "lastRecalledAt": "2026-05-22T00:00:18.123Z",
       "queryHashes": [
         "22557c47eff9",
-        "41028ad10a2b"
+        "41028ad10a2b",
+        "eaf8f8ae4ecf"
       ],
       "recallDays": [
         "2026-05-20",
-        "2026-05-21"
+        "2026-05-21",
+        "2026-05-22"
       ],
       "conceptTags": [
         "backup",
