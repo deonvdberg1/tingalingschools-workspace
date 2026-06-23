@@ -202,11 +202,31 @@
         "direction": "out",
         "text": "Here are the Special Needs School fees: R3,000 per month (07:00–13:00) or R3,300 per month (07:00–17:00). Fees are due on the 2nd of each month and payable for 11 months.\n\nFor uniforms, shirts are R150 each and tracksuits are R450. Uniforms are available during purchase windows announced by the school — you can contact the office for the full uniform list and pricelist at info@tingalingschools.com, 0615274429 / 0724561282 😊",
         "timestamp": "2026-06-20T08:29:51.007Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-22T09:40:51.016Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! 😊 Welcome back — how can I help you today?",
+        "timestamp": "2026-06-22T09:40:51.016Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-22T17:05:11.297Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! 😊 How can I help you today?",
+        "timestamp": "2026-06-22T17:05:11.297Z"
       }
     ],
     "firstSeen": "2026-05-29T07:42:41.367Z",
-    "lastSeen": "2026-06-20T08:29:51.007Z",
-    "autoReplied": 18,
+    "lastSeen": "2026-06-22T17:05:11.297Z",
+    "autoReplied": 20,
     "humanRequests": 4
   },
   "27721234567": {
