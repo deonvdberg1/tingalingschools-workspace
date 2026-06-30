@@ -222,11 +222,31 @@
         "direction": "out",
         "text": "Hello! 😊 How can I help you today?",
         "timestamp": "2026-06-22T17:05:11.297Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-06-29T17:05:59.393Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! 😊 How can I help you today?",
+        "timestamp": "2026-06-29T17:05:59.393Z"
+      },
+      {
+        "direction": "in",
+        "text": "School fees?",
+        "timestamp": "2026-06-29T17:06:19.603Z"
+      },
+      {
+        "direction": "out",
+        "text": "I'd be happy to help with that! Just to check — are you asking about **Pre-Primary School** or **Special Needs School** fees? The amounts differ between the two 😊",
+        "timestamp": "2026-06-29T17:06:19.603Z"
       }
     ],
     "firstSeen": "2026-05-29T07:42:41.367Z",
-    "lastSeen": "2026-06-22T17:05:11.297Z",
-    "autoReplied": 20,
+    "lastSeen": "2026-06-29T17:06:19.603Z",
+    "autoReplied": 22,
     "humanRequests": 4
   },
   "27721234567": {
