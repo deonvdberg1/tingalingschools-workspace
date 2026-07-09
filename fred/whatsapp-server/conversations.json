@@ -242,11 +242,81 @@
         "direction": "out",
         "text": "I'd be happy to help with that! Just to check — are you asking about **Pre-Primary School** or **Special Needs School** fees? The amounts differ between the two 😊",
         "timestamp": "2026-06-29T17:06:19.603Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-07-08T18:38:44.551Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! 😊 Were you looking for information about our school fees? If you let me know whether it's for **Pre-Primary** or **Special Needs**, I can give you the right details.",
+        "timestamp": "2026-07-08T18:38:44.551Z"
+      },
+      {
+        "direction": "in",
+        "text": "Arboretum primary school grade 1 yearly fees",
+        "timestamp": "2026-07-08T18:40:13.711Z"
+      },
+      {
+        "direction": "out",
+        "text": "I'm sorry, I can only provide information about Ting-A-Ling Schools in Meerensee. Arboretum Primary School is a different school, so I don't have their fee details. You'd need to contact Arboretum Primary School directly for that information 😊",
+        "timestamp": "2026-07-08T18:40:13.711Z"
+      },
+      {
+        "direction": "in",
+        "text": "How many children are in the school?",
+        "timestamp": "2026-07-08T18:40:59.645Z"
+      },
+      {
+        "direction": "out",
+        "text": "I don't have that information available. Please contact the school office at info@tingalingschools.com, 0615274429 / 0724561282 or visit during office hours (07:00–15:30 weekdays) and they'll be happy to help 😊",
+        "timestamp": "2026-07-08T18:40:59.645Z"
+      },
+      {
+        "direction": "in",
+        "text": "What are the school fees?",
+        "timestamp": "2026-07-08T18:42:07.390Z"
+      },
+      {
+        "direction": "out",
+        "text": "Sure! Are you asking about fees for our **Pre-Primary School** (ages 2–6) or our **Special Needs School** (ages 3–12)? The fees are different for each, so just let me know which one and I'll give you the exact amounts 😊",
+        "timestamp": "2026-07-08T18:42:07.390Z"
+      },
+      {
+        "direction": "in",
+        "text": "For special needs",
+        "timestamp": "2026-07-08T18:42:40.618Z"
+      },
+      {
+        "direction": "out",
+        "text": "For the Special Needs School, fees are **R3,000 per month** (07:00–13:00) or **R3,300 per month** (07:00–17:00 with aftercare). Fees are payable for 11 months (January to November) and are due on the 2nd of each month 😊",
+        "timestamp": "2026-07-08T18:42:40.618Z"
+      },
+      {
+        "direction": "in",
+        "text": "And for pre primary",
+        "timestamp": "2026-07-08T18:43:16.377Z"
+      },
+      {
+        "direction": "out",
+        "text": "For the Pre-Primary School (ages 2–6), fees are **R2,500 per month** for 07:00–13:00 or **R2,800 per month** for 07:00–17:00 with aftercare. Fees are payable for 11 months (January to November) and due on the 2nd of each month 😊",
+        "timestamp": "2026-07-08T18:43:16.377Z"
+      },
+      {
+        "direction": "in",
+        "text": "Is there prices for siblings",
+        "timestamp": "2026-07-08T18:43:56.588Z"
+      },
+      {
+        "direction": "out",
+        "text": "I'm sorry, but I don't have any information on sibling pricing in my records. Please contact the school office at info@tingalingschools.com, 0615274429 / 0724561282 or visit during office hours (07:00–15:30 weekdays) and they'll be happy to help with that 😊",
+        "timestamp": "2026-07-08T18:43:56.588Z"
       }
     ],
     "firstSeen": "2026-05-29T07:42:41.367Z",
-    "lastSeen": "2026-06-29T17:06:19.603Z",
-    "autoReplied": 22,
+    "lastSeen": "2026-07-08T18:43:56.588Z",
+    "autoReplied": 29,
     "humanRequests": 4
   },
   "27721234567": {
