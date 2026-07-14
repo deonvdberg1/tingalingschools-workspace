@@ -48,7 +48,7 @@
 | WhatsApp server (port 3000) | ✅ LaunchAgent auto-restarts |
 | Dashboard API (port 3001) | ✅ LaunchAgent auto-restarts |
 | Vite dev server (port 5173) | ✅ LaunchAgent auto-restarts |
-| Tingaling tunnel (whatsapp + app) | ✅ LaunchAgent auto-restarts |
+| Main tunnel (Cloudflared Main — app, whatsapp, tingaling, root) | ✅ New LaunchAgent auto-restarts |
 | Tracking tunnel | ✅ LaunchAgent auto-restarts |
 | Caffeinate (stay awake) | ✅ LaunchAgent |
 | Crontab (watchman, healthcheck, backup) | ✅ Intact |
