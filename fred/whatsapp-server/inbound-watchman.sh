@@ -79,8 +79,10 @@ log_info "Last inbound: ${elapsed_min} min ago ($(date -r $latest_inbound '+%Y-%
 
 # ── State management ─────────────────────────────────────────────────
 # Track: last_inbound_timestamp, last_alerted_at_epoch, silence_alerted
-SILENCE_THRESHOLD=600   # 10 min
-REMINDER_INTERVAL=1800  # 30 min between reminders
+SILENCE_THRESHOLD=600      # 10 min — first alert after 10 min silence
+REMINDER_INTERVAL=3600    # 60 min between reminders
+CIRCUIT_BREAKER=86400     # 24h — stop alerting after this long in silence
+CIRCUIT_LOG="/tmp/watchman-circuit.log"
 
 # Read previous state
 last_seen_ts=0
@@ -114,6 +116,22 @@ if [ "$elapsed" -gt "$SILENCE_THRESHOLD" ]; then
 fi
 
 # ── Alert ────────────────────────────────────────────────────────────
+# ── Circuit breaker: if silence has lasted >24h, stop alerting ──
+# This prevents spam to Mr D on known-cold clients.
+if [ "$elapsed" -gt "$CIRCUIT_BREAKER" ]; then
+  circuit_alerted=0
+  if [ -f "$CIRCUIT_LOG" ]; then
+    circuit_alerted=$(cat "$CIRCUIT_LOG")
+  fi
+  time_since_circuit=$(( now - circuit_alerted ))
+  # Log a circuit-breaker note once every 24h
+  if [ "$time_since_circuit" -gt "$CIRCUIT_BREAKER" ]; then
+    log_info "Circuit breaker active — silence >24h. Silent since $(date -r $latest_inbound '+%Y-%m-%d %H:%M'). Supressing alerts."
+    echo "$now" > "$CIRCUIT_LOG"
+  fi
+  should_alert=0
+fi
+
 if [ "$should_alert" -eq 1 ]; then
   log_alert "No inbound messages for ${elapsed_min} minutes! Sending alert..."
 
