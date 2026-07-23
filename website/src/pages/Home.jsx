@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { MapPin, Phone, Mail, Heart, Star, Users, BookOpen, ChevronRight, Send } from 'lucide-react';
+import { MapPin, Phone, Mail, Heart, Star, Users, BookOpen, ChevronRight, Send, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { db } from '@/supabase/client';
 
@@ -160,11 +160,18 @@ export default function Home() {
                 <div className="flex items-center gap-2 text-xs text-slate-500 mb-5">
                   <MapPin className="w-3 h-3" /> {school.address}
                 </div>
-                <Link to={createPageUrl('Apply') + '?school=' + school.key}>
-                  <Button className={`w-full bg-gradient-to-r ${school.color} text-white hover:opacity-90 text-sm`}>
-                    Apply to {school.name}
-                  </Button>
-                </Link>
+                <div className="flex flex-col gap-2">
+                  <Link to={createPageUrl(school.key)}>
+                    <Button className={`w-full bg-gradient-to-r ${school.color} text-white hover:opacity-90 text-sm`} variant="outline">
+                      <ExternalLink className="w-3 h-3 mr-1" /> View School
+                    </Button>
+                  </Link>
+                  <Link to={createPageUrl('Apply') + '?school=' + school.key}>
+                    <Button className={`w-full bg-gradient-to-r ${school.color} text-white hover:opacity-90 text-sm`}>
+                      Apply to {school.name}
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </div>
           ))}

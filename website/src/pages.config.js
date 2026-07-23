@@ -58,6 +58,8 @@ import MyContracts from './pages/MyContracts';
 import ParentContract from './pages/ParentContract';
 import StaffDashboard from './pages/StaffDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import PrePrimary from './pages/PrePrimary';
+import SpecialNeeds from './pages/SpecialNeeds';
 import __Layout from './Layout.jsx';
 
 
@@ -76,6 +78,8 @@ export const PAGES = {
     "ParentContract": ParentContract,
     "StaffDashboard": StaffDashboard,
     "AdminDashboard": AdminDashboard,
+    "PrePrimary": PrePrimary,
+    "SpecialNeeds": SpecialNeeds,
 }
 
 export const pagesConfig = {
