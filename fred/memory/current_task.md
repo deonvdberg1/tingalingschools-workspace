@@ -1,6 +1,6 @@
 # Current Task — Master Context
 
-**Last updated:** 2026-06-02 11:31 SAST
+**Last updated:** 2026-07-31 12:17 SAST
 **Founder:** Mr D (Richards Bay, SA)
 **Agent:** Fred — independent AI entrepreneur, CEO of AutoEffortless
 
@@ -19,25 +19,31 @@
 
 ---
 
-## Phase 1: Analytics & Reporting ✅ COMPLETE
-- Analytics Overview — KPIs, message volume chart, daily breakdown ✅
-- Busiest Hours — 24h bar chart + hourly breakdown table ✅
-- Response Times — avg/fastest/slowest + daily trends ✅
-- Per-product stats — WhatsApp, Live Tracking, Instagram ✅
-- CSV export — one-click download ✅
-- Health score — per-client health monitoring ✅
+## 🔴 ACTIVE: Ting-A-Ling Website — Apply Now Flow Fix (2026-07-31)
 
-## Client Experience Overhaul — ✅ DEPLOYED
-- **Sidebar:** Products filtered by subscription (no more Trackman for Ting-A-Ling) ✅
-- **Overview:** Proper client dashboard with welcome card, business info, KPIs, recent conversations, quick actions, weekly chart ✅
-- **Settings:** Client-branded (Ting-A-Ling Schools name, WhatsApp number, email, connection status, regional prefs, billing section) ✅
-- **Profile:** Auto-populated from user + client data ✅
+**Problem:** tingalingschools.com Apply Now buttons submit to a DEAD Supabase backend (`uuisorsrhtiaqvvpgndp.supabase.co` → NXDOMAIN — project deleted). Applications fail to save.
 
-## 🟡 Cloudflare Cache Issue (PENDING)
-- `app.autoeffortless.com` still serves old cached version from Cloudflare edge
-- New files are at origin (port 3001) and at `tracking.autoeffortless.com`
-- **Fix:** Mr D to purge Cloudflare cache → Cloudflare dashboard → Caching → Purge Everything
-- Or wait ~2h for cache to expire naturally
+**Decision:** Replace with Google Apps Script web app → appends to "Tingaling Applications" spreadsheet + emails info@tingalingschools.com + sends parent confirmation email. Code READY at `website/supabase/functions/notify-application/appscript_handler.gs`.
+
+**Blocker:** Apps Script API cannot be enabled on GCP project `242592290344` (the "autoeffortless" project behind gog's OAuth client) — it's owned by another Google account (set up 29 May during AutoEffortless email setup), NOT info@tingalingschools.com. Mr D gets permission denied.
+
+**⏳ WAITING ON MR D (either):**
+1. **Fast path:** Create script manually at https://script.google.com (signed in as info@tingalingschools.com) → New project → paste code from `appscript_handler.gs` → Deploy → Web app → Execute as: Me → Who has access: Anyone → send me the `/exec` URL.
+2. **Alternative:** Create fresh GCP project under school account + new OAuth client → I do everything programmatically forever.
+
+**MY NEXT STEPS (once I have the /exec URL):**
+1. Rewire `website/src/pages/Apply.jsx` to POST to the Apps Script URL (use text/plain body to avoid CORS preflight)
+2. Rebuild (`npm run build`) + deploy to GitHub Pages (repo: deonvdberg1/tingalingschools-workspace)
+3. Test end-to-end: row in spreadsheet + email to school + confirmation to parent
+
+---
+
+## 🟡 Pending (awaiting Mr D)
+- Cloudflare cache purge (app.autoeffortless.com still serves old cached version)
+- UPS purchase (R1,293 APC 650VA, Takealot)
+- Parent opt-in campaign
+- Client #2 onboarding / sales intros
+- Phase 2: Billing & Subscriptions (Stripe) — ready to start when signalled
 
 ---
 
@@ -48,19 +54,18 @@
 | WhatsApp server (port 3000) | ✅ LaunchAgent auto-restarts |
 | Dashboard API (port 3001) | ✅ LaunchAgent auto-restarts |
 | Vite dev server (port 5173) | ✅ LaunchAgent auto-restarts |
-| Main tunnel (Cloudflared Main — app, whatsapp, tingaling, root) | ✅ New LaunchAgent auto-restarts |
+| Main tunnel (Cloudflared) | ✅ LaunchAgent auto-restarts |
 | Tracking tunnel | ✅ LaunchAgent auto-restarts |
 | Caffeinate (stay awake) | ✅ LaunchAgent |
 | Crontab (watchman, healthcheck, backup) | ✅ Intact |
-| Disk | ✅ 58Gi free / 228Gi total |
 
 ---
 
 ## 📋 What's Next (Next Session)
 
-1. 🔴 **Cloudflare cache purge** — Mr D: Cloudflare dashboard → Caching → Purge Everything (to see client experience changes on app.autoeffortless.com)
-2. 🟢 **Phase 2: Billing & Subscriptions** — Stripe integration, per-product pricing, usage metering, invoicing
-3. 🟢 **Parent opt-in campaign** — send intro message to get parents to message the bot
-4. 🟢 **Real client onboarding** — Mr D's sales intros
-5. 🟢 **UPS purchase** — R1,293 APC 650VA (Takealot)
-6. 🟢 **Demo video v2** — saved, needs polish
+1. 🔴 **Finish Apply Now fix** — get /exec URL from Mr D → rewire Apply.jsx → rebuild → deploy → test
+2. 🟡 **Cloudflare cache purge** — Mr D action
+3. 🟢 **Phase 2: Billing & Subscriptions** — Stripe integration
+4. 🟢 **Parent opt-in campaign**
+5. 🟢 **Real client onboarding** — Mr D's sales intros
+6. 🟢 **UPS purchase** — R1,293 APC 650VA (Takealot)
