@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { useSearchParams, Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useSearchParams, Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { supabase, db } from '@/supabase/client';
 import { toast } from 'sonner';
 import { CheckCircle, ArrowLeft, Send } from 'lucide-react';
 
@@ -23,10 +22,11 @@ const SPECIAL_NEEDS_OPTIONS = [
 
 const PREPRIMARY_GRADES = ['Grade RRR', 'Grade RR', 'Grade R'];
 
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxNtZEplTFGRKz7NzvV0o2SBQHAufWvbV0MHMczAjodgp-gotFCToF7KU7yGqh-NsJLxw/exec';
+
 export default function Apply() {
   const [searchParams] = useSearchParams();
   const school = searchParams.get('school') || 'PrePrimary';
-  const navigate = useNavigate();
   const info = SCHOOL_INFO[school];
 
   const [submitted, setSubmitted] = useState(false);
@@ -49,46 +49,29 @@ export default function Apply() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSending(true);
-    const specialNeedsNote = school === 'SpecialNeeds' && form.special_needs
-      ? `Special needs: ${form.special_needs}` : '';
     try {
-      await db.contracts.create({
-        status: 'application',
-        student_first_name: form.child_name || 'To be confirmed',
-        student_last_name: '.',
-        parent1_full_name: form.parent_name,
-        parent1_email: form.parent_email,
-        parent1_phone: form.parent_phone,
-        school_location: `${info.name} - ${info.address}`,
-        parent1_relationship: 'Parent',
-        child_grade: form.grade || form.child_age || '',
-        medical_conditions: specialNeedsNote || (form.previous_school ? `Previous school: ${form.previous_school}` : ''),
-        emergency_contact1_name: '.',
-        emergency_contact1_phone: '.',
-        emergency_contact1_relationship: '.',
+      // Google Apps Script web app: spreadsheet row + school email + parent confirmation.
+      // text/plain body avoids CORS preflight; Apps Script embeds the payload in its redirect.
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          school,
+          parent_name: form.parent_name,
+          parent_email: form.parent_email,
+          parent_phone: form.parent_phone,
+          child_name: form.child_name,
+          child_age: form.child_age,
+          grade: form.grade,
+          previous_school: form.previous_school,
+          special_needs: form.special_needs,
+        }),
       });
-
-      // Also send email notification via Edge Function
-      try {
-        await supabase.functions.invoke('notify-application', {
-          body: {
-            school: info.name,
-            parent_name: form.parent_name,
-            parent_email: form.parent_email,
-            parent_phone: form.parent_phone,
-            child_name: form.child_name,
-            child_age: form.child_age,
-            grade: form.grade,
-            previous_school: form.previous_school,
-            special_needs: form.special_needs,
-          }
-        });
-      } catch (notifyErr) {
-        console.error('Email notification failed (application still saved):', notifyErr);
-      }
-
+      const result = await res.json().catch(() => ({}));
+      if (!result.success) throw new Error(result.error || 'Submission failed');
       setSubmitted(true);
     } catch (err) {
+      console.error('Application submission failed:', err);
       toast.error('Could not submit. Please email us at info@tingalingschools.com');
     }
     setSending(false);
