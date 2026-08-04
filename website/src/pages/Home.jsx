@@ -7,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { MapPin, Phone, Mail, Heart, Star, Users, BookOpen, ChevronRight, Send, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
-import { db } from '@/supabase/client';
 
 const schools = [
   {
@@ -46,19 +45,24 @@ export default function Home() {
     e.preventDefault();
     setSending(true);
     try {
-      await db.contactSubmissions.create({
-        name: cf.name,
-        email: cf.email,
-        phone: cf.phone,
-        subject: cf.subject,
-        message: cf.message
-      });
-      toast.success('Message sent! We will get back to you soon.');
+      // Fire analytics event (GoatCounter) — contact form submitted
+      if (window.goatcounter) {
+        window.goatcounter.count({ event: true, path: 'contact-submit', title: cf.subject || 'Contact form' });
+      }
+      // Open the visitor's email app with a pre-filled message (no backend needed)
+      const subject = encodeURIComponent(`Website enquiry: ${cf.subject}`);
+      const body = encodeURIComponent(`Name: ${cf.name}\nEmail: ${cf.email}\nPhone: ${cf.phone || '—'}\n\n${cf.message}`);
+      window.open(`mailto:info@tingalingschools.com?subject=${subject}&body=${body}`, '_self');
+      toast.success('Thank you! Your message is ready in your email app — just press send.');
       setCf({ name: '', email: '', phone: '', subject: '', message: '' });
     } catch (err) {
+      if (window.goatcounter) {
+        window.goatcounter.count({ event: true, path: 'contact-error', title: cf.subject || 'Contact form' });
+      }
       toast.error('Could not send message. Please email us directly at info@tingalingschools.com');
+    } finally {
+      setSending(false);
     }
-    setSending(false);
   };
 
   return (
@@ -187,8 +191,8 @@ export default function Home() {
             <div className="space-y-3 text-slate-300">
               <div className="flex items-center gap-3"><MapPin className="w-4 h-4 text-teal-400 shrink-0" /> 74 Krewilkring, Meerensee (Pre-Primary)</div>
               <div className="flex items-center gap-3"><MapPin className="w-4 h-4 text-purple-400 shrink-0" /> 18 Elweboog, Meerensee (Special Needs)</div>
-              <div className="flex items-center gap-3"><Phone className="w-4 h-4 text-teal-400" /> 061 527 4429 / 072 456 1281</div>
-              <div className="flex items-center gap-3"><Mail className="w-4 h-4 text-teal-400" /> info@tingalingschools.com</div>
+              <div className="flex items-center gap-3"><Phone className="w-4 h-4 text-teal-400" /> <a href="tel:0615274429" onClick={() => window.goatcounter && window.goatcounter.count({ event: true, path: 'contact-call', title: 'PrePrimary' })} className="hover:text-teal-300">061 527 4429</a> / <a href="tel:0724561281" onClick={() => window.goatcounter && window.goatcounter.count({ event: true, path: 'contact-call', title: 'SpecialNeeds' })} className="hover:text-teal-300">072 456 1281</a></div>
+              <div className="flex items-center gap-3"><Mail className="w-4 h-4 text-teal-400" /> <a href="mailto:info@tingalingschools.com" onClick={() => window.goatcounter && window.goatcounter.count({ event: true, path: 'contact-email', title: 'info@tingalingschools.com' })} className="hover:text-teal-300">info@tingalingschools.com</a></div>
             </div>
           </div>
           <div>

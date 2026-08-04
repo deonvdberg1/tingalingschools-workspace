@@ -69,9 +69,16 @@ export default function Apply() {
       });
       const result = await res.json().catch(() => ({}));
       if (!result.success) throw new Error(result.error || 'Submission failed');
+      // Fire analytics event (GoatCounter) — application submitted
+      if (window.goatcounter) {
+        window.goatcounter.count({ event: true, path: 'apply-submit', title: school });
+      }
       setSubmitted(true);
     } catch (err) {
       console.error('Application submission failed:', err);
+      if (window.goatcounter) {
+        window.goatcounter.count({ event: true, path: 'apply-error', title: school });
+      }
       toast.error('Could not submit. Please email us at info@tingalingschools.com');
     }
     setSending(false);
@@ -86,7 +93,14 @@ export default function Apply() {
           <p className="text-slate-500 mb-4">Your application for {info.name} has been received.</p>
           <p className="text-xs text-slate-400 mb-6">We'll be in touch with you at <strong>{form.parent_email}</strong>.</p>
           <div className="flex flex-col gap-2">
-            <Link to="/Login"><Button className="w-full bg-teal-600 hover:bg-teal-700">Go to My Portal</Button></Link>
+            <a
+              href="https://wa.me/27615274429?text=Hi%20Ting-A-Ling%2C%20I%20just%20submitted%20an%20application%20for%20my%20child%20and%20would%20like%20to%20follow%20up."
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => window.goatcounter && window.goatcounter.count({ event: true, path: 'apply-followup-whatsapp', title: school })}
+            >
+              <Button className="w-full bg-teal-600 hover:bg-teal-700">Follow up on WhatsApp</Button>
+            </a>
             <Link to="/"><Button variant="outline" className="w-full">Back to Home</Button></Link>
           </div>
         </Card>
