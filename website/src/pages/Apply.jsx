@@ -69,16 +69,12 @@ export default function Apply() {
       });
       const result = await res.json().catch(() => ({}));
       if (!result.success) throw new Error(result.error || 'Submission failed');
-      // Fire analytics event (GoatCounter) — application submitted
-      if (window.goatcounter) {
-        window.goatcounter.count({ event: true, path: 'apply-submit', title: school });
-      }
+      // Fire analytics event — application submitted
+      if (window.AETrack) window.AETrack('apply-submit', school);
       setSubmitted(true);
     } catch (err) {
       console.error('Application submission failed:', err);
-      if (window.goatcounter) {
-        window.goatcounter.count({ event: true, path: 'apply-error', title: school });
-      }
+      if (window.AETrack) window.AETrack('apply-error', school);
       toast.error('Could not submit. Please email us at info@tingalingschools.com');
     }
     setSending(false);
@@ -97,7 +93,7 @@ export default function Apply() {
               href="https://wa.me/27615274429?text=Hi%20Ting-A-Ling%2C%20I%20just%20submitted%20an%20application%20for%20my%20child%20and%20would%20like%20to%20follow%20up."
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => window.goatcounter && window.goatcounter.count({ event: true, path: 'apply-followup-whatsapp', title: school })}
+              onClick={() => window.AETrack && window.AETrack('apply-followup-whatsapp', school)}
             >
               <Button className="w-full bg-teal-600 hover:bg-teal-700">Follow up on WhatsApp</Button>
             </a>

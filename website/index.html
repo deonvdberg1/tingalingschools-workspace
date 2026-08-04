@@ -26,9 +26,42 @@
     <meta property="twitter:description" content="Two dedicated schools in Meerensee providing quality education and care for every child." />
     <meta property="twitter:image" content="https://tingalingschools.com/logo.png" />
     
-    <!-- GoatCounter: privacy-friendly visitor stats (no cookies, POPIA-safe) -->
-    <script data-goatcounter="https://tingaling.goatcounter.com/count"
-            async src="https://gc.zgo.at/count.js"></script>
+    <!-- AutoEffortless site tracking (self-hosted, privacy-friendly, no cookies) -->
+    <script>
+      (function () {
+        function send(data) {
+          try {
+            var body = JSON.stringify(Object.assign({
+              clientId: 6,
+              path: location.pathname,
+              title: document.title,
+              referrer: document.referrer,
+              screen: (window.screen ? window.screen.width + 'x' + window.screen.height : ''),
+              ua: navigator.userAgent
+            }, data || {}));
+            var url = 'https://whatsapp.autoeffortless.com/api/site-track';
+            if (navigator.sendBeacon) {
+              navigator.sendBeacon(url, new Blob([body], { type: 'text/plain' }));
+            } else {
+              fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: body, keepalive: true });
+            }
+          } catch (e) {}
+        }
+        window.AETrack = function (label, title) {
+          send({ event: true, label: label, title: title || document.title });
+        };
+        if (document.readyState === 'complete') send({});
+        else window.addEventListener('load', function () { send({}); });
+        // Track SPA route changes too
+        var origPush = history.pushState;
+        history.pushState = function () {
+          var r = origPush.apply(this, arguments);
+          send({});
+          return r;
+        };
+        window.addEventListener('popstate', function () { send({}); });
+      })();
+    </script>
 
     <script type="module" src="/src/main.jsx"></script>
   </head>
