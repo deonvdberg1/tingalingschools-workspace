@@ -6,7 +6,6 @@ import NavigationTracker from '@/lib/NavigationTracker'
 import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
-import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import ErrorBoundary from '@/lib/ErrorBoundary';
 
 const { Pages, Layout, mainPage, NO_LAYOUT_PAGES = [] } = pagesConfig;
@@ -22,19 +21,7 @@ const LayoutWrapper = ({ children, currentPageName }) => {
     : <>{children}</>;
 };
 
-const AuthenticatedApp = () => {
-  const { isLoadingAuth, isAuthenticated } = useAuth();
-
-  // Show loading spinner briefly
-  if (isLoadingAuth) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  // Always render all routes — pages handle their own auth internally
+const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={
@@ -61,15 +48,13 @@ const AuthenticatedApp = () => {
 function App() {
   return (
     <ErrorBoundary>
-    <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
-        <Router>
-          <NavigationTracker />
-          <AuthenticatedApp />
-        </Router>
-        <Toaster />
-      </QueryClientProvider>
-    </AuthProvider>
+    <QueryClientProvider client={queryClientInstance}>
+      <Router>
+        <NavigationTracker />
+        <AppRoutes />
+      </Router>
+      <Toaster />
+    </QueryClientProvider>
     </ErrorBoundary>
   )
 }
