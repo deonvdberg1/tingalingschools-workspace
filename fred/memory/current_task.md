@@ -1,6 +1,6 @@
 # Current Task — Master Context
 
-**Last updated:** 2026-07-31 12:17 SAST
+**Last updated:** 2026-08-03 09:10 SAST
 **Founder:** Mr D (Richards Bay, SA)
 **Agent:** Fred — independent AI entrepreneur, CEO of AutoEffortless
 
@@ -19,22 +19,17 @@
 
 ---
 
-## 🔴 ACTIVE: Ting-A-Ling Website — Apply Now Flow Fix (2026-07-31)
+## ✅ DONE: Ting-A-Ling Apply Now Flow Fix (2026-08-03)
 
-**Problem:** tingalingschools.com Apply Now buttons submit to a DEAD Supabase backend (`uuisorsrhtiaqvvpgndp.supabase.co` → NXDOMAIN — project deleted). Applications fail to save.
-
-**Decision:** Replace with Google Apps Script web app → appends to "Tingaling Applications" spreadsheet + emails info@tingalingschools.com + sends parent confirmation email. Code READY at `website/supabase/functions/notify-application/appscript_handler.gs`.
-
-**Blocker:** Apps Script API cannot be enabled on GCP project `242592290344` (the "autoeffortless" project behind gog's OAuth client) — it's owned by another Google account (set up 29 May during AutoEffortless email setup), NOT info@tingalingschools.com. Mr D gets permission denied.
-
-**⏳ WAITING ON MR D (either):**
-1. **Fast path:** Create script manually at https://script.google.com (signed in as info@tingalingschools.com) → New project → paste code from `appscript_handler.gs` → Deploy → Web app → Execute as: Me → Who has access: Anyone → send me the `/exec` URL.
-2. **Alternative:** Create fresh GCP project under school account + new OAuth client → I do everything programmatically forever.
-
-**MY NEXT STEPS (once I have the /exec URL):**
-1. Rewire `website/src/pages/Apply.jsx` to POST to the Apps Script URL (use text/plain body to avoid CORS preflight)
-2. Rebuild (`npm run build`) + deploy to GitHub Pages (repo: deonvdberg1/tingalingschools-workspace)
-3. Test end-to-end: row in spreadsheet + email to school + confirmation to parent
+**Problem:** tingalingschools.com Apply Now → dead Supabase backend (NXDOMAIN). Applications failed.
+**Fix:** Google Apps Script web app (deployed by Mr D under school account, 5-min path) → spreadsheet row + school email + parent confirmation email. **All verified live:**
+- Apps Script URL: `https://script.google.com/macros/s/AKfycbxNtZEplTFGRKz7NzvV0o2SBQHAufWvbV0MHMczAjodgp-gotFCToF7KU7yGqh-NsJLxw/exec`
+- Handler code: `website/supabase/functions/notify-application/appscript_handler.gs` (deployed copy in school account)
+- `Apply.jsx`: single POST to Apps Script (text/plain, avoids preflight; sends raw school param)
+- Deployed: gh-pages 9aa2921 + main b7d5817 — live bundle `index-DGDoc7kO.js` at tingalingschools.com
+- CORS: `access-control-allow-origin: *` on both hops ✅
+- Test data: ~8 test rows/emails ("Test Child") — school to delete from "Tingaling Applications" spreadsheet
+- Gotcha: curl needs `-d` WITHOUT `-X POST` (Apps Script embeds payload in 302→GET echo hop); `-X POST` returns 405 Drive error page
 
 ---
 
@@ -63,9 +58,8 @@
 
 ## 📋 What's Next (Next Session)
 
-1. 🔴 **Finish Apply Now fix** — get /exec URL from Mr D → rewire Apply.jsx → rebuild → deploy → test
-2. 🟡 **Cloudflare cache purge** — Mr D action
-3. 🟢 **Phase 2: Billing & Subscriptions** — Stripe integration
-4. 🟢 **Parent opt-in campaign**
-5. 🟢 **Real client onboarding** — Mr D's sales intros
-6. 🟢 **UPS purchase** — R1,293 APC 650VA (Takealot)
+1. 🟡 **Cloudflare cache purge** — Mr D action (app.autoeffortless.com serves old cached version)
+2. 🟢 **Phase 2: Billing & Subscriptions** — Stripe integration (backend done, frontend + live keys needed)
+3. 🟢 **Parent opt-in campaign**
+4. 🟢 **Real client onboarding** — Mr D's sales intros
+5. 🟢 **UPS purchase** — R1,293 APC 650VA (Takealot)
