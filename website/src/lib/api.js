@@ -5,6 +5,8 @@
 
 const API_BASE = 'https://app.autoeffortless.com/api';
 
+export { API_BASE };
+
 export function getToken() {
   return localStorage.getItem('tingaling_token');
 }

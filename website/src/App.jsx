@@ -11,6 +11,7 @@ import { AuthProvider } from '@/lib/AuthContext';
 import PortalLogin from './pages/PortalLogin';
 import PortalRegister from './pages/PortalRegister';
 import PortalDashboard from './pages/PortalDashboard';
+import PortalAnalytics from './pages/PortalAnalytics';
 
 const { Pages, Layout, mainPage, NO_LAYOUT_PAGES = [] } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -49,6 +50,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<PortalLogin />} />
       <Route path="/register" element={<PortalRegister />} />
       <Route path="/portal" element={<PortalDashboard />} />
+      <Route path="/portal/analytics" element={<PortalAnalytics />} />
     </Routes>
   );
 };

@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import {
   LayoutDashboard, Megaphone, CalendarDays, Users, LogOut, ArrowLeft,
-  Plane, UserPlus, RefreshCw, Phone, Clock,
+  Plane, UserPlus, RefreshCw, Phone, Clock, BarChart3,
 } from 'lucide-react';
 
 const fmtDate = (d) => (d ? new Date(d + (d.length === 10 ? 'T00:00:00' : '')).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' }) : '—');
@@ -444,9 +444,14 @@ export default function PortalDashboard() {
           </Link>
         </div>
         <nav className="flex-1 p-4 space-y-1 text-sm">
-          <div className="flex items-center gap-2 px-3 py-2 bg-teal-50 text-teal-700 rounded-lg font-medium">
+          <Link to="/portal" className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-50 font-medium">
             <LayoutDashboard className="w-4 h-4" /> Dashboard
-          </div>
+          </Link>
+          {isAdmin && (
+            <Link to="/portal/analytics" className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-600 hover:bg-slate-50 font-medium">
+              <BarChart3 className="w-4 h-4" /> Analytics
+            </Link>
+          )}
           <div className="px-3 py-2 text-slate-400 flex items-center gap-2">
             <Megaphone className="w-4 h-4" /> Announcements
           </div>
