@@ -232,14 +232,12 @@ export function setupSiteAnalyticsRoutes(app, { query, run: _run, saveDb: _saveD
 
     const applyViews = query(
       `SELECT COUNT(*) AS c FROM site_hits
-       WHERE client_id = ? AND is_event = 0 AND path LIKE '/Apply%' AND date(created_at) BETWEEN date(?) AND date(?)
-       AND internal = 0`,
+       WHERE client_id = ? AND is_event = 0 AND lower(path) LIKE '%apply%' AND date(created_at) BETWEEN date(?) AND date(?)${incl}`,
       [cid, from, to]
     )[0]?.c || 0;
     const applySubmits = query(
       `SELECT COUNT(*) AS c FROM site_hits
-       WHERE client_id = ? AND is_event = 1 AND event_label = 'apply-submit' AND date(created_at) BETWEEN date(?) AND date(?)
-       AND internal = 0`,
+       WHERE client_id = ? AND is_event = 1 AND event_label LIKE 'apply-submit%' AND date(created_at) BETWEEN date(?) AND date(?)${incl}`,
       [cid, from, to]
     )[0]?.c || 0;
 
