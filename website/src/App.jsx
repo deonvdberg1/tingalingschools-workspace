@@ -7,6 +7,7 @@ import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import ErrorBoundary from '@/lib/ErrorBoundary';
+import { AuthProvider } from '@/lib/AuthContext';
 
 const { Pages, Layout, mainPage, NO_LAYOUT_PAGES = [] } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -49,10 +50,12 @@ function App() {
   return (
     <ErrorBoundary>
     <QueryClientProvider client={queryClientInstance}>
-      <Router>
-        <NavigationTracker />
-        <AppRoutes />
-      </Router>
+      <AuthProvider>
+        <Router>
+          <NavigationTracker />
+          <AppRoutes />
+        </Router>
+      </AuthProvider>
       <Toaster />
     </QueryClientProvider>
     </ErrorBoundary>
