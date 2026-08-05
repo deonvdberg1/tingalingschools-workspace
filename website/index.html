@@ -53,6 +53,8 @@
         }
         function send(data) {
           try {
+            // Skip portal app pages (admin/staff dashboard) — they're not marketing traffic
+            if (location.pathname.indexOf('/portal') === 0) return;
             var body = JSON.stringify(Object.assign({
               clientId: 6,
               path: location.pathname,

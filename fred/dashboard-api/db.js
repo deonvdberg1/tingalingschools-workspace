@@ -244,6 +244,9 @@ export async function initDb() {
       END
       WHERE section = '' OR section IS NULL
     `);
+    // Prune noise rows (portal app pages + old test hits) — portal pages are not marketing traffic
+    db.run(`DELETE FROM site_hits WHERE path LIKE '/portal%'`);
+    db.run(`DELETE FROM site_hits WHERE path IN ('/test-page','/hb-check','/heartbeat-test') OR event_label LIKE 'hb-%' OR event_label = 'apply-error'`);
   } catch (e) { /* table may not exist yet on fresh boot; created above */ }
   db.run('CREATE INDEX IF NOT EXISTS idx_site_hits_client ON site_hits(client_id, created_at)');
   db.run('CREATE INDEX IF NOT EXISTS idx_site_hits_path ON site_hits(path)');

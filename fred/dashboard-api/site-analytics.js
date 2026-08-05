@@ -209,7 +209,7 @@ export function setupSiteAnalyticsRoutes(app, { query, run: _run, saveDb: _saveD
       `SELECT
          SUM(CASE WHEN is_event = 0 THEN 1 ELSE 0 END) AS visits,
          SUM(CASE WHEN is_event = 1 THEN 1 ELSE 0 END) AS events,
-         COUNT(DISTINCT path) AS pages
+         COUNT(DISTINCT CASE WHEN is_event = 0 THEN path END) AS pages
        FROM site_hits WHERE client_id = ? AND date(created_at) BETWEEN date(?) AND date(?)${incl}`,
       [cid, from, to]
     )[0] || {};

@@ -34,9 +34,16 @@ const SECTION_LABELS = {
 };
 const fmt = (n) => (n || 0).toLocaleString('en-ZA');
 
-function Stat({ label, value, icon: Icon, sub, color = 'bg-teal-500' }) {
+function Stat({ label, value, icon: Icon, sub, color = 'bg-teal-500', target, onJump }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex items-center gap-4">
+    <button
+      type="button"
+      onClick={target ? () => onJump(target) : undefined}
+      title={target ? `Jump to ${label}` : undefined}
+      className={`bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex items-center gap-4 text-left transition-shadow ${
+        target ? 'cursor-pointer hover:shadow-md hover:border-teal-300' : ''
+      }`}
+    >
       <div className={`w-11 h-11 rounded-lg flex items-center justify-center ${color} shrink-0`}>
         <Icon className="w-5 h-5 text-white" />
       </div>
@@ -44,13 +51,14 @@ function Stat({ label, value, icon: Icon, sub, color = 'bg-teal-500' }) {
         <div className="text-2xl font-bold text-slate-800 leading-none">{value}</div>
         <div className="text-xs text-slate-500 mt-1">{label}</div>
         {sub && <div className="text-[11px] text-slate-400">{sub}</div>}
-        </div>
-    </div>
+        {target && <div className="text-[10px] text-teal-600 mt-0.5">View details →</div>}
+      </div>
+    </button>
   );
 }
 
-const Card = ({ title, icon: Icon, children, right, className = '' }) => (
-  <div className={`bg-white rounded-xl border border-slate-200 shadow-sm p-5 ${className}`}>
+const Card = ({ title, icon: Icon, children, right, className = '', id }) => (
+  <div id={id} className={`bg-white rounded-xl border border-slate-200 shadow-sm p-5 transition-shadow ${className}`}>
     <div className="flex items-center justify-between mb-4">
       <h2 className="text-sm font-semibold text-slate-700 uppercase tracking-wide flex items-center gap-2">
         {Icon && <Icon className="w-4 h-4 text-teal-600" />} {title}
@@ -89,9 +97,16 @@ export default function PortalAnalytics() {
   const [markedInternal, setMarkedInternal] = useState(() => {
     try { return localStorage.getItem('ae_internal') === '1'; } catch { return false; }
   });
+  const [flash, setFlash] = useState('');
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const jump = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setFlash(id);
+    setTimeout(() => setFlash(''), 2200);
+  };
 
   const markBrowser = () => {
     try { localStorage.setItem('ae_internal', '1'); setMarkedInternal(true); } catch {}
@@ -244,17 +259,17 @@ export default function PortalAnalytics() {
         <>
           {/* KPI cards */}
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
-            <Stat label="Page Views" value={fmt(o.totals.visits)} icon={Eye} color="bg-teal-500" sub={`${fmt(o.totals.avg_per_day)} / day avg`} />
-            <Stat label="Events" value={fmt(o.totals.events)} icon={Zap} color="bg-cyan-500" sub="clicks &amp; actions" />
-            <Stat label="Pages" value={fmt(o.totals.pages)} icon={Activity} color="bg-blue-500" sub="unique paths" />
-            <Stat label="Apply Views" value={fmt(o.funnel.apply_views)} icon={MousePointerClick} color="bg-indigo-500" sub="enrolment page" />
-            <Stat label="Apply Submits" value={fmt(o.funnel.apply_submits)} icon={Target} color="bg-amber-500" sub="forms sent" />
-            <Stat label="Conversion" value={`${o.funnel.conversion_rate}%`} icon={TrendingUp} color="bg-rose-500" sub="view → submit" />
+            <Stat label="Page Views" value={fmt(o.totals.visits)} icon={Eye} color="bg-teal-500" sub={`${fmt(o.totals.avg_per_day)} / day avg`} target="sec-trend" onJump={jump} />
+            <Stat label="Events" value={fmt(o.totals.events)} icon={Zap} color="bg-cyan-500" sub="clicks &amp; actions" target="sec-events" onJump={jump} />
+            <Stat label="Pages" value={fmt(o.totals.pages)} icon={Activity} color="bg-blue-500" sub="unique paths" target="sec-pages" onJump={jump} />
+            <Stat label="Apply Views" value={fmt(o.funnel.apply_views)} icon={MousePointerClick} color="bg-indigo-500" sub="enrolment page" target="sec-sections" onJump={jump} />
+            <Stat label="Apply Submits" value={fmt(o.funnel.apply_submits)} icon={Target} color="bg-amber-500" sub="forms sent" target="sec-sections" onJump={jump} />
+            <Stat label="Conversion" value={`${o.funnel.conversion_rate}%`} icon={TrendingUp} color="bg-rose-500" sub="view → submit" target="sec-sections" onJump={jump} />
           </div>
 
           {/* Sections */}
           {data.sections && data.sections.length > 0 && (
-            <Card title="Traffic by School Section" icon={Layers}>
+            <Card id="sec-sections" title="Traffic by School Section" icon={Layers} className={flash === 'sec-sections' ? 'ring-2 ring-teal-400' : ''}>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -292,7 +307,7 @@ export default function PortalAnalytics() {
 
           {/* Trend + hourly */}
           <div className="grid lg:grid-cols-3 gap-6">
-            <Card title="Visits per Day" icon={CalendarDays} right={<span className="text-xs text-slate-400">{o.range.from} → {o.range.to}</span>} >
+            <Card id="sec-trend" title="Visits per Day" icon={CalendarDays} className={flash === 'sec-trend' ? 'ring-2 ring-teal-400' : ''} right={<span className="text-xs text-slate-400">{o.range.from} → {o.range.to}</span>} >
               <div className="h-56">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={daily} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
@@ -340,7 +355,7 @@ export default function PortalAnalytics() {
 
           {/* Pages + events */}
           <div className="grid lg:grid-cols-2 gap-6">
-            <Card title="Top Pages" icon={Eye}>
+            <Card id="sec-pages" title="Top Pages" icon={Eye} className={flash === 'sec-pages' ? 'ring-2 ring-teal-400' : ''}>
               <div className="space-y-1 max-h-72 overflow-y-auto pr-1">
                 {data.pages.pages.slice(0, 15).map((p) => (
                   <div key={p.path} className="flex items-center justify-between gap-2 py-1.5 border-b border-slate-50 text-sm">
@@ -355,7 +370,7 @@ export default function PortalAnalytics() {
               </div>
             </Card>
 
-            <Card title="Events &amp; Actions" icon={Zap}>
+            <Card id="sec-events" title="Events &amp; Actions" icon={Zap} className={flash === 'sec-events' ? 'ring-2 ring-teal-400' : ''}>
               <div className="space-y-1 max-h-72 overflow-y-auto pr-1">
                 {data.pages.events.map((e) => (
                   <div key={e.path_id} className="flex items-center justify-between gap-2 py-1.5 border-b border-slate-50 text-sm">
