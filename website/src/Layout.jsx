@@ -29,16 +29,12 @@ export default function Layout({ children, currentPageName }) {
                   Apply Now
                 </Button>
               </Link>
-              <a
-                href="https://app.autoeffortless.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <Link to="/login">
                 <Button variant="outline" className="gap-2">
                   <LogIn className="w-4 h-4" />
-                  Staff Login
+                  Staff &amp; Parent Login
                 </Button>
-              </a>
+              </Link>
             </nav>
           </div>
         </div>

@@ -8,6 +8,9 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import ErrorBoundary from '@/lib/ErrorBoundary';
 import { AuthProvider } from '@/lib/AuthContext';
+import PortalLogin from './pages/PortalLogin';
+import PortalRegister from './pages/PortalRegister';
+import PortalDashboard from './pages/PortalDashboard';
 
 const { Pages, Layout, mainPage, NO_LAYOUT_PAGES = [] } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -42,6 +45,10 @@ const AppRoutes = () => {
         />
       ))}
       <Route path="*" element={<PageNotFound />} />
+      {/* ── Portal (independent Ting-A-Ling dashboard: staff / admin / parents) ── */}
+      <Route path="/login" element={<PortalLogin />} />
+      <Route path="/register" element={<PortalRegister />} />
+      <Route path="/portal" element={<PortalDashboard />} />
     </Routes>
   );
 };
