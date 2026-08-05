@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
 import { api, API_BASE, getToken } from '@/lib/api';
+import PortalShell from '@/components/PortalShell';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -10,7 +11,7 @@ import {
 } from 'recharts';
 import {
   Eye, CalendarDays, Zap, MousePointerClick, Target, TrendingUp,
-  Download, Activity, Globe, MonitorSmartphone, KeyRound, Users,
+  Download, Activity, Globe, MonitorSmartphone, KeyRound, Users, Layers,
 } from 'lucide-react';
 
 const COLORS = ['#0d9488', '#06b6d4', '#3b82f6', '#7c3aed', '#f59e0b', '#ef4444', '#10b981', '#f97316', '#84cc16', '#e11d48'];
@@ -25,6 +26,12 @@ const ACTION_LABELS = {
   signin_failed: '❌ Failed sign-in',
   signup: '🆕 Account sign-up',
 };
+const SECTION_LABELS = {
+  'pre-primary': 'Pre-Primary School',
+  'special-needs': 'Special Needs School',
+  main: 'Main Site / Home',
+  apply: 'Applications (general)',
+};
 const fmt = (n) => (n || 0).toLocaleString('en-ZA');
 
 function Stat({ label, value, icon: Icon, sub, color = 'bg-teal-500' }) {
@@ -37,7 +44,7 @@ function Stat({ label, value, icon: Icon, sub, color = 'bg-teal-500' }) {
         <div className="text-2xl font-bold text-slate-800 leading-none">{value}</div>
         <div className="text-xs text-slate-500 mt-1">{label}</div>
         {sub && <div className="text-[11px] text-slate-400">{sub}</div>}
-      </div>
+        </div>
     </div>
   );
 }
@@ -76,7 +83,7 @@ function Bars({ data, color = '#0d9488' }) {
 }
 
 export default function PortalAnalytics() {
-  const { user, isAuthenticated, isLoadingAuth } = useAuth();
+  const { user, isAuthenticated, isLoadingAuth, logout } = useAuth();
   const [range, setRange] = useState(RANGES[1]); // 30 days default
   const [includeInternal, setIncludeInternal] = useState(false);
   const [markedInternal, setMarkedInternal] = useState(() => {
@@ -108,7 +115,7 @@ export default function PortalAnalytics() {
     setError('');
     try {
       const q = new URLSearchParams(rangeParams()).toString();
-      const [overview, pages, referrers, locations, devices, logins, health] = await Promise.all([
+      const [overview, pages, referrers, locations, devices, logins, health, sections] = await Promise.all([
         api(`/site-analytics/overview?${q}`),
         api(`/site-analytics/pages?${q}`),
         api(`/site-analytics/referrers?${q}`),
@@ -116,8 +123,9 @@ export default function PortalAnalytics() {
         api(`/site-analytics/devices?${q}`),
         api(`/site-analytics/logins?${q}`),
         api('/site-analytics/health'),
+        api(`/site-analytics/sections?${q}`),
       ]);
-      setData({ overview, pages, referrers, locations, devices, logins: logins.logins || [], health });
+      setData({ overview, pages, referrers, locations, devices, logins: logins.logins || [], health, sections: sections.sections || [] });
     } catch (e) {
       setError(e.message || 'Failed to load analytics');
     } finally {
@@ -158,6 +166,7 @@ export default function PortalAnalytics() {
   const hourlyActive = hourly.filter((h) => h.count > 0);
 
   return (
+    <PortalShell user={user} logout={logout} active="analytics">
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -242,6 +251,44 @@ export default function PortalAnalytics() {
             <Stat label="Apply Submits" value={fmt(o.funnel.apply_submits)} icon={Target} color="bg-amber-500" sub="forms sent" />
             <Stat label="Conversion" value={`${o.funnel.conversion_rate}%`} icon={TrendingUp} color="bg-rose-500" sub="view → submit" />
           </div>
+
+          {/* Sections */}
+          {data.sections && data.sections.length > 0 && (
+            <Card title="Traffic by School Section" icon={Layers}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-xs text-slate-400 uppercase tracking-wide border-b border-slate-100">
+                      <th className="py-2 pr-4">Section</th>
+                      <th className="py-2 pr-4">Views</th>
+                      <th className="py-2 pr-4">Apply views</th>
+                      <th className="py-2 pr-4">Submits</th>
+                      <th className="py-2">Conversion</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.sections.map((s) => (
+                      <tr key={s.section} className="border-b border-slate-50">
+                        <td className="py-2 pr-4 font-medium text-slate-700">{SECTION_LABELS[s.section] || s.section}</td>
+                        <td className="py-2 pr-4 text-slate-600">{fmt(s.views)}</td>
+                        <td className="py-2 pr-4 text-slate-600">{fmt(s.apply_views)}</td>
+                        <td className="py-2 pr-4 text-slate-600">{fmt(s.apply_submits)}</td>
+                        <td className="py-2">
+                          <span className="font-semibold text-teal-600">{s.conversion_rate}%</span>
+                          <span className="w-20 h-1.5 bg-slate-100 rounded-full ml-2 align-middle inline-block">
+                            <span className="block h-full bg-teal-500 rounded-full" style={{ width: `${Math.min(100, s.conversion_rate)}%` }} />
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-xs text-slate-400 mt-2">
+                Where parents reach you — pre-primary and special-needs rows include their application pages (apply?school=…).
+              </p>
+            </Card>
+          )}
 
           {/* Trend + hourly */}
           <div className="grid lg:grid-cols-3 gap-6">
@@ -395,5 +442,6 @@ export default function PortalAnalytics() {
         </>
       )}
     </div>
+    </PortalShell>
   );
 }

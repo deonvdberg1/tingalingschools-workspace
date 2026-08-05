@@ -42,6 +42,15 @@
           } catch (e) {}
           return false;
         }
+        function sectionOf() {
+          try {
+            var p = location.pathname.toLowerCase() + location.search.toLowerCase();
+            if (p.indexOf('specialneeds') !== -1 || p.indexOf('special-needs') !== -1) return 'special-needs';
+            if (p.indexOf('preprimary') !== -1 || p.indexOf('pre-primary') !== -1) return 'pre-primary';
+            if (p.indexOf('apply') !== -1) return 'apply';
+            return 'main';
+          } catch (e) { return 'main'; }
+        }
         function send(data) {
           try {
             var body = JSON.stringify(Object.assign({
@@ -51,7 +60,8 @@
               referrer: document.referrer,
               screen: (window.screen ? window.screen.width + 'x' + window.screen.height : ''),
               ua: navigator.userAgent,
-              internal: isInternal() ? 1 : 0
+              internal: isInternal() ? 1 : 0,
+              section: sectionOf()
             }, data || {}));
             var url = 'https://whatsapp.autoeffortless.com/api/site-track';
             if (navigator.sendBeacon) {
@@ -62,7 +72,16 @@
           } catch (e) {}
         }
         window.AETrack = function (label, title) {
-          send({ event: true, label: label, title: title || document.title });
+          // Event labels may carry a program, e.g. 'apply-submit:PrePrimary' —
+          // attribute the event to that section.
+          var section = sectionOf();
+          if (label && label.indexOf('apply-submit') === 0) {
+            var prog = String(label).split(':')[1] || '';
+            if (prog.toLowerCase().indexOf('special') !== -1) section = 'special-needs';
+            else if (prog.toLowerCase().indexOf('pre') !== -1) section = 'pre-primary';
+            else section = 'apply';
+          }
+          send({ event: true, label: label, title: title || document.title, section: section });
         };
         if (document.readyState === 'complete') send({});
         else window.addEventListener('load', function () { send({}); });

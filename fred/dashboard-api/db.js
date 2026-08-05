@@ -230,6 +230,20 @@ export async function initDb() {
     if (!cols.some((c) => c[1] === 'internal')) {
       db.run('ALTER TABLE site_hits ADD COLUMN internal INTEGER DEFAULT 0');
     }
+    // Migration: section attribution (main / pre-primary / special-needs / apply)
+    if (!cols.some((c) => c[1] === 'section')) {
+      db.run("ALTER TABLE site_hits ADD COLUMN section TEXT DEFAULT ''");
+    }
+    // Backfill sections for rows recorded before the section column existed (idempotent)
+    db.run(`
+      UPDATE site_hits SET section = CASE
+        WHEN lower(path) LIKE '%special%' THEN 'special-needs'
+        WHEN lower(path) LIKE '%preprimary%' OR lower(path) LIKE '%pre-primary%' OR lower(path) LIKE '%pre_primary%' THEN 'pre-primary'
+        WHEN lower(path) LIKE '%apply%' THEN 'apply'
+        ELSE 'main'
+      END
+      WHERE section = '' OR section IS NULL
+    `);
   } catch (e) { /* table may not exist yet on fresh boot; created above */ }
   db.run('CREATE INDEX IF NOT EXISTS idx_site_hits_client ON site_hits(client_id, created_at)');
   db.run('CREATE INDEX IF NOT EXISTS idx_site_hits_path ON site_hits(path)');

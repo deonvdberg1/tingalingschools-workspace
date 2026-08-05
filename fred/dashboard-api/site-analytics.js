@@ -137,10 +137,11 @@ export function setupSiteAnalyticsRoutes(app, { query, run: _run, saveDb: _saveD
     const country = countryName(countryCode);
     try {
       const internal = body.internal ? 1 : 0;
+      const section = String(body.section || deriveSection(path)).slice(0, 20);
       run(
-        `INSERT INTO site_hits (client_id, path, title, referrer, ua, screen, country, is_event, event_label, ip, internal)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [clientId, path, title, referrer, ua, screen, country, isEvent, eventLabel, ip, internal]
+        `INSERT INTO site_hits (client_id, path, title, referrer, ua, screen, country, is_event, event_label, ip, internal, section)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [clientId, path, title, referrer, ua, screen, country, isEvent, eventLabel, ip, internal, section]
       );
       saveDb();
       res.json({ ok: true });
@@ -372,6 +373,56 @@ export function setupSiteAnalyticsRoutes(app, { query, run: _run, saveDb: _saveD
     res.json({ logins, summary });
   });
 
+
+  // ── GET /api/site-analytics/sections — traffic per school section (main / pre-primary / special-needs / apply) ──
+  app.get('/api/site-analytics/sections', requireAuth, resolve, (req, res) => {
+    const { from, to } = rangeParams(req.query);
+    const cid = req.analyticsClientId;
+    const incl = internalSql(req.query);
+
+    const viewRows = query(
+      `SELECT section,
+              COUNT(*) AS views,
+              SUM(CASE WHEN path LIKE '%apply%' THEN 1 ELSE 0 END) AS apply_views
+       FROM site_hits
+       WHERE client_id = ? AND is_event = 0 AND date(created_at) BETWEEN date(?) AND date(?)
+         AND section != ''${incl}
+       GROUP BY section`,
+      [cid, from, to]
+    );
+    const submitRows = query(
+      `SELECT section, COUNT(*) AS submits
+       FROM site_hits
+       WHERE client_id = ? AND is_event = 1 AND event_label LIKE 'apply-submit%'
+         AND date(created_at) BETWEEN date(?) AND date(?) AND section != ''${incl}
+       GROUP BY section`,
+      [cid, from, to]
+    );
+
+    const order = ['pre-primary', 'special-needs', 'main', 'apply'];
+    const byName = {};
+    viewRows.forEach((r) => { byName[r.section] = { views: r.views, apply_views: r.apply_views }; });
+    submitRows.forEach((r) => { if (byName[r.section]) byName[r.section].submits = r.submits; });
+
+    const sections = order.map((name) => {
+      const d = byName[name] || { views: 0, apply_views: 0 };
+      const submits = d.submits || 0;
+      return {
+        section: name,
+        views: d.views,
+        apply_views: d.apply_views,
+        apply_submits: submits,
+        conversion_rate: d.apply_views > 0 ? Math.round((submits / d.apply_views) * 1000) / 10 : 0,
+      };
+    });
+    // any other sections not in the fixed order (e.g. legacy '' or unexpected)
+    Object.keys(byName).forEach((k) => {
+      if (!order.includes(k)) sections.push({ section: k, views: byName[k].views, apply_views: byName[k].apply_views, apply_submits: byName[k].submits || 0, conversion_rate: 0 });
+    });
+
+    res.json({ sections });
+  });
+
   // ── GET /api/site-analytics/export — CSV ──
   app.get('/api/site-analytics/export', requireAuth, resolve, (req, res) => {
     const { from, to } = rangeParams(req.query);
@@ -428,6 +479,15 @@ export function setupSiteAnalyticsRoutes(app, { query, run: _run, saveDb: _saveD
 
 
 // ── Internal-traffic filtering (owner/staff visits vs customers) ──
+
+function deriveSection(path) {
+  const p = String(path || '').toLowerCase();
+  if (p.includes('special')) return 'special-needs';
+  if (p.includes('preprimary') || p.includes('pre-primary') || p.includes('pre_primary')) return 'pre-primary';
+  if (p.includes('apply')) return 'apply';
+  return 'main';
+}
+
 function internalSql(q) {
   // default: EXCLUDE internal visits; pass internal=1 to include everything
   return q.internal === '1' ? '' : ' AND internal = 0';
