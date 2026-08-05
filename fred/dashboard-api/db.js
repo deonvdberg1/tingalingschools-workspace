@@ -129,8 +129,6 @@ export async function initDb() {
       FOREIGN KEY (client_id) REFERENCES clients(id)
     );
   `);
-  
-  // Insert default overlord if no users exist
   const userCheck = db.exec('SELECT COUNT(*) as c FROM users');
   if (!userCheck[0] || userCheck[0].values[0][0] === 0) {
     const hash = crypto.createHash('sha256').update('admin123').digest('hex');
@@ -177,9 +175,117 @@ export async function initDb() {
   if (settingsCount[0]?.values[0][0] === 0) {
     db.run('INSERT INTO settings (id) VALUES (1)');
   }
+
+  // ── Site analytics configs (per-client GoatCounter setup) ──
+  db.run(`
+    CREATE TABLE IF NOT EXISTS site_analytics_configs (
+      client_id INTEGER PRIMARY KEY,
+      site_code TEXT NOT NULL,
+      api_token TEXT DEFAULT '',
+      domain TEXT DEFAULT '',
+      enabled INTEGER DEFAULT 1,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
+  `);
+
+  // ── Portal auth event log (signins, failed signins, signups) ──
+  db.run(`
+    CREATE TABLE IF NOT EXISTS login_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER,
+      email TEXT DEFAULT '',
+      name TEXT DEFAULT '',
+      role TEXT DEFAULT '',
+      client_id INTEGER,
+      action TEXT NOT NULL,
+      ip TEXT DEFAULT '',
+      user_agent TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+  `);
+  db.run('CREATE INDEX IF NOT EXISTS idx_login_log_client ON login_log(client_id, created_at)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_login_log_action ON login_log(action, created_at)');
+
+  // ── Self-hosted site tracking (pageviews + events from the site beacon) ──
+  db.run(`
+    CREATE TABLE IF NOT EXISTS site_hits (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id INTEGER NOT NULL DEFAULT 6,
+      path TEXT DEFAULT '',
+      title TEXT DEFAULT '',
+      referrer TEXT DEFAULT '',
+      ua TEXT DEFAULT '',
+      screen TEXT DEFAULT '',
+      country TEXT DEFAULT '',
+      is_event INTEGER DEFAULT 0,
+      event_label TEXT DEFAULT '',
+      ip TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now','localtime'))
+    );
+  `);
+  // Migration: internal-visit flag (added 2026-08-05 — distinguishes staff/owner traffic from customers)
+  try {
+    const cols = db.exec('PRAGMA table_info(site_hits)')[0]?.values || [];
+    if (!cols.some((c) => c[1] === 'internal')) {
+      db.run('ALTER TABLE site_hits ADD COLUMN internal INTEGER DEFAULT 0');
+    }
+  } catch (e) { /* table may not exist yet on fresh boot; created above */ }
+  db.run('CREATE INDEX IF NOT EXISTS idx_site_hits_client ON site_hits(client_id, created_at)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_site_hits_path ON site_hits(path)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_site_hits_event ON site_hits(is_event)');
   
   // Setup delivery tracking tables
   setupTrackingTables(db);
+
+  // ── School portal tables (Ting-A-Ling independent dashboard) ──
+  db.run(`
+    CREATE TABLE IF NOT EXISTS portal_announcements (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      body TEXT NOT NULL,
+      audience TEXT NOT NULL DEFAULT 'all',
+      created_by TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+  `);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS portal_events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      event_date TEXT,
+      description TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+  `);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS leave_requests (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      user_name TEXT,
+      start_date TEXT NOT NULL,
+      end_date TEXT NOT NULL,
+      reason TEXT DEFAULT '',
+      status TEXT NOT NULL DEFAULT 'pending',
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+  `);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS portal_registrations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      child_name TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+  `);
+  db.run('CREATE INDEX IF NOT EXISTS idx_announcements_client ON portal_announcements(client_id)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_events_client ON portal_events(client_id)');
+  db.run('CREATE INDEX IF NOT EXISTS idx_leave_client ON leave_requests(client_id)');
   
   saveDb();
   return db;

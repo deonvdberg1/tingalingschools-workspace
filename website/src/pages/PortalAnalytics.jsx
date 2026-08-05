@@ -78,9 +78,20 @@ function Bars({ data, color = '#0d9488' }) {
 export default function PortalAnalytics() {
   const { user, isAuthenticated, isLoadingAuth } = useAuth();
   const [range, setRange] = useState(RANGES[1]); // 30 days default
+  const [includeInternal, setIncludeInternal] = useState(false);
+  const [markedInternal, setMarkedInternal] = useState(() => {
+    try { return localStorage.getItem('ae_internal') === '1'; } catch { return false; }
+  });
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+
+  const markBrowser = () => {
+    try { localStorage.setItem('ae_internal', '1'); setMarkedInternal(true); } catch {}
+  };
+  const unmarkBrowser = () => {
+    try { localStorage.removeItem('ae_internal'); setMarkedInternal(false); } catch {}
+  };
 
   const isAdmin = user?.role === 'client_admin' || user?.role === 'overlord';
 
@@ -89,8 +100,8 @@ export default function PortalAnalytics() {
     const from = range.days
       ? new Date(Date.now() - (range.days - 1) * 864e5).toISOString().slice(0, 10)
       : '2000-01-01';
-    return { from, to };
-  }, [range]);
+    return { from, to, internal: includeInternal ? '1' : '0' };
+  }, [range, includeInternal]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -173,6 +184,49 @@ export default function PortalAnalytics() {
           </Button>
         </div>
       </div>
+
+      {data && o && o.split && (
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-wrap items-center gap-4">
+          <div className="min-w-[220px]">
+            <div className="text-sm font-semibold text-slate-700">Customer vs Your visits</div>
+            <div className="text-xs text-slate-500">
+              {fmt(o.split.external)} customer visits · {fmt(o.split.internal)} from you
+              {o.split.external + o.split.internal > 0 && (
+                <> — {Math.round((o.split.internal / (o.split.external + o.split.internal)) * 100)}% of traffic is your own</>
+              )}
+            </div>
+          </div>
+          <div className="flex-1 min-w-[140px] h-3 bg-slate-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-teal-500 rounded-full"
+              style={{ width: `${((o.split.external / (o.split.external + o.split.internal || 1)) * 100)}%` }}
+            />
+          </div>
+          <div className="flex items-center gap-2 ml-auto flex-wrap">
+            <Button
+              variant={includeInternal ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setIncludeInternal((v) => !v)}
+            >
+              {includeInternal ? 'Showing all visits' : 'Customers only'}
+            </Button>
+            {markedInternal ? (
+              <Button variant="outline" size="sm" onClick={unmarkBrowser} title="This browser is marked as yours — its visits are excluded from customer numbers">
+                ✓ This browser = me
+              </Button>
+            ) : (
+              <Button variant="outline" size="sm" onClick={markBrowser} title="Mark this browser/device as yours so its visits don't count as customers">
+                Mark this browser as me
+              </Button>
+            )}
+          </div>
+          <p className="w-full text-[11px] text-slate-400">
+            {markedInternal
+              ? 'This browser/device is marked as yours — its visits are excluded from customer numbers (applies from now on).'
+              : 'Tip: click “Mark this browser as me” on each device you use (laptop, phone) so your own browsing doesn’t count as customers.'}
+          </p>
+        </div>
+      )}
 
       {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</div>}
       {loading && !data && <div className="py-20 flex justify-center"><div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" /></div>}

@@ -29,6 +29,19 @@
     <!-- AutoEffortless site tracking (self-hosted, privacy-friendly, no cookies) -->
     <script>
       (function () {
+        function isInternal() {
+          try {
+            // Explicit opt-out flag (set from portal Analytics page)
+            if (localStorage.getItem('ae_internal') === '1') return true;
+            // Portal users (admin/staff) browsing the site count as internal
+            var t = localStorage.getItem('tingaling_token');
+            if (t) {
+              var u = JSON.parse(atob(t));
+              if (u.role === 'client_admin' || u.role === 'overlord' || u.role === 'staff') return true;
+            }
+          } catch (e) {}
+          return false;
+        }
         function send(data) {
           try {
             var body = JSON.stringify(Object.assign({
@@ -37,7 +50,8 @@
               title: document.title,
               referrer: document.referrer,
               screen: (window.screen ? window.screen.width + 'x' + window.screen.height : ''),
-              ua: navigator.userAgent
+              ua: navigator.userAgent,
+              internal: isInternal() ? 1 : 0
             }, data || {}));
             var url = 'https://whatsapp.autoeffortless.com/api/site-track';
             if (navigator.sendBeacon) {
