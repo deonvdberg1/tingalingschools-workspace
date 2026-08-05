@@ -125,7 +125,7 @@ fi
 echo "{\"status\":\"$current_status\",\"updated\":\"$(date '+%Y-%m-%d %H:%M SAST')\"}" > "$STATE_FILE"
 
 # Keep log trimmed
-tail -n 500 "$LOG_FILE" > "${LOG_FILE}.tmp" 2>/dev/null && mv "${LOG_FILE}.tmp" "$LOG_FILE"
+tail -n 500 "$LOG_FILE" > "${LOG_FILE}.tmp.$$" 2>/dev/null && mv -f "${LOG_FILE}.tmp.$$" "$LOG_FILE"; rm -f "${LOG_FILE}.tmp.$$"
 
 # Report summary
 if [ -n "$FAILURES" ]; then

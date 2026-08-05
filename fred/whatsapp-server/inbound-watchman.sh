@@ -160,7 +160,7 @@ else
 fi
 
 # Keep log trimmed
-tail -n 500 "$LOG_FILE" > "${LOG_FILE}.tmp" 2>/dev/null && mv "${LOG_FILE}.tmp" "$LOG_FILE"
+tail -n 500 "$LOG_FILE" > "${LOG_FILE}.tmp.$$" 2>/dev/null && mv -f "${LOG_FILE}.tmp.$$" "$LOG_FILE"; rm -f "${LOG_FILE}.tmp.$$"
 
 echo "[$(date)] STATUS: OK — Last inbound ${elapsed_min} min ago" >> "$LOG_FILE"
 exit 0

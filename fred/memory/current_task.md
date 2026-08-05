@@ -63,3 +63,9 @@
 3. 🟢 **Parent opt-in campaign**
 4. 🟢 **Real client onboarding** — Mr D's sales intros
 5. 🟢 **UPS purchase** — R1,293 APC 650VA (Takealot)
+
+## 2026-08-04 — Visitor tracking: GoatCounter → SELF-HOSTED (COMPLETE, replaces GoatCounter)
+- **~14:40:** GoatCounter replaced by self-hosted beacon (commit 2ec3070, "no third-party analytics") — site now posts pageviews/events to `whatsapp.autoeffortless.com/api/site-track` → dashboard API → `site_hits` table (client_id=6) in dashboard-api/data/autoeffortless.db
+- Dashboard Site Analytics page reads same DB. Real data flowing (Google visitor 15:41)
+- Daily 08:00 report cron (249af5eb) repointed from GoatCounter API → local sqlite query
+- GoatCounter account/dashboard (tingaling.goatcounter.com, secrets/goatcounter.env) now unused — tracker removed from site. Free tier, no cost; can delete later if wanted.
