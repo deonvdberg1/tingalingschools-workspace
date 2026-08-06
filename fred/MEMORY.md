@@ -108,6 +108,59 @@ This is where I keep what matters.
 - **Status:** active, health: healthy
 - **Onboarding:** reset to not_started (will see wizard on login)
 
+## 🧭 Internal vs Customer Traffic (2026-08-05)
+
+Analytics now separates owner/staff visits from customer traffic.
+- **Beacon (index.html):** sends `internal:1` when localStorage `ae_internal=1` OR the visitor is logged into the portal as admin/staff (JWT role decode). Parents = customers.
+- **Backend:** `site_hits.internal` column (migration in db.js) + `internalSql()` filter in site-analytics.js — default EXCLUDES internal; `?internal=1` includes all. Overview returns `split:{internal,external}` + `filtering`.
+- **UI (PortalAnalytics):** "Customer vs Your visits" panel (split bar + %), toggle "Customers only / Showing all visits", and "Mark this browser as me" button (sets `ae_internal` in localStorage — do this on every device Mr D uses).
+- **Deploy:** gh-pages 61a6860, main 5e45cec.
+
+## 🧭 Section Analytics (2026-08-05)
+
+Site traffic is now attributed to school sections so Mr D can see where parents reach the school.
+- **Sections:** `main` (home/general), `pre-primary`, `special-needs`, `apply` (general apply). Beacon computes `section` from pathname + query (so `/apply?school=PrePrimary` → pre-primary); AETrack events carry program labels (`apply-submit:PrePrimary`).
+- **Backend:** `site_hits.section` column (migration + idempotent path backfill in db.js); new `GET /api/site-analytics/sections` endpoint → views / apply_views / apply_submits / conversion per section.
+- **UI (PortalAnalytics):** "Traffic by School Section" table (Pre-Primary School, Special Needs School, Main Site/Home, Applications) with conversion bars. Page now uses shared **PortalShell** component (`website/src/components/PortalShell.jsx`) so the sidebar stays visible on the analytics page (fixes disappearing menu).
+- **Deploy:** gh-pages 8f1e2e6, main 9f29b0f.
+
+## 📊 Portal Analytics Page (2026-08-05)
+
+Admin portal now has a full site-traffic analytics page at https://tingalingschools.com/portal/analytics (sidebar "Analytics", admin only).
+
+- **Backend:** existing `dashboard-api/site-analytics.js` (self-hosted beacon → `site_hits` table). Endpoints: overview, pages, referrers, locations, devices, logins, export (CSV), health. All client-scoped via `resolve` middleware.
+- **Frontend:** `website/src/pages/PortalAnalytics.jsx` (recharts) — KPIs (views, events, pages, apply funnel + conversion), daily trend area chart, hourly bar chart, top pages, events, referrers, browsers pie, OS bars, screen sizes + locations, portal sign-in log, tracking health, CSV export, 7/30/90/all range picker.
+- **Data notes:** beacon sends clientId/path/title/referrer/ua/screen; server adds IP + country (CF-IPCountry). Privacy-friendly: no cookies, aggregate only. site_hits uses `datetime('now','localtime')`; login_log uses UTC.
+- **Deploy:** gh-pages 045585c, main 91e8e3b.
+
+## 🚪 Ting-A-Ling Independent Portal (2026-08-05)
+
+Ting-A-Ling now has its OWN portal on tingalingschools.com — no redirect to AutoEffortless.
+
+- **URLs:** https://tingalingschools.com/login · /register (parents) · /portal (dashboard)
+- **Login button on site:** "Staff & Parent Login" → internal /login (was app.autoeffortless.com)
+- **Roles:** client_admin (admin), staff, parent — same dashboard, role-based panels
+- **Admin panel:** stats cards, publish announcements (audience: all/staff/parents), events, approve/reject staff leave, create staff logins, view parent registrations
+- **Staff panel:** announcements, events, submit + track leave requests
+- **Parent panel:** announcements, events, report absence (prefilled WhatsApp to 061 527 4429), self-register at /register
+- **Accounts:**
+  - Admin: info@tingalingschools.com / Tingaling2026!
+  - Staff: staff@tingalingschools.com / Staff2026!
+  - Parent: parent@tingalingschools.com / Parent2026!
+- **Backend:** dashboard-api (port 3001) — new `portal-routes.js` + tables (portal_announcements, portal_events, leave_requests, portal_registrations). API base in SPA: `https://app.autoeffortless.com/api` (internal infra, invisible to users).
+- **Frontend:** `website/src/pages/Portal{Login,Register,Dashboard}.jsx`, `lib/api.js`, AuthContext rewritten off Supabase → our JWT API (bundle shrank 600→422 kB).
+- **Deploy:** gh-pages 9060eac, main d77a2e6.
+
+
+## 🌐 tingalingschools.com (School Website) — FIXED 2026-08-05
+
+- **Source:** `workspace/website/` (Vite + shadcn React app, package `tingalingschools`)
+- **Hosting:** GitHub Pages on `tingalingschools-workspace` repo, **gh-pages branch** (repo = the big workspace repo, origin git@github.com:deonvdberg1/tingalingschools-workspace.git)
+- **Build:** `npm run build` → dist/ (copies index.html → 404.html for SPA deep-link fallback)
+- **Deploy:** copy dist/* → gh-pages worktree → commit + push; keep CNAME/favicon/logo
+- **Aug 4–5 incident:** AuthProvider removed from App.jsx (commit d3f3824) while NavigationTracker still called useAuth → full-site crash. Restored AuthProvider → rebuilt → redeployed (gh-pages 93fbd58, main 3d85db1). Verified headless: no errors.
+- ⚠️ Never `rsync --delete` into a git worktree root (deletes .git pointer + CNAME)
+
 ## 🔑 Credentials (stored in .env / secrets/)
 ```
 WHATSAPP_TOKEN           → whatsapp-server/.env
@@ -135,10 +188,18 @@ Cloudflare tunnel token  → secrets/cert.pem + 41e8685d-...json
 - **Health check speedup** — now runs every 15 min (was 2h)
 - **Better Uptime / UptimeRobot** — 🟡 Not yet set up (requires browser signup)
 
-## ⏰ Crontab (2026-05-29)
+## ⏰ Crontab (2026-08-05)
 - `*/5 * * * *` — Inbound Watchman
+- `*/10 * * * *` — Website Monitor (tingalingschools.com render + uptime)
 - `*/15 * * * *` — Full health check
-- `0 * * * *` — Hourly backup
+- `0 2 * * *` — Auto-backup (daily)
+
+## 🖥️ Website Monitor (2026-08-05)
+- Script: `fred/scripts/site-monitor.sh` — runs every 10 min
+- Checks: HTTP 200 → bundle referenced → REAL headless-Chrome render (crash markers + content)
+- Catches "HTTP 200 but React crash" bugs (like the 2026-08-05 useAuth incident)
+- Alerts Mr D via WhatsApp on state change only (no spam)
+- Log: `fred/logs/site-monitor.log` | State: `/tmp/site-monitor-state.json`
 
 ## 💾 SQLite Chat Persistence (2026-05-29)
 - **New:** `messages` table in `dashboard-api/data/autoeffortless.db`
