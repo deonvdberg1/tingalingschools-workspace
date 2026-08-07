@@ -1,0 +1,68 @@
+{
+  "source": "https://ngmeerensee.co.za (WordPress 6.2.9 / PHP 7.2.34, Imaginet hosting)",
+  "exported_at": "2026-08-06T16:05:00+02:00",
+  "method": "Public WordPress REST API (no credentials)",
+  "pages": [
+    {
+      "slug": "2026_ng-kerk-calendar_final-pdf",
+      "title": "Kalender 2026",
+      "modified": "2026-05-20T07:01:22"
+    },
+    {
+      "slug": "eredienste",
+      "title": "Eredienste",
+      "modified": "2022-09-23T09:51:11"
+    },
+    {
+      "slug": "vorms",
+      "title": "Vorms",
+      "modified": "2024-01-17T05:53:16"
+    },
+    {
+      "slug": "media",
+      "title": "Media",
+      "modified": "2016-06-15T10:50:47"
+    },
+    {
+      "slug": "omgeegroepe",
+      "title": "Omgeegroepe",
+      "modified": "2016-05-23T03:19:43"
+    },
+    {
+      "slug": "finansies",
+      "title": "Finansies",
+      "modified": "2026-05-20T06:37:34"
+    },
+    {
+      "slug": "gebed",
+      "title": "Gebed",
+      "modified": "2023-01-30T09:44:22"
+    },
+    {
+      "slug": "jeug-splash",
+      "title": "Jeug",
+      "modified": "2018-02-26T21:18:24"
+    },
+    {
+      "slug": "kontak",
+      "title": "Kontak",
+      "modified": "2026-01-09T09:29:06"
+    }
+  ],
+  "media_count": 100,
+  "media_size_mb": 49.3,
+  "media_types": {
+    "jpg": 66,
+    "pdf": 16,
+    "gif": 2,
+    "png": 14,
+    "jpeg": 1
+  },
+  "notes": [
+    "Calendar PDF: media/files/2026_NG-Kerk-Calendar.pdf",
+    "Nuwe Intrekkervorm PDFs: media/files/Nuwe-Intrekkervorm-*.pdf",
+    "Logos: media/files/NG-KERK-MEERENSEE-LOGO-*",
+    "All 9 pages content in pages/pages.json",
+    "Email via Imaginet MX \u2014 preserve during cutover"
+  ]
+}

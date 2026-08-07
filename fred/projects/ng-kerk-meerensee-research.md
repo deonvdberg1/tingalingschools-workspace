@@ -73,3 +73,25 @@
 
 ---
 *Research method: DNS/WHOIS, HTTP headers, WordPress fingerprinting (wp-json, readme, xmlrpc, generators), content audit via REST API + homepage scrape. No credentials used — all passive/public checks.*
+
+## Re-check 2026-08-06 08:47 SAST — Site UP, Security Posture UNCHANGED
+
+Mr D noted "they have things up and running again" — confirmed live, healthy, fast.
+
+| Check | Result | vs 2026-08-05 |
+|---|---|---|
+| DNS | 41.78.28.162 (Imaginet IDC) | same |
+| Uptime | HTTP 200 in 0.57s | ✅ same |
+| WordPress | 6.2.9 (generator meta + readme) | ❌ unchanged — still 2.5 yrs behind |
+| PHP | 7.2.34 (x-powered-by) | ❌ unchanged — still EOL since Nov 2020 |
+| SSL | Let's Encrypt, valid | ✅ |
+| User enumeration | /wp-json/wp/v2/users → 200, "Annolien Liebenberg" (id 5) exposed | ❌ still open |
+| xmlrpc.php | GET 405 (normal), **POST fully active** — system.listMethods + pingback.ping respond | ❌ still active — DDoS vector |
+| Security headers | None of 7 present | ❌ unchanged |
+| Blog | Last post 2019-03-08 (Matteus 25-uitdaging Dag 7) | ❌ still dead 7+ yrs |
+| Pages | 9, same slugs (Kalender 2026 home, Eredienste, Vorms, Media, Omgeegroepe, Finansies, Gebed, Jeug, Kontak) | same |
+| Plugins | captcha, chapelworks-church-basic-features, wd-google-maps | same |
+
+**Summary: Site being "up and running" was never the problem — it's fast and stable. Every security issue from the brief remains untouched. Perfect opening for the client conversation: the site works *today*, but it's one exploit away from being defaced or serving malware, because the underlying software (PHP 7.2, WP 6.2.9) stopped receiving security patches years ago.**
+
+⚠️ Note for meeting: xmlrpc GET gives 405 but POST is live — a naive "is xmlrpc disabled?" check by GET alone gives a false "blocked" signal. Must test with POST.
