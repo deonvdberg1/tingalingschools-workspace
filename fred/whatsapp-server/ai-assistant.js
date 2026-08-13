@@ -48,10 +48,10 @@ function getHistory(phone) {
   return conversationHistory.get(phone);
 }
 
-function callGateway(messages) {
+function callGateway(agentId, messages) {
   return new Promise((resolve) => {
     const data = JSON.stringify({
-      model: 'openclaw/tingai',
+      model: 'openclaw/' + (agentId || 'tingai'),
       messages: messages,
       stream: false,
       max_tokens: 400,
@@ -128,7 +128,7 @@ async function getAIAutoReply(messageText, fromNumber, clientContext) {
 
   // Build messages with conversation history
   const messages = buildMessages(fromNumber, messageText);
-  const reply = await callGateway(messages);
+  const reply = await callGateway(agentId, messages);
 
   if (reply && reply.length > 0) {
     // Store in conversation history

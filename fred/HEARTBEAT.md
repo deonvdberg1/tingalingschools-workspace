@@ -1,6 +1,33 @@
 # Heartbeat Monitor
 # Fred checks these on every session start
 
+## 2026-08-13 — NG Kerk Meerensee Onboarded (Kliënt #2) ✅
+
+- Agent `ngkerk` geskep + geregistreer (Afrikaans-eerste, KB-alleen)
+- KB gebou uit hul webwerf (12 seksies, 3853 chars) — hul site bly onveranderd
+- Admin-login: info@ngmeerensee.co.za / NGKerk2026!
+- ai-assistant.js: per-kliënt agent routing (`openclaw/<agentId>`)
+- KB-sync per-kliënt in server.js (wattsapp-server + agent workspace)
+- ⏳ Wag op hul WhatsApp-nommer vir Meta-registrasie
+
+## 2026-08-05 08:55 SAST — tingalingschools.com Crash Fixed ✅
+
+⚠️ Incident: Site showed "useAuth must be used within an AuthProvider" (React crash, site blank)
+
+**Root cause:** Commit d3f3824 (Aug 4) removed `<AuthProvider>` from `website/src/App.jsx` when portal pages were dropped, but left `<NavigationTracker />` (calls `useAuth()`) in the tree → every page load crashed.
+
+**Fix:** Restored `<AuthProvider>` wrapper in App.jsx → rebuilt → deployed to gh-pages branch of `tingalingschools-workspace` repo → pushed main (3d85db1) + gh-pages (93fbd58).
+
+**Verified:** Headless Chrome render — 0 errors, all pages render (Home, Apply, Pre-Primary, Special Needs).
+
+**Monitoring added:** `fred/scripts/site-monitor.sh` — every 10 min via crontab. Checks HTTP 200 + bundle ref + REAL headless-Chrome render (no crash markers, content present). WhatsApp alerts to Mr D on state change only (no spam). This would have caught today's bug within 10 min.
+
+**School website ops notes:**
+- Source: `workspace/website/` (Vite + shadcn React app, package name `tingalingschools`)
+- Build: `npm run build` (outputs dist/ + 404.html for SPA fallback)
+- Deploy: copy dist → gh-pages branch of `tingalingschools-workspace` repo (GitHub Pages)
+- ⚠️ Lesson: NEVER `rsync --delete dist/` into a git worktree root — it deleted `.git` pointer + `CNAME`. Recreate `.git` (gitdir pointer) + CNAME from `git show gh-pages:CNAME`.
+
 ## 2026-06-02 10:30 SAST — Phase 1 Analytics Complete ✅
 ✅ Hourly trends dashboard (busiest hours) — live at /analytics/messages
 ✅ Response time trends (avg, fastest, slowest, daily) — live at /analytics/compare

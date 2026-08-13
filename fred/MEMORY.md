@@ -100,6 +100,18 @@ This is where I keep what matters.
 
 ## 👥 Clients
 
+### NG Kerk Meerensee (ID: 8) — CLIENT #2 (2026-08-13)
+- **Login:** info@ngmeerensee.co.za / NGKerk2026! — role: client_admin
+- **Type:** church (Afrikaans-first) — webwerf bly WordPress (ONVERANDERD — hulle redigeer self)
+- **Agent:** `ngkerk` — geregistreer in openclaw.json (workspace `/Users/deonvandenberg/.openclaw/workspace/ngkerk`)
+- **Agent id in DB:** clients.agent_id='ngkerk', ai_enabled=1
+- **KB:** `ngkerk-knowledge-base.md` (3853 chars, 12 seksies uit hul webwerf onttrek) — in ngkerk/ workspace + whatsapp-server/
+- **KB-sinkronisasie:** PUT /api/clients/:id/knowledge skryf nou per-kliënt (server.js) — tingai bly terugwaarts versoenbaar (tingaling-knowledge-base.md)
+- **AI-routing:** ai-assistant.js roep nou `openclaw/<agentId>` (was hardcoded openclaw/tingai)
+- **WhatsApp-nommer:** ⏳ nog te bevestig — waba_configs + whatsapp_number moet nog ingevul word
+- **Onboarding:** complete (slaan wizard oor — ons doen die opstelling)
+- **Sitedata:** volledige spieël van ngmeerensee.co.za by `fred/ngkerk/` (nie in git nie)
+
 ### Ting-A-Ling Schools (ID: 6)
 - **Login:** info@tingalingschools.com / Tingaling2026!
 - **Role:** client_admin

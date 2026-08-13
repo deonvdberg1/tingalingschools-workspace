@@ -10,6 +10,8 @@ import { initDb, getDb, saveDb } from './db.js';
 import setupTrackingRoutes from './tracking-routes.js';
 import setupGoogleRoutes from './google-api.js';
 import setupBillingRoutes from './billing-routes.js';
+import setupPortalRoutes from './portal-routes.js';
+import { setupSiteAnalyticsRoutes, logAuthEvent } from './site-analytics.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -104,6 +106,12 @@ setupTrackingRoutes(app, { query, run, saveDb });
 // ── Billing routes (subscriptions, invoices, usage, Stripe) ──
 setupBillingRoutes(app, { query, run, saveDb });
 
+// ── School portal routes (Ting-A-Ling staff/admin/parent dashboard) ──
+setupPortalRoutes(app, { query, run, saveDb, requireAuth, requireRole, hashPassword });
+
+// ── Site analytics routes (GoatCounter views/events + portal login log) ──
+setupSiteAnalyticsRoutes(app, { query, run, saveDb, requireAuth });
+
 // ── Google API proxy routes ──
 setupGoogleRoutes(app);
 
@@ -192,15 +200,20 @@ app.post('/api/auth/signin', (req, res) => {
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
   
   const users = query('SELECT * FROM users WHERE email = ?', [email.toLowerCase().trim()]);
-  if (users.length === 0) return res.status(401).json({ error: 'Invalid credentials' });
+  if (users.length === 0) {
+    logAuthEvent('signin_failed', { email: email.toLowerCase().trim() }, req);
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
   
   const user = users[0];
 
   if (user.password !== hashPassword(password)) {
+    logAuthEvent('signin_failed', user, req);
     return res.status(401).json({ error: 'Invalid credentials' });
   }
   
   const token = createToken(user);
+  logAuthEvent('signin', user, req);
   
   // Get client name if client admin
   let clientName = null;
@@ -228,6 +241,7 @@ app.post('/api/auth/signup', (req, res) => {
   
   const users = query('SELECT * FROM users ORDER BY id DESC LIMIT 1');
   const token = createToken(users[0]);
+  logAuthEvent('signup', users[0], req);
   res.status(201).json({ token, user: { id: users[0].id, name: users[0].name, email: users[0].email, role: users[0].role } });
 });
 
@@ -1086,17 +1100,30 @@ app.put('/api/clients/:id/knowledge', requireAuth, (req, res) => {
   if (knowledge_base === undefined) return res.status(400).json({ error: 'knowledge_base is required' });
   run('UPDATE clients SET knowledge_base = ? WHERE id = ?', [knowledge_base, req.params.id]);
   saveDb();
-  
+
   // Also write to the WhatsApp server's knowledge file for live AI updates
   try {
-    const kbFile = path.join(__dirname, '..', 'whatsapp-server', 'tingaling-knowledge-base.md');
+    // Per-client file naming (falls back to the legacy Ting-A-Ling paths for agent 'tingai')
+    const clientRow = query('SELECT agent_id, name FROM clients WHERE id = ?', [req.params.id])[0] || {};
+    const agentId = clientRow.agent_id || 'tingai';
+    let serverFile, agentDir, agentFile;
+    if (agentId === 'tingai') {
+      serverFile = 'tingaling-knowledge-base.md';
+      agentDir = 'tingai';
+      agentFile = 'tingaling-knowledge-base.md';
+    } else {
+      serverFile = agentId + '-knowledge-base.md';
+      agentDir = agentId;
+      agentFile = agentId + '-knowledge-base.md';
+    }
+    const kbFile = path.join(__dirname, '..', 'whatsapp-server', serverFile);
     fs.writeFileSync(kbFile, knowledge_base, 'utf8');
-    console.log(`[KB] Saved to whatsapp-server for client ${req.params.id}`);
-    
-    // 4. KB sync: also write to the TingAI agent's workspace
-    const agentKbFile = path.join(__dirname, '..', '..', 'tingai', 'tingaling-knowledge-base.md');
+    console.log(`[KB] Saved to whatsapp-server for client ${req.params.id} (${serverFile})`);
+
+    // Also sync to the agent's workspace so the live AI reads it fresh
+    const agentKbFile = path.join(__dirname, '..', '..', agentDir, agentFile);
     fs.writeFileSync(agentKbFile, knowledge_base, 'utf8');
-    console.log(`[KB] Synced to agent workspace for client ${req.params.id}`);
+    console.log(`[KB] Synced to agent workspace for client ${req.params.id} (${agentDir}/${agentFile})`);
   } catch (e) {
     console.error(`[KB] Failed to write file: ${e.message}`);
   }
