@@ -124,6 +124,18 @@ Mr D asked why views weren't converting. Root cause found: **~96% of "customer" 
 - **Real conversion problem:** not "views not converting" — there are almost no real views. Needs the parent opt-in campaign / actual traffic driving.
 - Deploy: gh-pages f2fa7e2 (beacon), main a30aefd (beacon+monitor), main bc9617d (pages endpoint).
 
+## 🚣 River Whisperer Traffic Audit (2026-08-13)
+
+Same audit as Ting-A-Ling — **completely different story: River Whisperer has real traffic.**
+
+- **124 hits in 7 days (Aug 6–12)**: only 19 internal (15%) — all HeadlessChrome from localhost on launch day (one-off render testing, NOT a recurring monitor; no cron exists for it). Backfilled to `internal=1`.
+- **105 real external hits**, of which ~30 are Mr D's own browsing (IP 197.185.161.11, not marked internal).
+- **3 real WhatsApp booking clicks** from 3 different SA visitors: 156.155.16.98 (Sunset Passage), 156.155.18.152 (Capture the Moment add-on — arrived via Google), 197.245.61.181 (River Whisperer cruise). **This site converts.**
+- **Referrers**: 14 Google organic (≈6 unique IPs incl. DE/UK), 9 Facebook + 6 fbclid link taps (shared on Facebook!), rest direct.
+- **Bots**: ~15–20 (OVH/online.net scanners 62.210.x, 151.115.x, 2001:bc8:...; Facebook crawler 2a03:2880 = link unfurls, harmless).
+- **Fixes**: rw-track.js skips HeadlessChrome UA, analytics.html has "Mark this browser as me" (sets rw_internal=1), server restarted to load backfill. Committed master bf98a77.
+- **Note**: `private/` (hits.jsonl, users.json) is gitignored — backfill is local-only. River Whisperer server = port 8080, LaunchAgent com.autoeffortless.riverwhisperer, tunnel com.autoeffortless.cloudflared-riverwhisperer → theriverwhisperer.co.za.
+
 ## 🧭 Internal vs Customer Traffic (2026-08-05)
 
 Analytics now separates owner/staff visits from customer traffic.
