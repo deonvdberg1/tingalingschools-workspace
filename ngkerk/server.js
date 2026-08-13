@@ -492,26 +492,53 @@ app.use((req, res, next) => {
 const INJECT = `<script src="/rw-track.js"></script>\n<script src="/rw-chat.js"></script>`;
 app.use((req, res, next) => {
   if (req.method !== 'GET') return next();
-  let filePath = path.join(__dirname, path.normalize(req.path).replace(/^[/\\]+/, ''));
-  if (!filePath.startsWith(__dirname)) return next();
-  let stat;
-  try { stat = fs.statSync(filePath); } catch { return next(); }
-  if (stat.isDirectory()) {
-    filePath = path.join(filePath, 'index.html');
-    try { stat = fs.statSync(filePath); } catch { return next(); }
-  }
-  if (!stat.isFile()) return next();
-  if (filePath.endsWith('.html')) {
+  const raw = req.path;
+  // The mirror URL-encodes ? as %3F in asset names (wget artifact) —
+  // try the decoded form too so wp-content assets resolve.
+  let candidates = [raw];
+  try {
+    const decoded = decodeURIComponent(raw);
+    if (decoded !== raw) candidates.push(decoded);
+  } catch {}
+  for (const candidate of candidates) {
+    let filePath = path.join(__dirname, path.normalize(candidate).replace(/^[/\\]+/, ''));
+    if (!filePath.startsWith(__dirname)) return next();
+    let stat;
+    try { stat = fs.statSync(filePath); } catch { continue; }
+    if (stat.isDirectory()) {
+      filePath = path.join(filePath, 'index.html');
+      try { stat = fs.statSync(filePath); } catch { continue; }
+    }
+    if (!stat.isFile()) continue;
+    if (filePath.endsWith('.html')) {
+      try {
+        let html = fs.readFileSync(filePath, 'utf-8');
+        if (html.indexOf('rw-track.js') === -1) {
+          html = html.replace(/<\/head>/i, INJECT + '\n</head>');
+        }
+        res.type('html').send(html);
+        return;
+      } catch (e) { return next(); }
+    }
+    // Read + send directly — the send module chokes on filenames
+    // containing '?' (wget mirror artifact), so bypass it entirely.
+    const ext = path.extname(filePath).toLowerCase();
+    const mime = {
+      '.css': 'text/css', '.js': 'application/javascript', '.mjs': 'application/javascript',
+      '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png',
+      '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp',
+      '.ico': 'image/x-icon', '.pdf': 'application/pdf', '.woff': 'font/woff',
+      '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.eot': 'application/vnd.ms-fontobject',
+      '.mp4': 'video/mp4', '.webm': 'video/webm', '.mp3': 'audio/mpeg', '.txt': 'text/plain',
+      '.xml': 'application/xml'
+    }[ext] || 'application/octet-stream';
     try {
-      let html = fs.readFileSync(filePath, 'utf-8');
-      if (html.indexOf('rw-track.js') === -1) {
-        html = html.replace(/<\/head>/i, INJECT + '\n</head>');
-      }
-      res.type('html').send(html);
+      const buf = fs.readFileSync(filePath);
+      res.type(mime).send(buf);
       return;
     } catch (e) { return next(); }
   }
-  res.sendFile(filePath);
+  next();
 });
 
 // ── Start ──
