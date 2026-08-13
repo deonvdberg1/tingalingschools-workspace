@@ -490,6 +490,36 @@ app.use((req, res, next) => {
 // analytics beacon (rw-track.js) + the admin Site Editor widget (rw-chat.js)
 // injected before </head> — including pages the AI creates later.
 const INJECT = `<script src="/rw-track.js"></script>\n<script src="/rw-chat.js"></script>`;
+// Login/Portal button — top right on site pages only (platform pages have their own nav)
+const LOGIN_BTN = `<script>
+(function(){
+  function add(){
+    try {
+      if (!document.body) return;
+      if (document.getElementById('ngk-login-btn')) return;
+      var b = document.createElement('a');
+      b.id = 'ngk-login-btn';
+      b.style.cssText = 'position:fixed;top:14px;right:14px;z-index:99999;background:#1a2e3a;color:#fff;padding:9px 18px;border-radius:999px;font:600 13px/1.4 Raleway,Arial,sans-serif;text-decoration:none;box-shadow:0 3px 12px rgba(0,0,0,.18);letter-spacing:.2px;';
+      b.textContent = 'Teken in';
+      b.href = '/login';
+      b.setAttribute('title', 'Admin-toegang');
+      document.body.appendChild(b);
+      fetch('/api/me').then(function(r){return r.json()}).then(function(d){
+        if (d && d.authenticated) {
+          var admin = d.user && d.user.role === 'admin';
+          b.textContent = admin ? 'Portal' : 'Dashboard';
+          b.href = admin ? '/admin' : '/dashboard';
+          b.style.background = '#b8956a';
+        }
+      }).catch(function(){});
+    } catch (e) {}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', add);
+  else add();
+})();
+</script>`;
+const PLATFORM_PATHS = ['/login', '/signup', '/admin', '/analytics', '/dashboard', '/preview'];
+function isPlatformPath(p) { return PLATFORM_PATHS.some(function(x) { return p === x || p.indexOf(x + '/') === 0; }); }
 app.use((req, res, next) => {
   if (req.method !== 'GET') return next();
   const raw = req.path;
@@ -519,6 +549,9 @@ app.use((req, res, next) => {
                    .replace(/window\._igniter[^;]*;/g, '');
         if (html.indexOf('rw-track.js') === -1) {
           html = html.replace(/<\/head>/i, INJECT + '\n</head>');
+        }
+        if (html.indexOf('ngk-login-btn') === -1 && !isPlatformPath(req.path)) {
+          html = html.replace(/<\/head>/i, LOGIN_BTN + '\n</head>');
         }
         res.type('html').send(html);
         return;
