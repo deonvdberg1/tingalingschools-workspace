@@ -36,7 +36,7 @@
     </div>
     <div class="stat-card">
       <div class="icon gold"><svg class="rw-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;vertical-align:middle;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
-      <div><div class="value" id="kBooking">–</div><div class="label">Booking Clicks · <span id="kConv" style="color:#b8956a;font-weight:600;">–</span>% conv</div></div>
+      <div><div class="value" id="kBooking">–</div><div class="label">Kontak-klikke (WhatsApp/Tel) · <span id="kConv" style="color:#b8956a;font-weight:600;">–</span>% conv</div></div>
     </div>
     <div class="stat-card">
       <div class="icon light"><svg class="rw-icon" viewBox="0 0 24 24" fill="none" stroke="#8a6b45" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;vertical-align:middle;"><path d="M12 2v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M20 12h2"/><path d="M19.07 4.93l-1.41 1.41"/><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"/></svg></div>
@@ -63,9 +63,7 @@
 
   <div class="grid-2">
     <div class="card">
-      <div class="card-title">Cruise demand <span class="hint">WhatsApp booking clicks</span></div>
-      <div class="chart-wrap"><canvas id="cruiseChart"></canvas></div>
-    </div>
+
     <div class="card">
       <div class="card-title">Referrers <span class="hint">where visitors come from</span></div>
       <div id="referrerList"><div class="empty">No data yet</div></div>
@@ -127,9 +125,8 @@
     function destroy(name) { if (charts[name]) { charts[name].destroy(); delete charts[name]; } }
 
     async function loadAll() {
-      const [ov, cruises, pages, refs, locs, devs, health] = await Promise.all([
+      const [ov, pages, refs, locs, devs, health] = await Promise.all([
         api('/api/admin/analytics/overview' + qs()),
-        api('/api/admin/analytics/cruises' + qs()),
         api('/api/admin/analytics/pages' + qs()),
         api('/api/admin/analytics/referrers' + qs()),
         api('/api/admin/analytics/locations' + qs()),
@@ -139,7 +136,6 @@
       renderKPIs(ov);
       renderDaily(ov.daily, ov.range);
       renderHourly(ov.hourly);
-      renderCruises(cruises.cruises);
       renderReferrers(refs.refs);
       renderPages(pages.pages);
       renderLocations(locs.locations);
@@ -198,18 +194,7 @@
       });
     }
 
-    function renderCruises(cruises) {
-      const el = document.getElementById('cruiseChart');
-      if (!cruises.length) { destroy('cruise'); return; }
-      const labels = cruises.map(c => c.name);
-      const data = cruises.map(c => c.count);
-      destroy('cruise');
-      charts.cruise = new Chart(el, {
-        type: 'doughnut',
-        data: { labels, datasets: [{ data, backgroundColor: ['#1a2e3a', '#b8956a', '#7a9a9e', '#d4b08a', '#c9c2b8'], borderWidth: 2, borderColor: '#fff' }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } }
-      });
-    }
+  }
 
     function barList(el, items, { valueKey = 'count', nameKey = 'name', empty = 'No data yet' } = {}) {
       if (!items || !items.length) { el.innerHTML = '<div class="empty">' + empty + '</div>'; return; }

@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-// The River Whisperer — Portal shell (mirrors Ting-A-Ling portal)
+// NG Kerk Meerensee — Portal shell (AutoEffortless blueprint)
 // Injects sidebar + mobile header + footer, handles auth check.
 // Pages set window.RW_PAGE = 'dashboard' | 'analytics' | ...
 // ─────────────────────────────────────────────────────────────
@@ -8,8 +8,6 @@
   const NAV = [
     { id: 'dashboard', href: '/admin', label: 'Dashboard', icon: 'M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z' },
     { id: 'analytics', href: '/analytics', label: 'Analytics', icon: 'M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z' },
-    { id: 'bookings', href: '/bookings', label: 'Bookings', icon: 'M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 16H5V10h14v10z' },
-    { id: 'media', href: '/media', label: 'Media', icon: 'M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3 3.5-4.5 4.5 6H5l3.5-4.5z' },
   ];
   const ICONS = {
     logout: 'M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8v-2H4V5z',
@@ -26,8 +24,8 @@
     const sidebar =
       '<aside class="portal-sidebar">' +
         '<a href="/" class="brand">' +
-          '<img src="/images/logo.png" alt="The River Whisperer" onerror="this.style.display=\'none\'">' +
-          '<div><div class="brand-name">The River Whisperer</div><div class="brand-sub">Portal</div></div>' +
+          '<div class="brand-logo">⛪</div>' +
+          '<div><div class="brand-name">NG Kerk Meerensee</div><div class="brand-sub">Portal</div></div>' +
         '</a>' +
         '<nav>' + navHtml + '</nav>' +
         '<div class="sidebar-foot">' +
@@ -40,8 +38,8 @@
     const mobileHeader =
       '<div class="portal-mobile-header">' +
         '<a href="/" class="mobile-brand">' +
-          '<img src="/images/logo.png" alt="The River Whisperer" onerror="this.style.display=\'none\'">' +
-          '<span>The River Whisperer</span>' +
+          '<div class="brand-logo">⛪</div>' +
+          '<span>NG Kerk Meerensee</span>' +
         '</a>' +
         '<div class="mobile-actions">' +
           '<span class="role-badge">' + (user.role || 'admin') + '</span>' +
@@ -50,7 +48,7 @@
       '</div>';
 
     const footer =
-      '<footer class="portal-footer">The River Whisperer · Kowie River, Port Alfred · ' +
+      '<footer class="portal-footer">NG Kerk Meerensee · Galjoengolf 11, Meerensee · ' +
       'WhatsApp 071 903 3791</footer>';
 
     const shellEl = document.createElement('div');

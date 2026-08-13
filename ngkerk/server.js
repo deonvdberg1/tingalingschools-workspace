@@ -513,6 +513,10 @@ app.use((req, res, next) => {
     if (filePath.endsWith('.html')) {
       try {
         let html = fs.readFileSync(filePath, 'utf-8');
+        // Strip dead third-party tracker baked into the mirrored WP pages
+        // (apps.ignitefeedback.com no longer resolves — would throw console errors)
+        html = html.replace(/<script[^>]*apps\.ignitefeedback\.com[^>]*><\/script>/g, '')
+                   .replace(/window\._igniter[^;]*;/g, '');
         if (html.indexOf('rw-track.js') === -1) {
           html = html.replace(/<\/head>/i, INJECT + '\n</head>');
         }
