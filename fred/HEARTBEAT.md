@@ -5,10 +5,19 @@
 
 - Agent `ngkerk` geskep + geregistreer (Afrikaans-eerste, KB-alleen)
 - KB gebou uit hul webwerf (12 seksies, 3853 chars) — hul site bly onveranderd
-- Admin-login: info@ngmeerensee.co.za / NGKerk2026!
+- Admin-login (dashboard): info@ngmeerensee.co.za / NGKerk2026!
 - ai-assistant.js: per-kliënt agent routing (`openclaw/<agentId>`)
-- KB-sync per-kliënt in server.js (wattsapp-server + agent workspace)
-- ⏳ Wag op hul WhatsApp-nommer vir Meta-registrasie
+- KB-sync per-kliënt in server.js (whatsapp-server + agent workspace)
+- ⏳ WhatsApp: OPGESKORT per Mr D — eers admin + AI Site Editor
+
+## 2026-08-13 — NG Kerk Platform (River Whisperer-styl) — LOKAAL LIVE ✅
+
+- **Port 8091** + LaunchAgent `com.autoeffortless.ngkerk` (auto-start)
+- Volledige gespieëlde webwerf bedien lokaal; rw-track + rw-chat ingespuit op elke bladsy
+- Admin /login (info@ngmeerensee.co.za / NGKerk2026!) → dashboard + analytics
+- **AI Site Editor:** chat → ngkerk-agent → drafts/ (STAGING) → preview → publish → auto-rugsteun
+- E2E getoets: footer-kopiereg verander + gepubliseer + rugsteun geskep ✅
+- Geen tunnel/WhatsApp — net lokaal vir nou
 
 ## 2026-08-05 08:55 SAST — tingalingschools.com Crash Fixed ✅
 

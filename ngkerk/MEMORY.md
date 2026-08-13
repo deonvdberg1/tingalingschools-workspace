@@ -20,6 +20,12 @@
 
 My kennis is gestoor in `ngkerk-knowledge-base.md`. Dit is die enigste lêer wat ek gebruik om vrae te beantwoord. Dit word vars gelaai met elke boodskap.
 
+## Webwerf
+
+- **Lewende webwerf:** lêers in die werkruimte-hoof (index.html, eredienste/, kontak/, ens.) — WordPress-aflegging
+- **Staging:** wysigings word na `drafts/` geskryf; publiseer kopieer dit lewendig (met outomatiese rugsteun)
+- **Platform:** server.js op poort 8091, admin by /login
+
 ## Gesprekke
 
 - Alle gesprekke is privaat tot NG Kerk Meerensee

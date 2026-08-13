@@ -1,0 +1,156 @@
+
+
+.planso-form-builder .pull-left {
+  float: left !important;
+}
+.planso-form-builder .hide {
+  display: none !important;
+}
+.planso-form-builder .show {
+  display: block !important;
+}
+.planso-form-builder .invisible {
+  visibility: hidden;
+}
+.planso-form-builder .text-hide {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+.planso-form-builder .hidden {
+  display: none !important;
+  visibility: hidden !important;
+}
+.planso-form-builder .dropup,
+.planso-form-builder .dropdown {
+  position: relative;
+}
+.planso-form-builder .dropdown-toggle:focus {
+  outline: 0;
+}
+.planso-form-builder .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  float: left;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  font-size: 14px;
+  text-align: left;
+  list-style: none;
+  background-color: #fff;
+  -webkit-background-clip: padding-box;
+          background-clip: padding-box;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, .15);
+  border-radius: 4px;
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+          box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+}
+.planso-form-builder .dropdown-menu.pull-right {
+  right: 0;
+  left: auto;
+}
+.planso-form-builder .dropdown-menu .divider {
+  height: 1px;
+  margin: 9px 0;
+  overflow: hidden;
+  background-color: #e5e5e5;
+}
+.planso-form-builder .dropdown-menu > li > a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: normal;
+  line-height: 1.42857143;
+  color: #333;
+  white-space: nowrap;
+}
+.planso-form-builder .dropdown-menu > li > a:hover,
+.planso-form-builder .dropdown-menu > li > a:focus {
+  color: #262626;
+  text-decoration: none;
+  background-color: #f5f5f5;
+}
+.planso-form-builder .dropdown-menu > .active > a,
+.planso-form-builder .dropdown-menu > .active > a:hover,
+.planso-form-builder .dropdown-menu > .active > a:focus {
+  color: #fff;
+  text-decoration: none;
+  background-color: #337ab7;
+  outline: 0;
+}
+.planso-form-builder .dropdown-menu > .disabled > a,
+.planso-form-builder .dropdown-menu > .disabled > a:hover,
+.planso-form-builder .dropdown-menu > .disabled > a:focus {
+  color: #777;
+}
+.planso-form-builder .dropdown-menu > .disabled > a:hover,
+.planso-form-builder .dropdown-menu > .disabled > a:focus {
+  text-decoration: none;
+  cursor: not-allowed;
+  background-color: transparent;
+  background-image: none;
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.planso-form-builder .open > .dropdown-menu {
+  display: block;
+}
+.planso-form-builder .open > a {
+  outline: 0;
+}
+.planso-form-builder .dropdown-menu-right {
+  right: 0;
+  left: auto;
+}
+.planso-form-builder .dropdown-menu-left {
+  right: auto;
+  left: 0;
+}
+.planso-form-builder .dropdown-header {
+  display: block;
+  padding: 3px 20px;
+  font-size: 12px;
+  line-height: 1.42857143;
+  color: #777;
+  white-space: nowrap;
+}
+.planso-form-builder .dropdown-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 990;
+}
+.planso-form-builder .pull-right > .dropdown-menu {
+  right: 0;
+  left: auto;
+}
+.planso-form-builder .dropup .caret,
+.planso-form-builder .navbar-fixed-bottom .dropdown .caret {
+  content: "";
+  border-top: 0;
+  border-bottom: 4px solid;
+}
+.planso-form-builder .dropup .dropdown-menu,
+.planso-form-builder .navbar-fixed-bottom .dropdown .dropdown-menu {
+  top: auto;
+  bottom: 100%;
+  margin-bottom: 2px;
+}
+@media (min-width: 768px) {
+  .planso-form-builder .navbar-right .dropdown-menu {
+    right: 0;
+    left: auto;
+  }
+  .planso-form-builder .navbar-right .dropdown-menu-left {
+    right: auto;
+    left: 0;
+  }
+}

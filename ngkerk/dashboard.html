@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Dashboard — NG Kerk Meerensee</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Raleway', sans-serif;
+      background: #f4f2ef;
+      min-height: 100vh;
+      color: #2c2c2c;
+    }
+    nav {
+      background: #1a2e3a; color: #fcfaf7;
+      padding: 0 28px; height: 68px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand { font-family: 'Playfair Display', serif; font-size: 1.2rem; }
+    .nav-brand span { color: #d4b08a; }
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .nav-right .user-name { font-size: 0.85rem; opacity: 0.8; }
+    .nav-right .role-badge {
+      font-size: 0.7rem; background: #d4b08a; color: #1a2e3a;
+      padding: 4px 10px; border-radius: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .btn-logout {
+      background: none; border: 1px solid rgba(255,255,255,0.3); color: #fcfaf7;
+      padding: 8px 18px; border-radius: 6px; cursor: pointer;
+      font-size: 0.8rem; transition: all 0.2s;
+      font-family: 'Raleway', sans-serif;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
+    .container { max-width: 960px; margin: 0 auto; padding: 40px 28px; }
+    .dashboard-header { margin-bottom: 40px; }
+    .dashboard-header h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: #1a2e3a; margin-bottom: 8px; }
+    .dashboard-header p { color: #888; }
+    .welcome-card {
+      background: #fff; border-radius: 14px; padding: 40px 36px;
+      border: 1px solid #eee; margin-bottom: 28px;
+    }
+    .welcome-card h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: #1a2e3a; margin-bottom: 12px; }
+    .welcome-card p { color: #666; line-height: 1.7; }
+    .quick-links { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .quick-link-card {
+      background: #fff; border-radius: 12px; padding: 28px;
+      border: 1px solid #eee; text-decoration: none; color: inherit;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .quick-link-card:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+    .quick-link-card .icon { font-size: 2rem; margin-bottom: 12px; }
+    .quick-link-card h3 { font-size: 1rem; color: #1a2e3a; margin-bottom: 6px; }
+    .quick-link-card p { font-size: 0.85rem; color: #888; }
+    @media (max-width: 600px) {
+      .quick-links { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-brand" style="color:#fcfaf7;text-decoration:none;">The River <span>Whisperer</span></a>
+    <div class="nav-right">
+      <span class="user-name" id="userName"></span>
+      <span class="role-badge">Client</span>
+      <button class="btn-logout" id="logoutBtn">Sign Out</button>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="dashboard-header">
+      <h1>My Dashboard</h1>
+      <p>Welcome back! Manage your cruises and account.</p>
+    </div>
+    <div class="welcome-card">
+      <h2>Welcome aboard, <span id="welcomeName">guest</span>!</h2>
+      <p>This is your personal dashboard. From here you can browse cruises, check pricing, and book your next adventure on the Kowie River. Use the quick links below to get started, or contact Deon and Susan directly via WhatsApp for any special requests.</p>
+    </div>
+    <div class="quick-links">
+      <a href="/#cruises" class="quick-link-card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;display:inline-block;vertical-align:middle;"><path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1s1.2 1 2.5 1c2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.76"/><path d="M12 3v6"/></svg></div>
+        <h3>View Cruises</h3>
+        <p>Browse our signature cruise experiences and pricing</p>
+      </a>
+      <a href="https://wa.me/27637321679?text=Hi%20I'm%20a%20registered%20client%20and%20would%20like%20to%20book%20a%20cruise" target="_blank" class="quick-link-card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;display:inline-block;vertical-align:middle;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
+        <h3>Book on WhatsApp</h3>
+        <p>Send us a message to schedule your private cruise</p>
+      </a>
+      <a href="/#gallery" class="quick-link-card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;display:inline-block;vertical-align:middle;"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><path d="M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/></svg></div>
+        <h3>Gallery</h3>
+        <p>See photos from the Kowie River experience</p>
+      </a>
+      <a href="/" class="quick-link-card">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px;display:inline-block;vertical-align:middle;"><path d="Mm3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></div>
+        <h3>Back to Home</h3>
+        <p>Return to the main site</p>
+      </a>
+    </div>
+  </div>
+  <script>
+    async function loadDashboard() {
+      const res = await fetch('/api/me');
+      const data = await res.json();
+      if (!data.authenticated) {
+        window.location.href = '/login.html';
+        return;
+      }
+      document.getElementById('userName').textContent = data.user.name;
+      document.getElementById('welcomeName').textContent = data.user.name.split(' ')[0];
+    }
+    loadDashboard();
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/';
+    });
+
+    // ── AI Chat Widget ──
+    var _rws=document.createElement("script");_rws.src="/rw-chat.js?v=4";document.body.appendChild(_rws);
+  </script>
+</body>
+</html>

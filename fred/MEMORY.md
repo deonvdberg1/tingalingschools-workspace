@@ -101,16 +101,22 @@ This is where I keep what matters.
 ## 👥 Clients
 
 ### NG Kerk Meerensee (ID: 8) — CLIENT #2 (2026-08-13)
-- **Login:** info@ngmeerensee.co.za / NGKerk2026! — role: client_admin
+- **Login (dashboard):** info@ngmeerensee.co.za / NGKerk2026! — role: client_admin
 - **Type:** church (Afrikaans-first) — webwerf bly WordPress (ONVERANDERD — hulle redigeer self)
 - **Agent:** `ngkerk` — geregistreer in openclaw.json (workspace `/Users/deonvandenberg/.openclaw/workspace/ngkerk`)
 - **Agent id in DB:** clients.agent_id='ngkerk', ai_enabled=1
 - **KB:** `ngkerk-knowledge-base.md` (3853 chars, 12 seksies uit hul webwerf onttrek) — in ngkerk/ workspace + whatsapp-server/
 - **KB-sinkronisasie:** PUT /api/clients/:id/knowledge skryf nou per-kliënt (server.js) — tingai bly terugwaarts versoenbaar (tingaling-knowledge-base.md)
 - **AI-routing:** ai-assistant.js roep nou `openclaw/<agentId>` (was hardcoded openclaw/tingai)
-- **WhatsApp-nommer:** ⏳ nog te bevestig — waba_configs + whatsapp_number moet nog ingevul word
+- **WhatsApp-nommer:** ⏳ OPGESKORT — Mr D sê moenie WhatsApp opstel nie (eers admin + AI Site Editor)
 - **Onboarding:** complete (slaan wizard oor — ons doen die opstelling)
 - **Sitedata:** volledige spieël van ngmeerensee.co.za by `fred/ngkerk/` (nie in git nie)
+- **🚀 NG Kerk Platform (River Whisperer-styl, LOKAAL):** port **8091**, LaunchAgent `com.autoeffortless.ngkerk`
+  - Bedien die volledige gespieëlde webwerf lokaal (index.html, eredienste/, kontak/, ens.) met `rw-track.js` + `rw-chat.js` ingespuit op elke bladsy (middleware)
+  - **Admin-login:** /login — info@ngmeerensee.co.za / NGKerk2026! (users.json in private/, bcrypt)
+  - **AI Site Editor:** chat → `ngkerk` agent werk in drafts/ (STAGING) → preview → publish (auto-rugsteun, backups/manifest)
+  - E2E getoets: agent het footer-kopiereg 2026→2026-2027 verander, gepubliseer, rugsteun geskep ✅
+  - Geen WhatsApp/tunnel nie — net lokaal vir nou
 
 ### Ting-A-Ling Schools (ID: 6)
 - **Login:** info@tingalingschools.com / Tingaling2026!

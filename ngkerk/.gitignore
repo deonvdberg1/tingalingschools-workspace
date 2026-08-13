@@ -1,0 +1,8 @@
+node_modules/
+private/
+uploads/
+drafts/
+*.log
+.DS_Store
+.agent/
+.openclaw/

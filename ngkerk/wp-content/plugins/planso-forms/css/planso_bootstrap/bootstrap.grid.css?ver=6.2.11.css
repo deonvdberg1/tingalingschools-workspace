@@ -1,0 +1,1219 @@
+/*!
+ * Bootstrap v3.3.2 (http://getbootstrap.com)
+ * Copyright 2011-2015 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
+
+/*!
+ * Generated using the Bootstrap Customizer (http://getbootstrap.com/customize/?id=0dd56d77d879effa17a2)
+ * Config saved to config.json and https://gist.github.com/0dd56d77d879effa17a2
+ */
+/*! normalize.css v3.0.2 | MIT License | git.io/normalize */
+
+/*
+ * MODIFIED FOR PlanSo Forms (http://forms.planso.de/) 
+ */
+
+.planso-form-builder article,
+.planso-form-builder aside,
+.planso-form-builder details,
+.planso-form-builder figcaption,
+.planso-form-builder figure,
+.planso-form-builder footer,
+.planso-form-builder header,
+.planso-form-builder hgroup,
+.planso-form-builder main,
+.planso-form-builder menu,
+.planso-form-builder nav,
+.planso-form-builder section,
+.planso-form-builder summary {
+  display: block;
+}
+.planso-form-builder audio,
+.planso-form-builder canvas,
+.planso-form-builder progress,
+.planso-form-builder video {
+  display: inline-block;
+  vertical-align: baseline;
+}
+.planso-form-builder audio:not([controls]) {
+  display: none;
+  height: 0;
+}
+.planso-form-builder [hidden],
+.planso-form-builder template {
+  display: none;
+}
+.planso-form-builder a:active,
+.planso-form-builder a:hover {
+  outline: 0;
+}
+.planso-form-builder abbr[title] {
+  border-bottom: 1px dotted;
+}
+.planso-form-builder b,
+.planso-form-builder strong {
+  font-weight: bold;
+}
+.planso-form-builder dfn {
+  font-style: italic;
+}
+.planso-form-builder h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+.planso-form-builder mark {
+  background: #ff0;
+  color: #000;
+}
+.planso-form-builder small {
+  font-size: 80%;
+}
+.planso-form-builder sub,
+.planso-form-builder sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+.planso-form-builder sup {
+  top: -0.5em;
+}
+.planso-form-builder sub {
+  bottom: -0.25em;
+}
+.planso-form-builder img {
+  border: 0;
+}
+.planso-form-builder svg:not(:root) {
+  overflow: hidden;
+}
+.planso-form-builder figure {
+  margin: 1em 40px;
+}
+.planso-form-builder hr {
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+          box-sizing: content-box;
+  height: 0;
+}
+.planso-form-builder pre {
+  overflow: auto;
+}
+.planso-form-builder code,
+.planso-form-builder kbd,
+.planso-form-builder pre,
+.planso-form-builder samp {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+.planso-form-builder button,
+.planso-form-builder input,
+.planso-form-builder optgroup,
+.planso-form-builder select,
+.planso-form-builder textarea {
+  font: inherit;
+  margin: 0;
+}
+.planso-form-builder button {
+  overflow: visible;
+}
+.planso-form-builder button,
+.planso-form-builder select {
+  text-transform: none;
+}
+.planso-form-builder button,
+.planso-form-builder input[type="button"],
+.planso-form-builder input[type="reset"],
+.planso-form-builder input[type="submit"] {
+  -webkit-appearance: button;
+  cursor: pointer;
+}
+.planso-form-builder button[disabled],
+.planso-form-builder input[disabled] {
+  cursor: default;
+}
+.planso-form-builder button::-moz-focus-inner,
+.planso-form-builder input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+.planso-form-builder input {
+  line-height: normal;
+}
+.planso-form-builder input[type="checkbox"],
+.planso-form-builder input[type="radio"] {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 0;
+}
+.planso-form-builder input[type="number"]::-webkit-inner-spin-button,
+.planso-form-builder input[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+.planso-form-builder input[type="search"] {
+  -webkit-appearance: textfield;
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  box-sizing: content-box;
+}
+.planso-form-builder input[type="search"]::-webkit-search-cancel-button,
+.planso-form-builder input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+.planso-form-builder fieldset {
+  border: 1px solid #c0c0c0;
+  margin: 0 2px;
+  padding: 0.35em 0.625em 0.75em;
+}
+.planso-form-builder legend {
+  border: 0;
+  padding: 0;
+}
+.planso-form-builder textarea {
+  overflow: auto;
+}
+.planso-form-builder optgroup {
+  font-weight: bold;
+}
+.planso-form-builder table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+.planso-form-builder td,
+.planso-form-builder th {
+  padding: 0;
+}
+.planso-form-builder *,
+.planso-form-builder div{
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.planso-form-builder *:before,
+.planso-form-builder *:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.planso-form-builder input,
+.planso-form-builder button,
+.planso-form-builder select,
+.planso-form-builder textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.planso-form-builder figure {
+  margin: 0;
+}
+.planso-form-builder img {
+  vertical-align: middle;
+}
+.planso-form-builder .img-responsive {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.planso-form-builder .img-rounded {
+  border-radius: 6px;
+}
+.planso-form-builder .img-thumbnail {
+  padding: 4px;
+  line-height: 1.42857143;
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  -webkit-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+}
+.planso-form-builder .img-circle {
+  border-radius: 50%;
+}
+.planso-form-builder hr {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: 0;
+  border-top: 1px solid #eeeeee;
+}
+.planso-form-builder .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+.planso-form-builder .sr-only-focusable:active,
+.planso-form-builder .sr-only-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+}
+.planso-form-builder .container {
+  margin-right: auto;
+  margin-left: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+@media (min-width: 768px) {
+  .planso-form-builder .container {
+    width: 750px;
+  }
+}
+@media (min-width: 992px) {
+  .planso-form-builder .container {
+    width: 970px;
+  }
+}
+@media (min-width: 1200px) {
+  .planso-form-builder .container {
+    width: 1170px;
+  }
+}
+.planso-form-builder .container-fluid {
+  margin-right: auto;
+  margin-left: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.planso-form-builder .row {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+.planso-form-builder .col-xs-1, .planso-form-builder .col-sm-1, .planso-form-builder .col-md-1, .planso-form-builder .col-lg-1, .planso-form-builder .col-xs-2, .planso-form-builder .col-sm-2, .planso-form-builder .col-md-2, .planso-form-builder .col-lg-2, .planso-form-builder .col-xs-3, .planso-form-builder .col-sm-3, .planso-form-builder .col-md-3, .planso-form-builder .col-lg-3, .planso-form-builder .col-xs-4, .planso-form-builder .col-sm-4, .planso-form-builder .col-md-4, .planso-form-builder .col-lg-4, .planso-form-builder .col-xs-5, .planso-form-builder .col-sm-5, .planso-form-builder .col-md-5, .planso-form-builder .col-lg-5, .planso-form-builder .col-xs-6, .planso-form-builder .col-sm-6, .planso-form-builder .col-md-6, .planso-form-builder .col-lg-6, .planso-form-builder .col-xs-7, .planso-form-builder .col-sm-7, .planso-form-builder .col-md-7, .planso-form-builder .col-lg-7, .planso-form-builder .col-xs-8, .planso-form-builder .col-sm-8, .planso-form-builder .col-md-8, .planso-form-builder .col-lg-8, .planso-form-builder .col-xs-9, .planso-form-builder .col-sm-9, .planso-form-builder .col-md-9, .planso-form-builder .col-lg-9, .planso-form-builder .col-xs-10, .planso-form-builder .col-sm-10, .planso-form-builder .col-md-10, .planso-form-builder .col-lg-10, .planso-form-builder .col-xs-11, .planso-form-builder .col-sm-11, .planso-form-builder .col-md-11, .planso-form-builder .col-lg-11, .planso-form-builder .col-xs-12, .planso-form-builder .col-sm-12, .planso-form-builder .col-md-12, .planso-form-builder .col-lg-12 {
+  position: relative;
+  min-height: 1px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.planso-form-builder .col-xs-1, .planso-form-builder .col-xs-2, .planso-form-builder .col-xs-3, .planso-form-builder .col-xs-4, .planso-form-builder .col-xs-5, .planso-form-builder .col-xs-6, .planso-form-builder .col-xs-7, .planso-form-builder .col-xs-8, .planso-form-builder .col-xs-9, .planso-form-builder .col-xs-10, .planso-form-builder .col-xs-11, .planso-form-builder .col-xs-12 {
+  float: left;
+}
+.planso-form-builder .col-xs-12 {
+  width: 100%;
+}
+.planso-form-builder .col-xs-11 {
+  width: 91.66666667%;
+}
+.planso-form-builder .col-xs-10 {
+  width: 83.33333333%;
+}
+.planso-form-builder .col-xs-9 {
+  width: 75%;
+}
+.planso-form-builder .col-xs-8 {
+  width: 66.66666667%;
+}
+.planso-form-builder .col-xs-7 {
+  width: 58.33333333%;
+}
+.planso-form-builder .col-xs-6 {
+  width: 50%;
+}
+.planso-form-builder .col-xs-5 {
+  width: 41.66666667%;
+}
+.planso-form-builder .col-xs-4 {
+  width: 33.33333333%;
+}
+.planso-form-builder .col-xs-3 {
+  width: 25%;
+}
+.planso-form-builder .col-xs-2 {
+  width: 16.66666667%;
+}
+.planso-form-builder .col-xs-1 {
+  width: 8.33333333%;
+}
+.planso-form-builder .col-xs-pull-12 {
+  right: 100%;
+}
+.planso-form-builder .col-xs-pull-11 {
+  right: 91.66666667%;
+}
+.planso-form-builder .col-xs-pull-10 {
+  right: 83.33333333%;
+}
+.planso-form-builder .col-xs-pull-9 {
+  right: 75%;
+}
+.planso-form-builder .col-xs-pull-8 {
+  right: 66.66666667%;
+}
+.planso-form-builder .col-xs-pull-7 {
+  right: 58.33333333%;
+}
+.planso-form-builder .col-xs-pull-6 {
+  right: 50%;
+}
+.planso-form-builder .col-xs-pull-5 {
+  right: 41.66666667%;
+}
+.planso-form-builder .col-xs-pull-4 {
+  right: 33.33333333%;
+}
+.planso-form-builder .col-xs-pull-3 {
+  right: 25%;
+}
+.planso-form-builder .col-xs-pull-2 {
+  right: 16.66666667%;
+}
+.planso-form-builder .col-xs-pull-1 {
+  right: 8.33333333%;
+}
+.planso-form-builder .col-xs-pull-0 {
+  right: auto;
+}
+.planso-form-builder .col-xs-push-12 {
+  left: 100%;
+}
+.planso-form-builder .col-xs-push-11 {
+  left: 91.66666667%;
+}
+.planso-form-builder .col-xs-push-10 {
+  left: 83.33333333%;
+}
+.planso-form-builder .col-xs-push-9 {
+  left: 75%;
+}
+.planso-form-builder .col-xs-push-8 {
+  left: 66.66666667%;
+}
+.planso-form-builder .col-xs-push-7 {
+  left: 58.33333333%;
+}
+.planso-form-builder .col-xs-push-6 {
+  left: 50%;
+}
+.planso-form-builder .col-xs-push-5 {
+  left: 41.66666667%;
+}
+.planso-form-builder .col-xs-push-4 {
+  left: 33.33333333%;
+}
+.planso-form-builder .col-xs-push-3 {
+  left: 25%;
+}
+.planso-form-builder .col-xs-push-2 {
+  left: 16.66666667%;
+}
+.planso-form-builder .col-xs-push-1 {
+  left: 8.33333333%;
+}
+.planso-form-builder .col-xs-push-0 {
+  left: auto;
+}
+.planso-form-builder .col-xs-offset-12 {
+  margin-left: 100%;
+}
+.planso-form-builder .col-xs-offset-11 {
+  margin-left: 91.66666667%;
+}
+.planso-form-builder .col-xs-offset-10 {
+  margin-left: 83.33333333%;
+}
+.planso-form-builder .col-xs-offset-9 {
+  margin-left: 75%;
+}
+.planso-form-builder .col-xs-offset-8 {
+  margin-left: 66.66666667%;
+}
+.planso-form-builder .col-xs-offset-7 {
+  margin-left: 58.33333333%;
+}
+.planso-form-builder .col-xs-offset-6 {
+  margin-left: 50%;
+}
+.planso-form-builder .col-xs-offset-5 {
+  margin-left: 41.66666667%;
+}
+.planso-form-builder .col-xs-offset-4 {
+  margin-left: 33.33333333%;
+}
+.planso-form-builder .col-xs-offset-3 {
+  margin-left: 25%;
+}
+.planso-form-builder .col-xs-offset-2 {
+  margin-left: 16.66666667%;
+}
+.planso-form-builder .col-xs-offset-1 {
+  margin-left: 8.33333333%;
+}
+.planso-form-builder .col-xs-offset-0 {
+  margin-left: 0%;
+}
+@media (min-width: 768px) {
+  .planso-form-builder .col-sm-1, .planso-form-builder .col-sm-2, .planso-form-builder .col-sm-3, .planso-form-builder .col-sm-4, .planso-form-builder .col-sm-5, .planso-form-builder .col-sm-6, .planso-form-builder .col-sm-7, .planso-form-builder .col-sm-8, .planso-form-builder .col-sm-9, .planso-form-builder .col-sm-10, .planso-form-builder .col-sm-11, .planso-form-builder .col-sm-12 {
+    float: left;
+  }
+  .planso-form-builder .col-sm-12 {
+    width: 100%;
+  }
+  .planso-form-builder .col-sm-11 {
+    width: 91.66666667%;
+  }
+  .planso-form-builder .col-sm-10 {
+    width: 83.33333333%;
+  }
+  .planso-form-builder .col-sm-9 {
+    width: 75%;
+  }
+  .planso-form-builder .col-sm-8 {
+    width: 66.66666667%;
+  }
+  .planso-form-builder .col-sm-7 {
+    width: 58.33333333%;
+  }
+  .planso-form-builder .col-sm-6 {
+    width: 50%;
+  }
+  .planso-form-builder .col-sm-5 {
+    width: 41.66666667%;
+  }
+  .planso-form-builder .col-sm-4 {
+    width: 33.33333333%;
+  }
+  .planso-form-builder .col-sm-3 {
+    width: 25%;
+  }
+  .planso-form-builder .col-sm-2 {
+    width: 16.66666667%;
+  }
+  .planso-form-builder .col-sm-1 {
+    width: 8.33333333%;
+  }
+  .planso-form-builder .col-sm-pull-12 {
+    right: 100%;
+  }
+  .planso-form-builder .col-sm-pull-11 {
+    right: 91.66666667%;
+  }
+  .planso-form-builder .col-sm-pull-10 {
+    right: 83.33333333%;
+  }
+  .planso-form-builder .col-sm-pull-9 {
+    right: 75%;
+  }
+  .planso-form-builder .col-sm-pull-8 {
+    right: 66.66666667%;
+  }
+  .planso-form-builder .col-sm-pull-7 {
+    right: 58.33333333%;
+  }
+  .planso-form-builder .col-sm-pull-6 {
+    right: 50%;
+  }
+  .planso-form-builder .col-sm-pull-5 {
+    right: 41.66666667%;
+  }
+  .planso-form-builder .col-sm-pull-4 {
+    right: 33.33333333%;
+  }
+  .planso-form-builder .col-sm-pull-3 {
+    right: 25%;
+  }
+  .planso-form-builder .col-sm-pull-2 {
+    right: 16.66666667%;
+  }
+  .planso-form-builder .col-sm-pull-1 {
+    right: 8.33333333%;
+  }
+  .planso-form-builder .col-sm-pull-0 {
+    right: auto;
+  }
+  .planso-form-builder .col-sm-push-12 {
+    left: 100%;
+  }
+  .planso-form-builder .col-sm-push-11 {
+    left: 91.66666667%;
+  }
+  .planso-form-builder .col-sm-push-10 {
+    left: 83.33333333%;
+  }
+  .planso-form-builder .col-sm-push-9 {
+    left: 75%;
+  }
+  .planso-form-builder .col-sm-push-8 {
+    left: 66.66666667%;
+  }
+  .planso-form-builder .col-sm-push-7 {
+    left: 58.33333333%;
+  }
+  .planso-form-builder .col-sm-push-6 {
+    left: 50%;
+  }
+  .planso-form-builder .col-sm-push-5 {
+    left: 41.66666667%;
+  }
+  .planso-form-builder .col-sm-push-4 {
+    left: 33.33333333%;
+  }
+  .planso-form-builder .col-sm-push-3 {
+    left: 25%;
+  }
+  .planso-form-builder .col-sm-push-2 {
+    left: 16.66666667%;
+  }
+  .planso-form-builder .col-sm-push-1 {
+    left: 8.33333333%;
+  }
+  .planso-form-builder .col-sm-push-0 {
+    left: auto;
+  }
+  .planso-form-builder .col-sm-offset-12 {
+    margin-left: 100%;
+  }
+  .planso-form-builder .col-sm-offset-11 {
+    margin-left: 91.66666667%;
+  }
+  .planso-form-builder .col-sm-offset-10 {
+    margin-left: 83.33333333%;
+  }
+  .planso-form-builder .col-sm-offset-9 {
+    margin-left: 75%;
+  }
+  .planso-form-builder .col-sm-offset-8 {
+    margin-left: 66.66666667%;
+  }
+  .planso-form-builder .col-sm-offset-7 {
+    margin-left: 58.33333333%;
+  }
+  .planso-form-builder .col-sm-offset-6 {
+    margin-left: 50%;
+  }
+  .planso-form-builder .col-sm-offset-5 {
+    margin-left: 41.66666667%;
+  }
+  .planso-form-builder .col-sm-offset-4 {
+    margin-left: 33.33333333%;
+  }
+  .planso-form-builder .col-sm-offset-3 {
+    margin-left: 25%;
+  }
+  .planso-form-builder .col-sm-offset-2 {
+    margin-left: 16.66666667%;
+  }
+  .planso-form-builder .col-sm-offset-1 {
+    margin-left: 8.33333333%;
+  }
+  .planso-form-builder .col-sm-offset-0 {
+    margin-left: 0%;
+  }
+}
+@media (min-width: 992px) {
+  .planso-form-builder .col-md-1, .planso-form-builder .col-md-2, .planso-form-builder .col-md-3, .planso-form-builder .col-md-4, .planso-form-builder .col-md-5, .planso-form-builder .col-md-6, .planso-form-builder .col-md-7, .planso-form-builder .col-md-8, .planso-form-builder .col-md-9, .planso-form-builder .col-md-10, .planso-form-builder .col-md-11, .planso-form-builder .col-md-12 {
+    float: left;
+  }
+  .planso-form-builder .col-md-12 {
+    width: 100%;
+  }
+  .planso-form-builder .col-md-11 {
+    width: 91.66666667%;
+  }
+  .planso-form-builder .col-md-10 {
+    width: 83.33333333%;
+  }
+  .planso-form-builder .col-md-9 {
+    width: 75%;
+  }
+  .planso-form-builder .col-md-8 {
+    width: 66.66666667%;
+  }
+  .planso-form-builder .col-md-7 {
+    width: 58.33333333%;
+  }
+  .planso-form-builder .col-md-6 {
+    width: 50%;
+  }
+  .planso-form-builder .col-md-5 {
+    width: 41.66666667%;
+  }
+  .planso-form-builder .col-md-4 {
+    width: 33.33333333%;
+  }
+  .planso-form-builder .col-md-3 {
+    width: 25%;
+  }
+  .planso-form-builder .col-md-2 {
+    width: 16.66666667%;
+  }
+  .planso-form-builder .col-md-1 {
+    width: 8.33333333%;
+  }
+  .planso-form-builder .col-md-pull-12 {
+    right: 100%;
+  }
+  .planso-form-builder .col-md-pull-11 {
+    right: 91.66666667%;
+  }
+  .planso-form-builder .col-md-pull-10 {
+    right: 83.33333333%;
+  }
+  .planso-form-builder .col-md-pull-9 {
+    right: 75%;
+  }
+  .planso-form-builder .col-md-pull-8 {
+    right: 66.66666667%;
+  }
+  .planso-form-builder .col-md-pull-7 {
+    right: 58.33333333%;
+  }
+  .planso-form-builder .col-md-pull-6 {
+    right: 50%;
+  }
+  .planso-form-builder .col-md-pull-5 {
+    right: 41.66666667%;
+  }
+  .planso-form-builder .col-md-pull-4 {
+    right: 33.33333333%;
+  }
+  .planso-form-builder .col-md-pull-3 {
+    right: 25%;
+  }
+  .planso-form-builder .col-md-pull-2 {
+    right: 16.66666667%;
+  }
+  .planso-form-builder .col-md-pull-1 {
+    right: 8.33333333%;
+  }
+  .planso-form-builder .col-md-pull-0 {
+    right: auto;
+  }
+  .planso-form-builder .col-md-push-12 {
+    left: 100%;
+  }
+  .planso-form-builder .col-md-push-11 {
+    left: 91.66666667%;
+  }
+  .planso-form-builder .col-md-push-10 {
+    left: 83.33333333%;
+  }
+  .planso-form-builder .col-md-push-9 {
+    left: 75%;
+  }
+  .planso-form-builder .col-md-push-8 {
+    left: 66.66666667%;
+  }
+  .planso-form-builder .col-md-push-7 {
+    left: 58.33333333%;
+  }
+  .planso-form-builder .col-md-push-6 {
+    left: 50%;
+  }
+  .planso-form-builder .col-md-push-5 {
+    left: 41.66666667%;
+  }
+  .planso-form-builder .col-md-push-4 {
+    left: 33.33333333%;
+  }
+  .planso-form-builder .col-md-push-3 {
+    left: 25%;
+  }
+  .planso-form-builder .col-md-push-2 {
+    left: 16.66666667%;
+  }
+  .planso-form-builder .col-md-push-1 {
+    left: 8.33333333%;
+  }
+  .planso-form-builder .col-md-push-0 {
+    left: auto;
+  }
+  .planso-form-builder .col-md-offset-12 {
+    margin-left: 100%;
+  }
+  .planso-form-builder .col-md-offset-11 {
+    margin-left: 91.66666667%;
+  }
+  .planso-form-builder .col-md-offset-10 {
+    margin-left: 83.33333333%;
+  }
+  .planso-form-builder .col-md-offset-9 {
+    margin-left: 75%;
+  }
+  .planso-form-builder .col-md-offset-8 {
+    margin-left: 66.66666667%;
+  }
+  .planso-form-builder .col-md-offset-7 {
+    margin-left: 58.33333333%;
+  }
+  .planso-form-builder .col-md-offset-6 {
+    margin-left: 50%;
+  }
+  .planso-form-builder .col-md-offset-5 {
+    margin-left: 41.66666667%;
+  }
+  .planso-form-builder .col-md-offset-4 {
+    margin-left: 33.33333333%;
+  }
+  .planso-form-builder .col-md-offset-3 {
+    margin-left: 25%;
+  }
+  .planso-form-builder .col-md-offset-2 {
+    margin-left: 16.66666667%;
+  }
+  .planso-form-builder .col-md-offset-1 {
+    margin-left: 8.33333333%;
+  }
+  .planso-form-builder .col-md-offset-0 {
+    margin-left: 0%;
+  }
+}
+@media (min-width: 1200px) {
+  .planso-form-builder .col-lg-1, .planso-form-builder .col-lg-2, .planso-form-builder .col-lg-3, .planso-form-builder .col-lg-4, .planso-form-builder .col-lg-5, .planso-form-builder .col-lg-6, .planso-form-builder .col-lg-7, .planso-form-builder .col-lg-8, .planso-form-builder .col-lg-9, .planso-form-builder .col-lg-10, .planso-form-builder .col-lg-11, .planso-form-builder .col-lg-12 {
+    float: left;
+  }
+  .planso-form-builder .col-lg-12 {
+    width: 100%;
+  }
+  .planso-form-builder .col-lg-11 {
+    width: 91.66666667%;
+  }
+  .planso-form-builder .col-lg-10 {
+    width: 83.33333333%;
+  }
+  .planso-form-builder .col-lg-9 {
+    width: 75%;
+  }
+  .planso-form-builder .col-lg-8 {
+    width: 66.66666667%;
+  }
+  .planso-form-builder .col-lg-7 {
+    width: 58.33333333%;
+  }
+  .planso-form-builder .col-lg-6 {
+    width: 50%;
+  }
+  .planso-form-builder .col-lg-5 {
+    width: 41.66666667%;
+  }
+  .planso-form-builder .col-lg-4 {
+    width: 33.33333333%;
+  }
+  .planso-form-builder .col-lg-3 {
+    width: 25%;
+  }
+  .planso-form-builder .col-lg-2 {
+    width: 16.66666667%;
+  }
+  .planso-form-builder .col-lg-1 {
+    width: 8.33333333%;
+  }
+  .planso-form-builder .col-lg-pull-12 {
+    right: 100%;
+  }
+  .planso-form-builder .col-lg-pull-11 {
+    right: 91.66666667%;
+  }
+  .planso-form-builder .col-lg-pull-10 {
+    right: 83.33333333%;
+  }
+  .planso-form-builder .col-lg-pull-9 {
+    right: 75%;
+  }
+  .planso-form-builder .col-lg-pull-8 {
+    right: 66.66666667%;
+  }
+  .planso-form-builder .col-lg-pull-7 {
+    right: 58.33333333%;
+  }
+  .planso-form-builder .col-lg-pull-6 {
+    right: 50%;
+  }
+  .planso-form-builder .col-lg-pull-5 {
+    right: 41.66666667%;
+  }
+  .planso-form-builder .col-lg-pull-4 {
+    right: 33.33333333%;
+  }
+  .planso-form-builder .col-lg-pull-3 {
+    right: 25%;
+  }
+  .planso-form-builder .col-lg-pull-2 {
+    right: 16.66666667%;
+  }
+  .planso-form-builder .col-lg-pull-1 {
+    right: 8.33333333%;
+  }
+  .planso-form-builder .col-lg-pull-0 {
+    right: auto;
+  }
+  .planso-form-builder .col-lg-push-12 {
+    left: 100%;
+  }
+  .planso-form-builder .col-lg-push-11 {
+    left: 91.66666667%;
+  }
+  .planso-form-builder .col-lg-push-10 {
+    left: 83.33333333%;
+  }
+  .planso-form-builder .col-lg-push-9 {
+    left: 75%;
+  }
+  .planso-form-builder .col-lg-push-8 {
+    left: 66.66666667%;
+  }
+  .planso-form-builder .col-lg-push-7 {
+    left: 58.33333333%;
+  }
+  .planso-form-builder .col-lg-push-6 {
+    left: 50%;
+  }
+  .planso-form-builder .col-lg-push-5 {
+    left: 41.66666667%;
+  }
+  .planso-form-builder .col-lg-push-4 {
+    left: 33.33333333%;
+  }
+  .planso-form-builder .col-lg-push-3 {
+    left: 25%;
+  }
+  .planso-form-builder .col-lg-push-2 {
+    left: 16.66666667%;
+  }
+  .planso-form-builder .col-lg-push-1 {
+    left: 8.33333333%;
+  }
+  .planso-form-builder .col-lg-push-0 {
+    left: auto;
+  }
+  .planso-form-builder .col-lg-offset-12 {
+    margin-left: 100%;
+  }
+  .planso-form-builder .col-lg-offset-11 {
+    margin-left: 91.66666667%;
+  }
+  .planso-form-builder .col-lg-offset-10 {
+    margin-left: 83.33333333%;
+  }
+  .planso-form-builder .col-lg-offset-9 {
+    margin-left: 75%;
+  }
+  .planso-form-builder .col-lg-offset-8 {
+    margin-left: 66.66666667%;
+  }
+  .planso-form-builder .col-lg-offset-7 {
+    margin-left: 58.33333333%;
+  }
+  .planso-form-builder .col-lg-offset-6 {
+    margin-left: 50%;
+  }
+  .planso-form-builder .col-lg-offset-5 {
+    margin-left: 41.66666667%;
+  }
+  .planso-form-builder .col-lg-offset-4 {
+    margin-left: 33.33333333%;
+  }
+  .planso-form-builder .col-lg-offset-3 {
+    margin-left: 25%;
+  }
+  .planso-form-builder .col-lg-offset-2 {
+    margin-left: 16.66666667%;
+  }
+  .planso-form-builder .col-lg-offset-1 {
+    margin-left: 8.33333333%;
+  }
+  .planso-form-builder .col-lg-offset-0 {
+    margin-left: 0%;
+  }
+}
+.planso-form-builder .clearfix:before,
+.planso-form-builder .clearfix:after,
+.planso-form-builder .container:before,
+.planso-form-builder .container:after,
+.planso-form-builder .container-fluid:before,
+.planso-form-builder .container-fluid:after,
+.planso-form-builder .row:before,
+.planso-form-builder .row:after {
+  content: " ";
+  display: table;
+}
+.planso-form-builder .clearfix:after,
+.planso-form-builder .container:after,
+.planso-form-builder .container-fluid:after,
+.planso-form-builder .row:after {
+  clear: both;
+}
+.planso-form-builder .center-block {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.planso-form-builder .pull-right {
+  float: right !important;
+}
+.planso-form-builder .pull-left {
+  float: left !important;
+}
+.planso-form-builder .hide {
+  display: none !important;
+}
+.planso-form-builder .show {
+  display: block !important;
+}
+.planso-form-builder .invisible {
+  visibility: hidden;
+}
+.planso-form-builder .text-hide {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+.planso-form-builder .hidden {
+  display: none !important;
+  visibility: hidden !important;
+}
+.planso-form-builder .affix {
+  position: fixed;
+}
+@-ms-viewport {
+  width: device-width;
+}
+.planso-form-builder .visible-xs,
+.planso-form-builder .visible-sm,
+.planso-form-builder .visible-md,
+.planso-form-builder .visible-lg {
+  display: none !important;
+}
+.planso-form-builder .visible-xs-block,
+.planso-form-builder .visible-xs-inline,
+.planso-form-builder .visible-xs-inline-block,
+.planso-form-builder .visible-sm-block,
+.planso-form-builder .visible-sm-inline,
+.planso-form-builder .visible-sm-inline-block,
+.planso-form-builder .visible-md-block,
+.planso-form-builder .visible-md-inline,
+.planso-form-builder .visible-md-inline-block,
+.planso-form-builder .visible-lg-block,
+.planso-form-builder .visible-lg-inline,
+.planso-form-builder .visible-lg-inline-block {
+  display: none !important;
+}
+@media (max-width: 767px) {
+  .planso-form-builder .visible-xs {
+    display: block !important;
+  }
+  table.planso-form-builder .visible-xs {
+    display: table;
+  }
+  tr.planso-form-builder .visible-xs {
+    display: table-row !important;
+  }
+  th.planso-form-builder .visible-xs,
+  td.planso-form-builder .visible-xs {
+    display: table-cell !important;
+  }
+}
+@media (max-width: 767px) {
+  .planso-form-builder .visible-xs-block {
+    display: block !important;
+  }
+}
+@media (max-width: 767px) {
+  .planso-form-builder .visible-xs-inline {
+    display: inline !important;
+  }
+}
+@media (max-width: 767px) {
+  .planso-form-builder .visible-xs-inline-block {
+    display: inline-block !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  .planso-form-builder .visible-sm {
+    display: block !important;
+  }
+  table.planso-form-builder .visible-sm {
+    display: table;
+  }
+  tr.planso-form-builder .visible-sm {
+    display: table-row !important;
+  }
+  th.planso-form-builder .visible-sm,
+  td.planso-form-builder .visible-sm {
+    display: table-cell !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  .planso-form-builder .visible-sm-block {
+    display: block !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  .planso-form-builder .visible-sm-inline {
+    display: inline !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  .planso-form-builder .visible-sm-inline-block {
+    display: inline-block !important;
+  }
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  .planso-form-builder .visible-md {
+    display: block !important;
+  }
+  .planso-form-builder table.visible-md {
+    display: table;
+  }
+  .planso-form-builder tr.visible-md {
+    display: table-row !important;
+  }
+  .planso-form-builder th.visible-md,
+  .planso-form-builder td.visible-md {
+    display: table-cell !important;
+  }
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  .planso-form-builder .visible-md-block {
+    display: block !important;
+  }
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  .planso-form-builder .visible-md-inline {
+    display: inline !important;
+  }
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  .planso-form-builder .visible-md-inline-block {
+    display: inline-block !important;
+  }
+}
+@media (min-width: 1200px) {
+  .planso-form-builder .visible-lg {
+    display: block !important;
+  }
+  .planso-form-builder table.visible-lg {
+    display: table;
+  }
+  .planso-form-builder tr.visible-lg {
+    display: table-row !important;
+  }
+  .planso-form-builder th.visible-lg,
+  .planso-form-builder td.visible-lg {
+    display: table-cell !important;
+  }
+}
+@media (min-width: 1200px) {
+  .planso-form-builder .visible-lg-block {
+    display: block !important;
+  }
+}
+@media (min-width: 1200px) {
+  .planso-form-builder .visible-lg-inline {
+    display: inline !important;
+  }
+}
+@media (min-width: 1200px) {
+  .planso-form-builder .visible-lg-inline-block {
+    display: inline-block !important;
+  }
+}
+@media (max-width: 767px) {
+  .planso-form-builder .hidden-xs {
+    display: none !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  .planso-form-builder .hidden-sm {
+    display: none !important;
+  }
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  .planso-form-builder .hidden-md {
+    display: none !important;
+  }
+}
+@media (min-width: 1200px) {
+  .planso-form-builder .hidden-lg {
+    display: none !important;
+  }
+}
+.planso-form-builder .visible-print {
+  display: none !important;
+}
+@media print {
+  .planso-form-builder .visible-print {
+    display: block !important;
+  }
+  .planso-form-builder table.visible-print {
+    display: table;
+  }
+  .planso-form-builder tr.visible-print {
+    display: table-row !important;
+  }
+  .planso-form-builder th.visible-print,
+  .planso-form-builder td.visible-print {
+    display: table-cell !important;
+  }
+}
+.planso-form-builder .visible-print-block {
+  display: none !important;
+}
+@media print {
+  .planso-form-builder .visible-print-block {
+    display: block !important;
+  }
+}
+.planso-form-builder .visible-print-inline {
+  display: none !important;
+}
+@media print {
+  .planso-form-builder .visible-print-inline {
+    display: inline !important;
+  }
+}
+.planso-form-builder .visible-print-inline-block {
+  display: none !important;
+}
+@media print {
+  .planso-form-builder .visible-print-inline-block {
+    display: inline-block !important;
+  }
+}
+@media print {
+  .planso-form-builder .hidden-print {
+    display: none !important;
+  }
+}
+
+
+
+.planso-form-builder .input-group {
+  display: table;
+  width:100%;
+}
+.planso-form-builder .input-group .input-group-addon {
+	display: table-cell;
+	padding: 0 7.5px;
+	width: 15px;
+	text-align: center;
+}
+.planso-form-builder .input-group .form-control{
+  width:100%;
+  display: table-cell;
+}
+.planso-form-builder label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+}
+.planso-form-builder .form-control,.planso-form-builder input[type="file"] {
+  display: block;
+  width: 100%;
+}

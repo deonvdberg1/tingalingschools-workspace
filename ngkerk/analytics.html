@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics — NG Kerk Meerensee</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/portal.css?v=5">
+</head>
+<body>
+  <script>window.RW_PAGE = 'analytics';</script>
+
+  <div class="page-head">
+    <h1><svg class="rw-icon" viewBox="0 0 24 24" fill="none" stroke="#1a2e3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;flex-shrink:0;vertical-align:middle;"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg> Site Analytics</h1>
+    <p>How visitors find and book NG Kerk Meerensee — ngmeerensee.co.za</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="range-group" id="rangeGroup">
+      <button class="range-btn" data-range="7">7 days</button>
+      <button class="range-btn active" data-range="30">30 days</button>
+      <button class="range-btn" data-range="90">90 days</button>
+      <button class="range-btn" data-range="all">All</button>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" id="markMeBtn" style="background:#eef3f5;color:#1a2e3a;">Mark this browser as me</button>
+    <button class="btn btn-primary" id="exportBtn"><svg class="rw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;flex-shrink:0;vertical-align:middle;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> CSV Export</button>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="icon"><svg class="rw-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;vertical-align:middle;"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z "/><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg></div>
+      <div><div class="value" id="kVisits">–</div><div class="label">Visits · <span id="kAvg" style="color:#b8956a;font-weight:600;">–</span> / day</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="icon gold"><svg class="rw-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;vertical-align:middle;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
+      <div><div class="value" id="kBooking">–</div><div class="label">Booking Clicks · <span id="kConv" style="color:#b8956a;font-weight:600;">–</span>% conv</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="icon light"><svg class="rw-icon" viewBox="0 0 24 24" fill="none" stroke="#8a6b45" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;vertical-align:middle;"><path d="M12 2v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M20 12h2"/><path d="M19.07 4.93l-1.41 1.41"/><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"/></svg></div>
+      <div><div class="value" id="kCal">–</div><div class="label">Calendar Views</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="icon light"><svg class="rw-icon" viewBox="0 0 24 24" fill="none" stroke="#8a6b45" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;flex-shrink:0;vertical-align:middle;"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      <div><div class="value" id="kEvents">–</div><div class="label">Total Events · <span id="kFilter" style="color:#b8956a;font-weight:600;">–</span></div></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Visits per day <span class="hint" id="dailyHint"></span></div>
+      <div class="chart-wrap"><canvas id="dailyChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Busiest hours <span class="hint">when people browse</span></div>
+      <div class="chart-wrap"><canvas id="hourlyChart"></canvas></div>
+    </div>
+  </div>
+
+  <div style="height:16px;"></div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Cruise demand <span class="hint">WhatsApp booking clicks</span></div>
+      <div class="chart-wrap"><canvas id="cruiseChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Referrers <span class="hint">where visitors come from</span></div>
+      <div id="referrerList"><div class="empty">No data yet</div></div>
+    </div>
+  </div>
+
+  <div style="height:16px;"></div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Top pages</div>
+      <div id="pageList"><div class="empty">No data yet</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Visitors by country</div>
+      <div id="locList"><div class="empty">No data yet</div></div>
+    </div>
+  </div>
+
+  <div style="height:16px;"></div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Devices <span class="hint">browser / OS / screen</span></div>
+      <div id="deviceList"><div class="empty">No data yet</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Tracker health</div>
+      <div id="healthBody"><div class="empty">Checking…</div></div>
+    </div>
+  </div>
+
+  <script src="/portal-shell.js?v=5"></script>
+  <script>
+    let range = '30';
+    let charts = {};
+
+    async function api(path) {
+      const r = await fetch(path);
+      if (r.redirected || r.status === 401) { window.location.href = '/login.html'; throw new Error('auth'); }
+      return r.json();
+    }
+
+    function rangeDates() {
+      const to = new Date();
+      const from = new Date();
+      if (range === '7') from.setDate(to.getDate() - 6);
+      else if (range === '30') from.setDate(to.getDate() - 29);
+      else if (range === '90') from.setDate(to.getDate() - 89);
+      else from.setFullYear(to.getFullYear() - 2);
+      const fmt = (d) => d.toISOString().slice(0, 10);
+      return { from: fmt(from), to: fmt(to) };
+    }
+    function qs() {
+      const { from, to } = rangeDates();
+      return '?from=' + from + '&to=' + to;
+    }
+
+    function destroy(name) { if (charts[name]) { charts[name].destroy(); delete charts[name]; } }
+
+    async function loadAll() {
+      const [ov, cruises, pages, refs, locs, devs, health] = await Promise.all([
+        api('/api/admin/analytics/overview' + qs()),
+        api('/api/admin/analytics/cruises' + qs()),
+        api('/api/admin/analytics/pages' + qs()),
+        api('/api/admin/analytics/referrers' + qs()),
+        api('/api/admin/analytics/locations' + qs()),
+        api('/api/admin/analytics/devices' + qs()),
+        api('/api/admin/analytics/health'),
+      ]);
+      renderKPIs(ov);
+      renderDaily(ov.daily, ov.range);
+      renderHourly(ov.hourly);
+      renderCruises(cruises.cruises);
+      renderReferrers(refs.refs);
+      renderPages(pages.pages);
+      renderLocations(locs.locations);
+      renderDevices(devs);
+      renderHealth(health);
+    }
+
+    function renderKPIs(ov) {
+      const t = ov.totals || {};
+      const f = ov.funnel || {};
+      document.getElementById('kVisits').textContent = t.visits || 0;
+      document.getElementById('kAvg').textContent = t.avg_per_day || 0;
+      document.getElementById('kBooking').textContent = f.booking_clicks || 0;
+      document.getElementById('kConv').textContent = f.conversion_rate || 0;
+      document.getElementById('kCal').textContent = f.calendar_views || 0;
+      document.getElementById('kEvents').textContent = t.events || 0;
+      document.getElementById('kFilter').textContent = ov.filtering === 'all' ? 'All visits' : 'Customers only';
+      // Mark-this-browser state
+      const marked = (function(){ try { return localStorage.getItem('rw_internal') === '1'; } catch(e){ return false; } })();
+      const mb = document.getElementById('markMeBtn');
+      if (mb) { mb.textContent = marked ? '✓ This browser marked as me' : 'Mark this browser as me'; mb.style.opacity = marked ? 0.75 : 1; }
+    }
+
+    // Mark-this-browser (button exists — script runs at end of body)
+    (function () {
+      const mb = document.getElementById('markMeBtn');
+      if (mb) mb.addEventListener('click', function () {
+        try { localStorage.setItem('rw_internal', '1'); } catch (e) {}
+        mb.textContent = '✓ This browser marked as me';
+        mb.style.opacity = 0.75;
+        loadAll();
+      });
+    })();
+
+    function renderDaily(daily, rng) {
+      const el = document.getElementById('dailyChart');
+      const labels = daily.map(d => d.day.slice(5));
+      const data = daily.map(d => d.daily);
+      document.getElementById('dailyHint').textContent = rng ? rng.from + ' → ' + rng.to : '';
+      destroy('daily');
+      charts.daily = new Chart(el, {
+        type: 'line',
+        data: { labels, datasets: [{ label: 'Visits', data, borderColor: '#1a2e3a', backgroundColor: 'rgba(26,46,58,0.08)', fill: true, tension: 0.35, pointRadius: 3, pointBackgroundColor: '#b8956a', borderWidth: 2 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+      });
+    }
+
+    function renderHourly(hourly) {
+      const el = document.getElementById('hourlyChart');
+      const labels = hourly.map((_, i) => String(i).padStart(2, '0') + ':00');
+      destroy('hourly');
+      charts.hourly = new Chart(el, {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Visits', data: hourly, backgroundColor: '#b8956a', borderRadius: 3 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+      });
+    }
+
+    function renderCruises(cruises) {
+      const el = document.getElementById('cruiseChart');
+      if (!cruises.length) { destroy('cruise'); return; }
+      const labels = cruises.map(c => c.name);
+      const data = cruises.map(c => c.count);
+      destroy('cruise');
+      charts.cruise = new Chart(el, {
+        type: 'doughnut',
+        data: { labels, datasets: [{ data, backgroundColor: ['#1a2e3a', '#b8956a', '#7a9a9e', '#d4b08a', '#c9c2b8'], borderWidth: 2, borderColor: '#fff' }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } }
+      });
+    }
+
+    function barList(el, items, { valueKey = 'count', nameKey = 'name', empty = 'No data yet' } = {}) {
+      if (!items || !items.length) { el.innerHTML = '<div class="empty">' + empty + '</div>'; return; }
+      const max = Math.max(...items.map(i => i[valueKey]));
+      el.innerHTML = items.map(i => {
+        const pct = Math.round((i[valueKey] / max) * 100);
+        const label = i[nameKey] || 'Unknown';
+        return '<div class="bar-row"><span class="name">' + label + '</span>' +
+          '<div class="track"><div class="fill" style="width:' + pct + '%"></div></div>' +
+          '<span class="count">' + i[valueKey] + '</span></div>';
+      }).join('');
+    }
+
+    function renderReferrers(refs) { barList(document.getElementById('referrerList'), refs, { empty: 'No referrers yet — traffic will show up here' }); }
+    function renderPages(pages) {
+      const el = document.getElementById('pageList');
+      if (!pages.length) { el.innerHTML = '<div class="empty">No data yet</div>'; return; }
+      el.innerHTML = pages.map(p => {
+        const name = p.path === '/' ? 'Home' : p.path;
+        return '<div class="bar-row"><span class="name">' + name + '</span>' +
+          '<div class="track"><div class="fill" style="width:100%"></div></div>' +
+          '<span class="count">' + p.visitors + '</span></div>';
+      }).join('');
+    }
+    function renderLocations(locs) { barList(document.getElementById('locList'), locs, { empty: 'No location data yet' }); }
+
+    function renderDevices(devs) {
+      const el = document.getElementById('deviceList');
+      const rows = [];
+      if (devs.browsers && devs.browsers.length) rows.push('<div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;margin:10px 0 4px;">Browsers</div>' + devs.browsers.map(d => '<div class="bar-row" style="padding:3px 0;"><span class="name">' + d.name + '</span><div class="track"><div class="fill" style="width:' + Math.round(d.count / Math.max(...devs.browsers.map(x => x.count)) * 100) + '%"></div></div><span class="count">' + d.count + '</span></div>').join(''));
+      if (devs.systems && devs.systems.length) rows.push('<div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;margin:10px 0 4px;">OS</div>' + devs.systems.map(d => '<div class="bar-row" style="padding:3px 0;"><span class="name">' + d.name + '</span><div class="track"><div class="fill" style="width:' + Math.round(d.count / Math.max(...devs.systems.map(x => x.count)) * 100) + '%"></div></div><span class="count">' + d.count + '</span></div>').join(''));
+      if (devs.sizes && devs.sizes.length) rows.push('<div style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;margin:10px 0 4px;">Screen</div>' + devs.sizes.map(d => '<div class="bar-row" style="padding:3px 0;"><span class="name">' + d.name + '</span><div class="track"><div class="fill" style="width:' + Math.round(d.count / Math.max(...devs.sizes.map(x => x.count)) * 100) + '%"></div></div><span class="count">' + d.count + '</span></div>').join(''));
+      el.innerHTML = rows.length ? rows.join('') : '<div class="empty">No data yet</div>';
+    }
+
+    function renderHealth(health) {
+      const el = document.getElementById('healthBody');
+      const ok = health.ok;
+      el.innerHTML =
+        '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><span class="health-dot ' + (ok ? '' : 'off') + '"></span><b>' + (ok ? 'Tracking active' : 'Tracking issue') + '</b></div>' +
+        '<div style="font-size:13px;color:#666;line-height:1.8;">' +
+        'Hits today: <b>' + health.today_hits + '</b><br>' +
+        'Total tracked: <b>' + health.total_hits + '</b><br>' +
+        'Last hit: <b>' + (health.last_hit ? new Date(health.last_hit).toLocaleString() : 'never') + '</b><br>' +
+        'Checked: ' + new Date(health.checked_at).toLocaleTimeString() + '</div>' +
+        '<div style="margin-top:12px;font-size:12px;color:#999;">Tip: open the site in another browser (or incognito) to see visits here.</div>';
+    }
+
+    window.RW_ON_LOAD = function () { loadAll(); };
+
+    // Range buttons
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.range-btn');
+      if (!btn) return;
+      range = btn.dataset.range;
+      document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      loadAll();
+    });
+
+    // Export
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('#exportBtn')) {
+        window.location.href = '/api/admin/analytics/export' + qs();
+      }
+    });
+  </script>
+</body>
+</html>
