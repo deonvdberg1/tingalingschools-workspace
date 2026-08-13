@@ -108,6 +108,22 @@ This is where I keep what matters.
 - **Status:** active, health: healthy
 - **Onboarding:** reset to not_started (will see wizard on login)
 
+## 📊 Real vs Monitor Traffic — REVEALED 2026-08-13
+
+Mr D asked why views weren't converting. Root cause found: **~96% of "customer" views were our own site monitor.**
+
+- **HeadlessChrome hits: 1,168 of 1,220 "external" views** — `site-monitor.sh` runs headless Chrome every 10 min (144/day) and the beacon's `navigator.webdriver` check did NOT trigger under `--headless=new --dump-dom`, so every check counted as a customer visit.
+- **Real external traffic: ~46 page views / ~7 unique IPs over 30 days. 0 real parent applications** (the 2 "submits" were a curl test + Mr D's own tests from his IP 197.185.161.11).
+- **Fixes deployed:**
+  - Beacon (`website/index.html`): skips UA matching `HeadlessChrome|TingalingSiteMonitor` (reliable; webdriver flag isn't).
+  - `site-monitor.sh`: now sends `--user-agent="TingalingSiteMonitor/1.0"` so it's always identifiable.
+  - DB backfill: `internal=1` for all HeadlessChrome + `::1` (localhost) hits (1,196 rows).
+  - API fix: pages endpoint `GROUP BY path, is_event` + select `event_label` (events were invisible — merged into page rows).
+- **⚠️ Lesson: dashboard-api uses sql.js (in-memory). Hand-editing the .db with sqlite3 while the API runs = the running process clobbers your edits on next saveDb().** Always: edit file → restart API immediately (kickstart) → verify. WAL: sqlite3 CLI writes go to -wal; sql.js reads only the main file — run `PRAGMA wal_checkpoint(TRUNCATE)` if needed.
+- **Action for Mr D:** click "Mark this browser as me" on the portal Analytics page on his Mac AND phone, so his own visits don't pollute customer stats.
+- **Real conversion problem:** not "views not converting" — there are almost no real views. Needs the parent opt-in campaign / actual traffic driving.
+- Deploy: gh-pages f2fa7e2 (beacon), main a30aefd (beacon+monitor), main bc9617d (pages endpoint).
+
 ## 🧭 Internal vs Customer Traffic (2026-08-05)
 
 Analytics now separates owner/staff visits from customer traffic.
