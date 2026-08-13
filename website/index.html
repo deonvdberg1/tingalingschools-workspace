@@ -56,8 +56,11 @@
             // Skip portal app pages (admin/staff dashboard) — they're not marketing traffic
             if (location.pathname.indexOf('/portal') === 0) return;
             // Skip automated browsers (site monitor's headless Chrome, bots) —
-            // they must not count as customer traffic
+            // they must not count as customer traffic.
+            // UA check is the reliable one: --headless=new --dump-dom does not
+            // always set navigator.webdriver, so monitor hits were leaking in.
             if (navigator.webdriver === true) return;
+            if (/HeadlessChrome|TingalingSiteMonitor/i.test(navigator.userAgent)) return;
             var body = JSON.stringify(Object.assign({
               clientId: 6,
               path: location.pathname,

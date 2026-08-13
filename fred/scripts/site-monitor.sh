@@ -50,7 +50,7 @@ fi
 # ── 3. Real render check (headless Chrome) ──
 render_check() {
   rm -f "$TMP_DOM"
-  "$CHROME" --headless=new --disable-gpu --no-sandbox \
+  "$CHROME" --headless=new --disable-gpu --no-sandbox --user-agent="TingalingSiteMonitor/1.0" \
     --virtual-time-budget=20000 --dump-dom "$URL/" > "$TMP_DOM" 2>/dev/null &
   local CPID=$!
   local waited=0
