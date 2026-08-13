@@ -280,9 +280,9 @@ export function setupSiteAnalyticsRoutes(app, { query, run: _run, saveDb: _saveD
     const { from, to } = rangeParams(req.query);
     const cid = req.analyticsClientId;
     const rows = query(
-      `SELECT path, title, is_event, COUNT(*) AS visitors, MAX(id) AS path_id
+      `SELECT path, title, is_event, event_label, COUNT(*) AS visitors, MAX(id) AS path_id
        FROM site_hits WHERE client_id = ? AND date(created_at) BETWEEN date(?) AND date(?)${internalSql(req.query)}
-       GROUP BY path ORDER BY visitors DESC LIMIT 100`,
+       GROUP BY path, is_event ORDER BY visitors DESC LIMIT 100`,
       [cid, from, to]
     );
     const pages = rows.filter((r) => !r.is_event).map((r) => ({
