@@ -111,7 +111,9 @@ This is where I keep what matters.
 - **WhatsApp-nommer:** ⏳ OPGESKORT — Mr D sê moenie WhatsApp opstel nie (eers admin + AI Site Editor)
 - **Onboarding:** complete (slaan wizard oor — ons doen die opstelling)
 - **Sitedata:** volledige spieël van ngmeerensee.co.za by `fred/ngkerk/` (nie in git nie)
-- **🚀 NG Kerk Platform (River Whisperer-styl, LOKAAL):** port **8091**, LaunchAgent `com.autoeffortless.ngkerk`
+- **🚀 NG Kerk Platform (River Whisperer-styl), LOKAAL LIVE:** port **8091**, LaunchAgent `com.autoeffortless.ngkerk`
+  - **🌐 Tunnel (2026-08-13):** `https://ngkerk.autoeffortless.com` → 8091 — tunnel `ngkerk` (c19a401b), config-ngkerk.yml, LaunchAgent `com.autoeffortless.cloudflared-ngkerk`
+  - ⚠️ Route DNS les: eerste `route dns` het na Main-tunnel gewys; fix = `cloudflared tunnel route dns --overwrite-dns <ngkerk-uuid> ngkerk.autoeffortless.com`
   - Bedien die volledige gespieëlde webwerf lokaal (index.html, eredienste/, kontak/, ens.) met `rw-track.js` + `rw-chat.js` ingespuit op elke bladsy (middleware)
   - **Admin-login:** /login — info@ngmeerensee.co.za / NGKerk2026! (users.json in private/, bcrypt)
   - **AI Site Editor:** chat → `ngkerk` agent werk in drafts/ (STAGING) → preview → publish (auto-rugsteun, backups/manifest)
