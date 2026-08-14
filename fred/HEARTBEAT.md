@@ -10,14 +10,20 @@
 - KB-sync per-kliënt in server.js (whatsapp-server + agent workspace)
 - ⏳ WhatsApp: OPGESKORT per Mr D — eers admin + AI Site Editor
 
-## 2026-08-13 — NG Kerk Platform (River Whisperer-styl) — LOKAAL LIVE ✅
+## 2026-08-13 — NG Kerk Platform (River Whisperer-styl) — LIVE ✅
 
 - **Port 8091** + LaunchAgent `com.autoeffortless.ngkerk` (auto-start)
 - Volledige gespieëlde webwerf bedien lokaal; rw-track + rw-chat ingespuit op elke bladsy
 - Admin /login (info@ngmeerensee.co.za / NGKerk2026!) → dashboard + analytics
 - **AI Site Editor:** chat → ngkerk-agent → drafts/ (STAGING) → preview → publish → auto-rugsteun
 - E2E getoets: footer-kopiereg verander + gepubliseer + rugsteun geskep ✅
-- Geen tunnel/WhatsApp — net lokaal vir nou
+- **🌐 Tunnel LIVE (2026-08-13):** `https://ngkerk.autoeffortless.com` → port 8091
+  - Tunnel ID: c19a401b-1494-4903-903b-12e1b37dabde (naam: `ngkerk`)
+  - Config: `~/.cloudflared/config-ngkerk.yml` · LaunchAgent: `com.autoeffortless.cloudflared-ngkerk`
+  - Geverifieer: /login, /dashboard.html, /admin.html, / almal HTTP 200 deur tunnel ✅
+  - ⚠️ Les: `cloudflared tunnel route dns` het eers na Main-tunnel (41e8685d) gewys — gefix met `--overwrite-dns <ngkerk-uuid>`
+- ⏳ WhatsApp: OPGESKORT per Mr D — eers admin + AI Site Editor
+- **NEXT:** URL aan NG Kerk stuur om te toets (Mr D se aksie)
 
 ## 2026-08-05 08:55 SAST — tingalingschools.com Crash Fixed ✅
 

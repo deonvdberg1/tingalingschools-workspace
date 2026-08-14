@@ -25,7 +25,7 @@
       '<aside class="portal-sidebar">' +
         '<a href="/" class="brand">' +
           '<div class="brand-logo">⛪</div>' +
-          '<div><div class="brand-name">NG Kerk Meerensee</div><div class="brand-sub">Portal</div></div>' +
+          '<div><div class="brand-name">NG Kerk Meerensee</div><div class="brand-sub">Admin Portal</div></div>' +
         '</a>' +
         '<nav>' + navHtml + '</nav>' +
         '<div class="sidebar-foot">' +

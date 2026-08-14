@@ -144,7 +144,8 @@ async function seed() {
     { lat: -28.7423, lng: 32.0518, speed: 0 },  // Arrived
   ];
 
-  const baseTimestamp = 1780600000000; // Approximate timestamp
+  const now = Date.now();
+  const baseTimestamp = now - ((gpsPath.length - 1) * 10000); // First point ~3 minutes ago
   gpsPath.forEach((point, i) => {
     run(
       `INSERT INTO driver_locations (client_id, driver_id, lat, lng, speed, accuracy, timestamp, created_at)

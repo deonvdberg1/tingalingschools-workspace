@@ -2,3 +2,12 @@
 .credentials
 CREDENTIALS.md
 *.backup
+
+# Runtime logs (rotated locally, not for git backup)
+logs/
+heartbeat_logs/
+
+# SQLite WAL/shm + old DB snapshots
+*.db-shm
+*.db-wal
+dashboard-api/data/*.bak-*

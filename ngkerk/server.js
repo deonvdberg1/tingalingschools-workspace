@@ -507,7 +507,7 @@ const LOGIN_BTN = `<script>
       fetch('/api/me').then(function(r){return r.json()}).then(function(d){
         if (d && d.authenticated) {
           var admin = d.user && d.user.role === 'admin';
-          b.textContent = admin ? 'Portal' : 'Dashboard';
+          b.textContent = admin ? 'Admin Portal' : 'Dashboard';
           b.href = admin ? '/admin' : '/dashboard';
           b.style.background = '#b8956a';
         }
