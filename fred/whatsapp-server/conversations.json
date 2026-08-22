@@ -322,11 +322,51 @@
         "direction": "out",
         "text": "Hello! Welcome to Ting-A-Ling Schools 😊 What would you like to know?",
         "timestamp": "2026-08-04T09:32:10.904Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-08-21T04:27:19.611Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello again! 😊 What can I tell you about Ting-A-Ling Schools today?",
+        "timestamp": "2026-08-21T04:27:19.611Z"
+      },
+      {
+        "direction": "in",
+        "text": "How are your school fees?",
+        "timestamp": "2026-08-21T04:29:03.029Z"
+      },
+      {
+        "direction": "out",
+        "text": "Our fees depend on which school you're asking about. Are you interested in the Pre-Primary School or the Special Needs School? 😊",
+        "timestamp": "2026-08-21T04:29:03.029Z"
+      },
+      {
+        "direction": "in",
+        "text": "Special needs",
+        "timestamp": "2026-08-21T04:29:19.099Z"
+      },
+      {
+        "direction": "out",
+        "text": "Our Special Needs School fees are R3,000 per month (07:00–13:00) or R3,300 per month (07:00–17:00 with aftercare) 😊 Fees are due on the 2nd of each month and payable for 11 months, plus a one-time R1,300 registration fee.",
+        "timestamp": "2026-08-21T04:29:19.099Z"
+      },
+      {
+        "direction": "in",
+        "text": "Can you tell me how many kids are currently enrolled?",
+        "timestamp": "2026-08-21T04:30:15.916Z"
+      },
+      {
+        "direction": "out",
+        "text": "I don't have current enrolment numbers in my knowledge base. The school office can help with that — please contact them at info@tingalingschools.com or call 0615274429 / 0724561282. 😊",
+        "timestamp": "2026-08-21T04:30:15.916Z"
       }
     ],
     "firstSeen": "2026-05-29T07:42:41.367Z",
-    "lastSeen": "2026-08-04T09:32:10.904Z",
-    "autoReplied": 30,
+    "lastSeen": "2026-08-21T04:30:15.916Z",
+    "autoReplied": 34,
     "humanRequests": 4
   },
   "27721234567": {
