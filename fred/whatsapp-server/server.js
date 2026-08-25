@@ -441,7 +441,10 @@ app.post('/webhooks/whatsapp', express.json(), async (req, res) => {
   const statuses = value?.statuses;
   if (statuses && statuses.length > 0) {
     for (const st of statuses) {
-      log('INFO', 'STATUS', `${st.status} | To: ${st.recipient_id} | Msg: ${(st.id || '').substring(0, 30)}`);
+      const errDetail = (st.errors && st.errors.length > 0)
+        ? ` | Err: ${st.errors.map(e => `${e.code}:${e.title}`).join(', ')}`
+        : '';
+      log('INFO', 'STATUS', `${st.status} | To: ${st.recipient_id} | Msg: ${(st.id || '').substring(0, 30)}${errDetail}`);
     }
     return;
   }
