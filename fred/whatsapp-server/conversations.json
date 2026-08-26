@@ -362,11 +362,41 @@
         "direction": "out",
         "text": "I don't have current enrolment numbers in my knowledge base. The school office can help with that — please contact them at info@tingalingschools.com or call 0615274429 / 0724561282. 😊",
         "timestamp": "2026-08-21T04:30:15.916Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-08-25T08:10:31.763Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hi there! 😊 How can I help you with Ting-A-Ling Schools today?",
+        "timestamp": "2026-08-25T08:10:31.763Z"
+      },
+      {
+        "direction": "in",
+        "text": "What type of special needs does your school cater for?",
+        "timestamp": "2026-08-25T09:05:12.127Z"
+      },
+      {
+        "direction": "out",
+        "text": "Our Special Needs School provides individualised care and education for children with diverse learning needs, with a dedicated team creating personalised programmes and therapy support available. 😊 For specific questions about your child's needs, the school office can advise — info@tingalingschools.com or 0615274429 / 0724561282.",
+        "timestamp": "2026-08-25T09:05:12.127Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-08-25T20:13:29.117Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello again! 😊 What would you like to know about Ting-A-Ling Schools?",
+        "timestamp": "2026-08-25T20:13:29.117Z"
       }
     ],
     "firstSeen": "2026-05-29T07:42:41.367Z",
-    "lastSeen": "2026-08-21T04:30:15.916Z",
-    "autoReplied": 34,
+    "lastSeen": "2026-08-25T20:13:29.117Z",
+    "autoReplied": 37,
     "humanRequests": 4
   },
   "27721234567": {
@@ -685,7 +715,7 @@
     "humanRequests": 0
   },
   "27663290632": {
-    "name": "Qwabelihle❤️",
+    "name": "Mr D (Dashboard)",
     "phone": "27663290632",
     "messages": [
       {
@@ -717,12 +747,32 @@
         "direction": "out",
         "text": "Our Pre-Primary fees are R1,900 (07:00–13:00), R2,000 (07:00–15:00), or R2,200 (07:00–17:00) per month, payable for 11 months. There's also a one-time registration fee of R1,300. 😊",
         "timestamp": "2026-06-01T08:06:18.998Z"
+      },
+      {
+        "direction": "in",
+        "text": "How old kids must be to qualify at pre primary",
+        "timestamp": "2026-08-25T08:11:59.506Z"
+      },
+      {
+        "direction": "out",
+        "text": "Children need to be between 2 and 6 years old to enrol at our Pre-Primary School. 😊 If you'd like to chat about enrolment, the office is at info@tingalingschools.com, 0615274429 / 0724561282.",
+        "timestamp": "2026-08-25T08:11:59.506Z"
+      },
+      {
+        "direction": "in",
+        "text": "Children need to be between 2 and 6 years old to enrol at our Pre-Primary School. 😊 If you'd like to chat about enrolment, the office is at info@tingalingschools.com, 0615274429 / 0724561282.",
+        "timestamp": "2026-08-25T08:14:57.172Z"
+      },
+      {
+        "direction": "in",
+        "text": "Children need to be between 2 and 6 years old to enrol at our Pre-Primary School. If you would like to chat about enrolment, the office is at info@tingalingschools.com, 0615274429 / 0724561282.",
+        "timestamp": "2026-08-25T08:16:13.441Z"
       }
     ],
     "firstSeen": "2026-06-01T08:05:14.381Z",
-    "lastSeen": "2026-06-01T08:06:18.998Z",
-    "autoReplied": 3,
-    "humanRequests": 0
+    "lastSeen": "2026-08-25T08:16:13.441Z",
+    "autoReplied": 4,
+    "humanRequests": 2
   },
   "27637321679": {
     "name": "The River Whisperer",
