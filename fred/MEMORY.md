@@ -98,6 +98,21 @@ This is where I keep what matters.
 - Absentee Reporting, Uniform (R150 shirt, R450 tracksuit), Events, Facilities, FAQ
 - GENERAL INSTRUCTION: ask which school when info differs
 
+## 📦 Click-and-Buy Product Portfolio (LOCKED 2026-08-26)
+
+**Strategy:** Pure web apps only — click-and-buy, zero setup from us. Customer self-serves (buy → Stripe → auto-account → login → wizard).
+- **NO WhatsApp/Meta** — too complex & verification-heavy (Mr D decision, all WhatsApp apps removed)
+- **NO documents/guides** — only real usable tools (Mr D decision)
+- **PDF:** `products/AutoEffortless-Product-Portfolio-2026-08-26.pdf` (2 pages) + HTML source `products/portfolio-2026-08-26.html`
+
+**15 apps locked (3 tiers):**
+- **Tier 1 AI:** DocChat (R99–199/mo) · Contract & Quote Generator · AI Content Studio (R199) · AI Website Builder (R299/mo) · AI Form Builder (R149)
+- **Tier 2 Business:** Invoice & Quote App (R199) · Simple CRM (R199) · Stock & Inventory (R149) · Small Team HR (R149) · Booking & Calendar (R149)
+- **Tier 3 Vertical:** School Admin (R299–499) · Church/Org Manager (R299) · Property Manager (R299) · Salon/Clinic Booking (R199) · Sports Club Manager (R149)
+
+**Buy flow:** Stripe checkout → account auto-created → email login → self-serve setup wizard. Subscriptions auto-renew.
+**Roadmap:** Phase 1 = storefront engine + DocChat + Contract Generator + Invoice App (all existing code) → Phase 2 business apps → Phase 3 vertical apps. Bundle into R199/R499/R999 tiers, each app also standalone.
+
 ## 👥 Clients
 
 ### NG Kerk Meerensee (ID: 8) — CLIENT #2 (2026-08-13)

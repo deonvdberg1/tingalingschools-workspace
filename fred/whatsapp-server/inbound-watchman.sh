@@ -132,6 +132,17 @@ if [ "$elapsed" -gt "$CIRCUIT_BREAKER" ]; then
   should_alert=0
 fi
 
+# ── Quiet hours: log only, no alerts 20:00–07:00 SAST ──
+# Added 2026-08-26: overnight lull (school) is normal — was sending hourly
+# false "SUSPECTED FAILURE" alerts to Mr D all night. Real outages are still
+# caught by healthcheck (15 min) + site-monitor (10 min); first alert after
+# quiet hours fires immediately if silence persists.
+HOUR=$(date +%H)
+if [ "$should_alert" -eq 1 ] && { [ "$HOUR" -ge 20 ] || [ "$HOUR" -lt 7 ]; }; then
+  log_info "Quiet hours (${HOUR}:00 SAST) — silence alert suppressed (${elapsed_min} min silence)"
+  should_alert=0
+fi
+
 if [ "$should_alert" -eq 1 ]; then
   log_alert "No inbound messages for ${elapsed_min} minutes! Sending alert..."
 

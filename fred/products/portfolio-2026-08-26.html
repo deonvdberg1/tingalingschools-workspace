@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AutoEffortless — Product Portfolio 2026</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #1e293b; font-size: 12.5px; line-height: 1.55; }
+  .page { max-width: 180mm; margin: 0 auto; }
+
+  .header { border-bottom: 4px solid #0f766e; padding-bottom: 14px; margin-bottom: 18px; }
+  .logo { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: #0f766e; }
+  .logo span { color: #1e293b; }
+  .tagline { font-size: 13px; color: #64748b; margin-top: 2px; }
+  .docmeta { font-size: 11px; color: #94a3b8; margin-top: 6px; }
+
+  h1 { font-size: 20px; margin: 20px 0 6px; color: #0f172a; }
+  h2 { font-size: 15px; margin: 22px 0 8px; color: #0f766e; text-transform: uppercase; letter-spacing: 0.5px; }
+  h3 { font-size: 13px; margin: 12px 0 4px; color: #0f172a; }
+  p { margin-bottom: 8px; }
+
+  .model { background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 8px; padding: 12px 14px; margin: 10px 0 16px; }
+  .model ul { margin-left: 18px; }
+  .model li { margin-bottom: 3px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 12px; }
+  th { background: #0f766e; color: #fff; text-align: left; padding: 7px 9px; font-weight: 600; }
+  td { border-bottom: 1px solid #e2e8f0; padding: 7px 9px; vertical-align: top; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  .tier { font-weight: 700; color: #0f172a; background: #ccfbf1 !important; }
+
+  .pill { display: inline-block; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 10px; padding: 0 8px; font-size: 10.5px; color: #475569; font-weight: 600; }
+  .pill.sub { background: #eef2ff; border-color: #c7d2fe; color: #4338ca; }
+  .pill.onetime { background: #fef3c7; border-color: #fde68a; color: #92400e; }
+
+  .flow { counter-reset: step; margin: 10px 0 16px; }
+  .flow .step { display: flex; align-items: flex-start; margin-bottom: 8px; }
+  .flow .n { counter-increment: step; flex: 0 0 26px; height: 26px; background: #0f766e; color: #fff; border-radius: 50%; text-align: center; line-height: 26px; font-weight: 700; font-size: 12px; }
+  .flow .s { margin-left: 10px; padding-top: 3px; }
+
+  .roadmap td:first-child { white-space: nowrap; font-weight: 600; }
+  .footer { margin-top: 22px; border-top: 1px solid #e2e8f0; padding-top: 8px; font-size: 10.5px; color: #94a3b8; text-align: center; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="logo">AutoEffortless<span> — Product Portfolio</span></div>
+    <div class="tagline">Click-and-Buy Applications · Build once · Sell forever · Zero setup</div>
+    <div class="docmeta">Version 1.0 · 26 August 2026 · autoeffortless.com</div>
+  </div>
+
+  <h1>The Model</h1>
+  <div class="model">
+    <ul>
+      <li><b>Pure web applications</b> — hosted by us, used in the browser. No apps to install.</li>
+      <li><b>Click and buy</b> — Stripe checkout → account auto-created → login → self-serve setup wizard.</li>
+      <li><b>Zero work from our side per sale</b> — the customer does their own setup inside the app.</li>
+      <li><b>No WhatsApp / Meta / verification-heavy integrations</b> — deliberately excluded.</li>
+      <li><b>Two price shapes</b> — monthly subscription (Stripe auto-renew) or one-time lifetime access.</li>
+    </ul>
+  </div>
+
+  <h2>Tier 1 — AI Apps <span class="pill sub">Subscription</span></h2>
+  <table>
+    <tr><th style="width:26%">App</th><th>What it does</th><th style="width:18%">Price</th></tr>
+    <tr><td><b>1. DocChat</b></td><td>Upload any document (contracts, policies, notes) and ask questions — answers with citations.</td><td>R99–199/mo</td></tr>
+    <tr><td><b>2. Contract &amp; Quote Generator</b></td><td>Answer a wizard → get a POPIA/BCEA-aware contract, quote or invoice as a ready PDF.</td><td>Pay-per-use or sub</td></tr>
+    <tr><td><b>3. AI Content Studio</b></td><td>Set your brand voice → generate SA marketing content: captions, ads, emails, blog drafts.</td><td>R199/mo</td></tr>
+    <tr><td><b>4. AI Website Builder</b></td><td>Describe your business in chat → get a live, hosted website. No code.</td><td>R299/mo or one-time</td></tr>
+    <tr><td><b>5. AI Form Builder</b></td><td>Build smart forms that adapt answers; leads land straight in the owner's inbox.</td><td>R149/mo</td></tr>
+  </table>
+
+  <h2>Tier 2 — Business Apps</h2>
+  <table>
+    <tr><th style="width:26%">App</th><th>What it does</th><th style="width:18%">Price</th></tr>
+    <tr><td><b>6. Invoice &amp; Quote App</b></td><td>VAT-aware invoicing and quotes, PDF export, send by email.</td><td>R199/mo</td></tr>
+    <tr><td><b>7. Simple CRM</b></td><td>Leads, pipeline tracking, automated email follow-ups.</td><td>R199/mo</td></tr>
+    <tr><td><b>8. Stock &amp; Inventory Lite</b></td><td>Track stock, get low-stock email alerts.</td><td>R149/mo</td></tr>
+    <tr><td><b>9. Small Team HR</b></td><td>Leave requests, rosters, staff records — built for small SA teams.</td><td>R149/mo</td></tr>
+    <tr><td><b>10. Booking &amp; Calendar</b></td><td>Shareable booking link, Google Calendar sync, automatic reminders.</td><td>R149/mo</td></tr>
+  </table>
+
+  <h2>Tier 3 — Vertical Apps</h2>
+  <table>
+    <tr><th style="width:26%">App</th><th>What it does</th><th style="width:18%">Price</th></tr>
+    <tr><td><b>11. School Admin</b></td><td>Fees tracking, announcements, events, parent portal.</td><td>R299–499/mo</td></tr>
+    <tr><td><b>12. Church / Org Manager</b></td><td>Members, giving, events, volunteers.</td><td>R299/mo</td></tr>
+    <tr><td><b>13. Property Manager</b></td><td>Tenants, leases, rent reminders by email, maintenance requests.</td><td>R299/mo</td></tr>
+    <tr><td><b>14. Salon / Clinic Booking</b></td><td>Bookings, reminders, client history.</td><td>R199/mo</td></tr>
+    <tr><td><b>15. Sports Club Manager</b></td><td>Fixtures, availability, subs collection.</td><td>R149/mo</td></tr>
+  </table>
+
+  <h2>The Buy Flow</h2>
+  <div class="flow">
+    <div class="step"><div class="n">1</div><div class="s">Customer clicks <b>Buy</b> on the product page.</div></div>
+    <div class="step"><div class="n">2</div><div class="s">Stripe checkout — card or instant EFT. Subscription or one-time.</div></div>
+    <div class="step"><div class="n">3</div><div class="s">Account <b>auto-created</b> on payment; login details emailed instantly.</div></div>
+    <div class="step"><div class="n">4</div><div class="s">Self-serve setup wizard — the customer configures their own data.</div></div>
+    <div class="step"><div class="n">5</div><div class="s">They use it. We host it. Updates ship automatically.</div></div>
+  </div>
+
+  <h2>Roadmap</h2>
+  <table class="roadmap">
+    <tr><th style="width:26%">Phase</th><th>Deliverables</th></tr>
+    <tr><td>Phase 1 — Engine + AI Apps</td><td>Click-and-buy storefront (checkout → auto-account → wizard) + <b>DocChat</b> + <b>Contract Generator</b> + <b>Invoice App</b>.</td></tr>
+    <tr><td>Phase 2 — Business Apps</td><td>CRM, Stock, HR, Booking, Content Studio, Form Builder.</td></tr>
+    <tr><td>Phase 3 — Vertical Apps</td><td>School, Church, Property, Salon, Sports Club.</td></tr>
+  </table>
+
+  <h2>Strategic Notes</h2>
+  <p>
+    · One login, one suite — apps bundle into tiered subscriptions (R199 / R499 / R999 per month), each app also sellable standalone.<br>
+    · Everything reuses existing AutoEffortless infrastructure (portal, AI agents, PDF engine, Stripe) — new sales cost us nothing per unit.<br>
+    · Revenue target: R200k/month by Month 6, combining these products with the managed service line.<br>
+    · Deliberately excluded: WhatsApp/Meta integrations, managed setups, custom builds — those stay in the managed offering.
+  </p>
+
+  <div class="footer">AutoEffortless (Pty) Ltd · Effortless Business Communication · autoeffortless.com · Portfolio v1.0 — locked 26 Aug 2026</div>
+
+</div>
+</body>
+</html>
