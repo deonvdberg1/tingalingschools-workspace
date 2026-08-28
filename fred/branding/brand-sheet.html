@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Arial Black', Arial, Helvetica, sans-serif; background: #f4f2ec; color: #14142a; }
+    .wrap { width: 1500px; margin: 0 auto; padding: 60px 64px 40px; }
+    .masthead { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid #14142a; padding-bottom: 22px; margin-bottom: 56px; }
+    .masthead h1 { font-size: 40px; letter-spacing: -0.01em; }
+    .masthead h1 em { color: #a8863a; font-style: normal; }
+    .masthead .meta { font-family: Arial, Helvetica, sans-serif; font-size: 14px; letter-spacing: 0.28em; color: #6b6b82; font-weight: 700; }
+    .panel { display: grid; grid-template-columns: 620px 1fr; gap: 56px; background: #fff; border: 1px solid #e4e1d8; border-radius: 24px; padding: 48px 52px; margin-bottom: 40px; box-shadow: 0 14px 40px rgba(20,20,42,0.07); }
+    .stage { background: #ffffff; border: 1px solid #eeebe3; border-radius: 18px; display: flex; align-items: center; justify-content: center; min-height: 420px; position: relative; }
+    .stage.tint { background: linear-gradient(150deg, #14142a, #232345); }
+    .info .num { font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.3em; color: #a8863a; margin-bottom: 14px; }
+    .info h2 { font-size: 34px; letter-spacing: -0.01em; margin-bottom: 8px; }
+    .info .tag { font-family: Arial, Helvetica, sans-serif; font-size: 15px; color: #6b6b82; margin-bottom: 22px; font-weight: 600; }
+    .info .why { font-family: Arial, Helvetica, sans-serif; font-size: 16px; line-height: 1.7; color: #35354f; margin-bottom: 30px; font-weight: 400; }
+    .info .why b { color: #14142a; }
+    .info .sub { font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 0.24em; color: #a8863a; margin-bottom: 12px; }
+    .mono-row { display: flex; gap: 18px; }
+    .mono-box { flex: 1; border: 1px solid #eeebe3; border-radius: 14px; padding: 22px; display: flex; align-items: center; justify-content: center; min-height: 110px; background: #faf9f5; }
+    .mono-box.dark { background: #14142a; border-color: #14142a; }
+    .lockup { display: flex; align-items: center; gap: 20px; }
+    .lockup .words { font-size: 38px; letter-spacing: -0.02em; white-space: nowrap; }
+    .lockup .words em { color: #a8863a; font-style: normal; }
+    .lockup .words small { display: block; font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.42em; color: #6b6b82; margin-top: 6px; }
+    /* Concept B wordmark */
+    .cw { display: inline-flex; align-items: baseline; font-size: 96px; letter-spacing: -0.035em; }
+    .cw .l { color: #14142a; }
+    .cw .o { position: relative; width: 0.56em; height: 0.56em; border: 0.105em solid #c8a34e; border-radius: 50%; display: inline-block; align-self: center; }
+    .cw .o::after { content: ''; position: absolute; top: 50%; left: 50%; width: 0.14em; height: 0.14em; border-radius: 50%; background: #e9d9ae; transform: translate(-50%, -50%); }
+    .cw2 { font-size: 44px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+    <div class="masthead">
+        <h1>Auto<em>Effortless</em></h1>
+        <div class="meta">LOGO EXPLORATIONS · AUGUST 2026 · CONCEPTS A–C</div>
+    </div>
+
+    <!-- CONCEPT A -->
+    <div class="panel">
+        <div class="stage">
+            <svg viewBox="0 0 200 160" width="330">
+                <line x1="100" y1="24" x2="48" y2="138" stroke="#14142a" stroke-width="20" stroke-linecap="round"/>
+                <line x1="100" y1="24" x2="152" y2="138" stroke="#14142a" stroke-width="20" stroke-linecap="round"/>
+                <ellipse cx="100" cy="96" rx="40" ry="14" fill="none" stroke="#c8a34e" stroke-width="9" transform="rotate(-14 100 96)"/>
+                <circle cx="139" cy="86" r="7.5" fill="#e9d9ae"/>
+            </svg>
+        </div>
+        <div class="info">
+            <div class="num">CONCEPT A</div>
+            <h2>Orbit A</h2>
+            <div class="tag">The letter A meets the orbit — automation in motion</div>
+            <div class="why">Two confident strokes form the <b>A</b>; the crossbar is replaced by an <b>orbital ring</b> with a gold node — the AI at work inside the brand. One idea, instantly read at favicon size. The gold node is the signature: <b>one accent, zero clutter</b>. Strong in mono.</div>
+            <div class="sub">LOCKUP</div>
+            <div class="lockup" style="margin-bottom:26px;">
+                <svg viewBox="0 0 200 160" width="72">
+                    <line x1="100" y1="24" x2="48" y2="138" stroke="#14142a" stroke-width="20" stroke-linecap="round"/>
+                    <line x1="100" y1="24" x2="152" y2="138" stroke="#14142a" stroke-width="20" stroke-linecap="round"/>
+                    <ellipse cx="100" cy="96" rx="40" ry="14" fill="none" stroke="#c8a34e" stroke-width="9" transform="rotate(-14 100 96)"/>
+                    <circle cx="139" cy="86" r="7.5" fill="#e9d9ae"/>
+                </svg>
+                <div class="words">Auto<em>Effortless</em><small>AI · BUILT &amp; MANAGED</small></div>
+            </div>
+            <div class="sub">MONOCHROME CHECK</div>
+            <div class="mono-row">
+                <div class="mono-box"><svg viewBox="0 0 200 160" width="110"><line x1="100" y1="24" x2="48" y2="138" stroke="#14142a" stroke-width="20" stroke-linecap="round"/><line x1="100" y1="24" x2="152" y2="138" stroke="#14142a" stroke-width="20" stroke-linecap="round"/><ellipse cx="100" cy="96" rx="40" ry="14" fill="none" stroke="#14142a" stroke-width="9" transform="rotate(-14 100 96)"/><circle cx="139" cy="86" r="6" fill="none" stroke="#14142a" stroke-width="4"/></svg></div>
+                <div class="mono-box dark"><svg viewBox="0 0 200 160" width="110"><line x1="100" y1="24" x2="48" y2="138" stroke="#fff" stroke-width="20" stroke-linecap="round"/><line x1="100" y1="24" x2="152" y2="138" stroke="#fff" stroke-width="20" stroke-linecap="round"/><ellipse cx="100" cy="96" rx="40" ry="14" fill="none" stroke="#fff" stroke-width="9" transform="rotate(-14 100 96)"/><circle cx="139" cy="86" r="6" fill="none" stroke="#fff" stroke-width="4"/></svg></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONCEPT B -->
+    <div class="panel">
+        <div class="stage">
+            <div class="cw"><span class="l">a</span><span class="l">u</span><span class="l">t</span><span class="o"></span><span class="l" style="margin-left:.14em;">e</span><span class="l">f</span><span class="l">f</span><span class="o"></span><span class="l" style="margin-left:.14em;">r</span><span class="l">t</span><span class="l">l</span><span class="l">e</span><span class="l">s</span><span class="l">s</span></div>
+        </div>
+        <div class="info">
+            <div class="num">CONCEPT B</div>
+            <h2>Orbital O</h2>
+            <div class="tag">The wordmark is the logo — and the two O's are orbits</div>
+            <div class="why">No icon, no box. The name does the work: <b>auto</b> and <b>effortless</b>, with every <b>o</b> rendered as an <b>orbit ring around a gold node</b> — automation, connection, and the "effortless loop". A typographic identity like Google or Visa: <b>ownable, scalable, unforgettable</b>. The orbit-o is the repeatable motif for every brand asset.</div>
+            <div class="sub">LOCKUP (COMPACT)</div>
+            <div style="margin-bottom:26px;">
+                <div class="cw cw2"><span class="l">a</span><span class="l">u</span><span class="l">t</span><span class="o"></span><span class="l" style="margin-left:.14em;">e</span><span class="l">f</span><span class="l">f</span><span class="o"></span><span class="l" style="margin-left:.14em;">r</span><span class="l">t</span><span class="l">l</span><span class="l">e</span><span class="l">s</span><span class="l">s</span></div>
+                <div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:700;letter-spacing:.42em;color:#6b6b82;margin-top:14px;">AI · BUILT &amp; MANAGED</div>
+            </div>
+            <div class="sub">THE MOTIF IN USE</div>
+            <div class="mono-row">
+                <div class="mono-box" style="gap:14px;">
+                    <span style="position:relative;width:44px;height:44px;border:.28em solid #c8a34e;border-radius:50%;display:inline-block;"><span style="position:absolute;top:50%;left:50%;width:10px;height:10px;border-radius:50%;background:#e9d9ae;transform:translate(-50%,-50%);"></span></span>
+                    <span style="position:relative;width:30px;height:30px;border:.22em solid #c8a34e;border-radius:50%;display:inline-block;"><span style="position:absolute;top:50%;left:50%;width:7px;height:7px;border-radius:50%;background:#e9d9ae;transform:translate(-50%,-50%);"></span></span>
+                    <span style="position:relative;width:18px;height:18px;border:.16em solid #c8a34e;border-radius:50%;display:inline-block;"><span style="position:absolute;top:50%;left:50%;width:4px;height:4px;border-radius:50%;background:#e9d9ae;transform:translate(-50%,-50%);"></span></span>
+                </div>
+                <div class="mono-box dark"><span style="position:relative;width:44px;height:44px;border:.28em solid #fff;border-radius:50%;display:inline-block;"><span style="position:absolute;top:50%;left:50%;width:10px;height:10px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);"></span></span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONCEPT C -->
+    <div class="panel">
+        <div class="stage">
+            <svg viewBox="0 0 260 160" width="380">
+                <path d="M 30 150 L 70 30 L 110 150" fill="none" stroke="#14142a" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="145" y1="40" x2="145" y2="140" stroke="#14142a" stroke-width="22" stroke-linecap="round"/>
+                <line x1="134" y1="48" x2="184" y2="48" stroke="#14142a" stroke-width="22" stroke-linecap="round"/>
+                <line x1="134" y1="90" x2="196" y2="90" stroke="#c8a34e" stroke-width="22" stroke-linecap="round"/>
+                <line x1="134" y1="132" x2="184" y2="132" stroke="#14142a" stroke-width="22" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <div class="info">
+            <div class="num">CONCEPT C</div>
+            <h2>Monogram AE</h2>
+            <div class="tag">A geometric system with one signature detail</div>
+            <div class="why">A pixel-sharp <b>AE monogram</b> built on a shared stroke system. The one twist: the E's middle bar is <b>gold and extends past the letter</b> — the "effortless forward" gesture. Precision-cut, digital-native, engineered like the products we build. Performs at 16px favicon and 4m signage.</div>
+            <div class="sub">LOCKUP</div>
+            <div class="lockup" style="margin-bottom:26px;">
+                <svg viewBox="0 0 260 160" width="120">
+                    <path d="M 30 150 L 70 30 L 110 150" fill="none" stroke="#14142a" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+                    <line x1="145" y1="40" x2="145" y2="140" stroke="#14142a" stroke-width="22" stroke-linecap="round"/>
+                    <line x1="134" y1="48" x2="184" y2="48" stroke="#14142a" stroke-width="22" stroke-linecap="round"/>
+                    <line x1="134" y1="90" x2="196" y2="90" stroke="#c8a34e" stroke-width="22" stroke-linecap="round"/>
+                    <line x1="134" y1="132" x2="184" y2="132" stroke="#14142a" stroke-width="22" stroke-linecap="round"/>
+                </svg>
+                <div class="words">Auto<em>Effortless</em><small>AI · BUILT &amp; MANAGED</small></div>
+            </div>
+            <div class="sub">MONOCHROME CHECK</div>
+            <div class="mono-row">
+                <div class="mono-box"><svg viewBox="0 0 260 160" width="170"><path d="M 30 150 L 70 30 L 110 150" fill="none" stroke="#14142a" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><line x1="145" y1="40" x2="145" y2="140" stroke="#14142a" stroke-width="22" stroke-linecap="round"/><line x1="134" y1="48" x2="184" y2="48" stroke="#14142a" stroke-width="22" stroke-linecap="round"/><line x1="134" y1="90" x2="196" y2="90" stroke="#14142a" stroke-width="22" stroke-linecap="round"/><line x1="134" y1="132" x2="184" y2="132" stroke="#14142a" stroke-width="22" stroke-linecap="round"/></svg></div>
+                <div class="mono-box dark"><svg viewBox="0 0 260 160" width="170"><path d="M 30 150 L 70 30 L 110 150" fill="none" stroke="#fff" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><line x1="145" y1="40" x2="145" y2="140" stroke="#fff" stroke-width="22" stroke-linecap="round"/><line x1="134" y1="48" x2="184" y2="48" stroke="#fff" stroke-width="22" stroke-linecap="round"/><line x1="134" y1="90" x2="196" y2="90" stroke="#fff" stroke-width="22" stroke-linecap="round"/><line x1="134" y1="132" x2="184" y2="132" stroke="#fff" stroke-width="22" stroke-linecap="round"/></svg></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,9 +1,6 @@
 {
-  "timestamp": "2026-06-05T08:33:38.949531",
-  "issues": [
-    "Facebook \u2014 Page.goto: Timeout 10000ms exceeded.\nCall log:\n  -",
-    "Some social platforms need re-login"
-  ],
+  "timestamp": "2026-08-28T08:00:30.501796",
+  "issues": [],
   "fixes": [],
-  "healthy": false
+  "healthy": true
 }

@@ -10,8 +10,12 @@ import { initDb, getDb, saveDb } from './db.js';
 import setupTrackingRoutes from './tracking-routes.js';
 import setupGoogleRoutes from './google-api.js';
 import setupBillingRoutes from './billing-routes.js';
+import setupPaystackRoutes from './paystack-routes.js';
+import setupDocChatRoutes from './docchat-routes.js';
 import setupPortalRoutes from './portal-routes.js';
 import { setupSiteAnalyticsRoutes, logAuthEvent } from './site-analytics.js';
+import { setupContactRoutes } from './contact-routes.js';
+import { setupSiteAIRoutes } from './site-ai-routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,6 +28,8 @@ app.use(cors());
 
 // ── Special raw body parser for Stripe webhook ──
 app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
+// ── Raw body parser for Paystack webhook (signature verification needs raw body) ──
+app.use('/api/paystack/webhook', express.raw({ type: 'application/json' }));
 
 app.use(express.json());
 
@@ -75,7 +81,9 @@ function parseToken(token) {
 
 // ── Auth middleware ──
 function requireAuth(req, res, next) {
-  const auth = req.headers.authorization;
+  // Accept Authorization header OR ?token= (needed for <img>/<iframe> tags
+  // which cannot send headers — used by DocChat file/thumb endpoints)
+  const auth = req.headers.authorization || (req.query.token ? `Bearer ${req.query.token}` : null);
   if (!auth || !auth.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
@@ -105,12 +113,20 @@ setupTrackingRoutes(app, { query, run, saveDb });
 
 // ── Billing routes (subscriptions, invoices, usage, Stripe) ──
 setupBillingRoutes(app, { query, run, saveDb });
+setupPaystackRoutes(app, { query, run, saveDb });
+setupDocChatRoutes(app, { query, run, saveDb, requireAuth });
 
 // ── School portal routes (Ting-A-Ling staff/admin/parent dashboard) ──
 setupPortalRoutes(app, { query, run, saveDb, requireAuth, requireRole, hashPassword });
 
 // ── Site analytics routes (GoatCounter views/events + portal login log) ──
 setupSiteAnalyticsRoutes(app, { query, run, saveDb, requireAuth });
+
+// ── Contact/lead capture routes (public form on autoeffortless.com) ──
+setupContactRoutes(app, { query, run, saveDb });
+
+// ── Site AI chat routes (public widget on autoeffortless.com) ──
+setupSiteAIRoutes(app, { query, run, saveDb });
 
 // ── Google API proxy routes ──
 setupGoogleRoutes(app);
@@ -252,6 +268,33 @@ app.get('/api/auth/me', requireAuth, (req, res) => {
     clientName = clients[0]?.name || null;
   }
   res.json({ id: req.user.id, name: req.user.name, email: req.user.email, role: req.user.role, client_id: req.user.client_id, client_name: clientName });
+});
+
+// ── My purchases (product buyers) ──
+app.get('/api/me/purchases', requireAuth, (req, res) => {
+  const rows = query(
+    'SELECT product_key, kind, status, amount_cents, created_at, expires_at FROM purchases WHERE email = ? ORDER BY created_at DESC',
+    [req.user.email]
+  );
+  res.json(rows);
+});
+
+// ── My billing (product buyers) ──
+app.get('/api/me/billing', requireAuth, (req, res) => {
+  const rows = query(
+    'SELECT product_key, kind, status, provider, provider_ref, amount_cents, created_at, expires_at FROM purchases WHERE email = ? ORDER BY created_at DESC',
+    [req.user.email]
+  );
+  const totalSpentCents = rows.reduce((s, r) => s + (r.amount_cents || 0), 0);
+  const active = rows.filter((r) => r.status === 'active');
+  res.json({
+    purchases: rows,
+    summary: {
+      total_spent_cents: totalSpentCents,
+      active_count: active.length,
+      subscription_count: active.filter((r) => r.kind === 'subscription').length,
+    },
+  });
 });
 
 // ── CLIENTS (role-filtered) ──

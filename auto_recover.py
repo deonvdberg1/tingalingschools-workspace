@@ -138,6 +138,12 @@ async def main():
     log(f"Playwright: {pw_ver}" if ok else "Playwright: MISSING", "OK" if ok else "FAIL")
     if not ok:
         ISSUES.append("Playwright CLI not found")
+
+    # Check browser binaries actually exist (CLI can be installed while browsers are missing)
+    browsers_ok = os.path.exists(os.path.expanduser('~/Library/Caches/ms-playwright'))
+    log(f"Playwright browsers: {'EXISTS' if browsers_ok else 'MISSING'}", "OK" if browsers_ok else "FAIL")
+    if not browsers_ok:
+        ISSUES.append("Playwright browser binaries missing")
     
     # Check state file
     state_exists = os.path.exists(STATE_FILE)
@@ -159,7 +165,7 @@ async def main():
         
         print(f"\n🛠️  Auto-recovery in progress...")
         
-        if not ok:  # Playwright missing
+        if not ok or not browsers_ok:  # Playwright CLI or browser binaries missing
             fix_playwright()
         
         fix_python_packages()
