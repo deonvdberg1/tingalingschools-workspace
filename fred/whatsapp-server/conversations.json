@@ -715,7 +715,7 @@
     "humanRequests": 0
   },
   "27663290632": {
-    "name": "Mr D (Dashboard)",
+    "name": "MaGumede❤️",
     "phone": "27663290632",
     "messages": [
       {
@@ -767,11 +767,61 @@
         "direction": "in",
         "text": "Children need to be between 2 and 6 years old to enrol at our Pre-Primary School. If you would like to chat about enrolment, the office is at info@tingalingschools.com, 0615274429 / 0724561282.",
         "timestamp": "2026-08-25T08:16:13.441Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-08-27T14:34:30.438Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hi there! Welcome to Ting-A-Ling Schools. How can I help you today? 😊",
+        "timestamp": "2026-08-27T14:34:30.438Z"
+      },
+      {
+        "direction": "in",
+        "text": "Age intake at tingaling",
+        "timestamp": "2026-08-27T14:34:56.432Z"
+      },
+      {
+        "direction": "out",
+        "text": "Our intake ages are 2 to 6 years at the Pre-Primary School, and 3 to 12 years at the Special Needs School. 😊 Would you like more info on either one?",
+        "timestamp": "2026-08-27T14:34:56.432Z"
+      },
+      {
+        "direction": "in",
+        "text": "School fees",
+        "timestamp": "2026-08-27T15:59:14.056Z"
+      },
+      {
+        "direction": "out",
+        "text": "Sure! Our fees differ per school — are you asking about the Pre-Primary School or the Special Needs School? 😊",
+        "timestamp": "2026-08-27T15:59:14.056Z"
+      },
+      {
+        "direction": "in",
+        "text": "?",
+        "timestamp": "2026-08-27T15:59:15.654Z"
+      },
+      {
+        "direction": "out",
+        "text": "Is there something you'd like me to explain a bit more? Just let me know what you're after and I'll help. 😊",
+        "timestamp": "2026-08-27T15:59:15.654Z"
+      },
+      {
+        "direction": "in",
+        "text": "How much",
+        "timestamp": "2026-08-27T15:59:35.649Z"
+      },
+      {
+        "direction": "out",
+        "text": "Here are the monthly fees for both schools:\n\n**Pre-Primary:** R1,900 (07:00–13:00), R2,000 (07:00–15:00), R2,200 (07:00–17",
+        "timestamp": "2026-08-27T15:59:35.649Z"
       }
     ],
     "firstSeen": "2026-06-01T08:05:14.381Z",
-    "lastSeen": "2026-08-25T08:16:13.441Z",
-    "autoReplied": 4,
+    "lastSeen": "2026-08-27T15:59:35.649Z",
+    "autoReplied": 9,
     "humanRequests": 2
   },
   "27637321679": {

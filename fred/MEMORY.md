@@ -25,6 +25,14 @@ This is where I keep what matters.
 ## Communication Rules
 - **Always provide clickable links — never text to copy-paste.**
 
+## 🎨 Brand & Design Consistency (LOCKED 2026-08-27, Mr D)
+- **RULE: everything AutoEffortless must look like autoeffortless.com — one brand everywhere.** No exceptions.
+- **Palette:** gold `#c8a34e` / gold-deep `#a8863a` / cream `#faf8f3` / ink `#14142a`. Buttons = gold gradient + white text. Font = Outfit.
+- **Source of truth:** `branding/BRAND.md` — read it before building ANY surface (portal, apps, PWAs, emails, PDFs).
+- Portal `brand-*` scale = gold palette (was teal — re-themed 2026-08-27). Never introduce teal/cyan/blue into AutoEffortless surfaces.
+- **Logo & icons (2026-08-27):** official logo = `branding/logo-current.png`; official icon mark = `website/logo-icon.svg`/`favicon.svg` (dark badge + gold orbit + gold AE) — portal `LogoMark.tsx`. NEVER old-school/outdated icons or text-only "AE" badges; every surface uses the autoeffortless.com mark/icon style.
+- Applies to: storefront, portal, DocChat + all 15 apps, super-app, welcome emails, PDFs, future builds.
+
 ## WhatsApp API — LIVE ✅
 
 - **Number:** +27 68 754 8390 (Phone ID: 1046384845235600)
@@ -47,6 +55,9 @@ This is where I keep what matters.
 ## Infrastructure
 
 - WhatsApp server LaunchAgent: ✅ (auto-starts)
+- **File server (products):** port 8099 — LaunchAgent `com.autoeffortless.fileserver` (python3 http.server, serves `fred/products/`, bind 127.0.0.1)
+- **Files tunnel:** dedicated `files` tunnel (6ba48693-8bfc-4151-a8b7-c16dbf803fe4) — config-files.yml → files.autoeffortless.com + portfolio.autoeffortless.com → :8099. LaunchAgent `com.autoeffortless.cloudflared-files`
+- ⚠️ **LESSON (2026-08-27):** Main tunnel (41e8685d) loads a **REMOTE Cloudflare dashboard config** (log: "Updated to new configuration ... warp-routing ... version=8") — local config.yml/ingress edits are IGNORED by that instance. Only `whatsapp/tingaling/app` routes work on it. For new hostnames: create a **dedicated tunnel** (ngkerk/files pattern), don't edit config.yml. Also: Cloudflare caches 404s for PDFs up to 4h (max-age=14400) — a fresh hostname is faster than fighting a cached 404 without an API token to purge.
 - Tunnel auto-start: ✅ Named LaunchAgent (com.tingaling.cloudflared-named)
 - Auto-restart after power loss: ✅ Enabled
 - Log rotation: ✅ Set
@@ -111,6 +122,8 @@ This is where I keep what matters.
 - **Tier 3 Vertical:** School Admin (R299–499) · Church/Org Manager (R299) · Property Manager (R299) · Salon/Clinic Booking (R199) · Sports Club Manager (R149)
 
 **Buy flow:** Stripe checkout → account auto-created → email login → self-serve setup wizard. Subscriptions auto-renew.
+**Mobile strategy (2026-08-27):** All 15 apps are browser-based SaaS — NO App Store/Google Play required. Delivered as PWAs (install-to-home-screen, full-screen, offline cache) for the native feel on iOS/Android. App Store publishing (Capacitor wrap) deferred until a flagship app has paying customers justifying the $99/yr Apple fee + review overhead.
+**Super-app plan (2026-08-27, Mr D):** When traction justifies it, build ONE AutoEffortless app (Capacitor wrap of the web apps) hosting ALL services — single login, single billing, in-app hub/switcher, cross-app data (e.g., CRM→Invoicing). To make this cheap later: build **shared auth (one account across all apps)** + **shared design system** from Phase 1 now. Timeline: individual PWAs now → super-app when paying customers exist.
 **Roadmap:** Phase 1 = storefront engine + DocChat + Contract Generator + Invoice App (all existing code) → Phase 2 business apps → Phase 3 vertical apps. Bundle into R199/R499/R999 tiers, each app also standalone.
 
 ## 👥 Clients

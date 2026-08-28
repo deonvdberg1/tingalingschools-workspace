@@ -676,9 +676,11 @@ app.use('/api', (req, res, next) => {
 });
 
 // ── SPA Dashboard — catch-all for non-API routes ──────────────────────────
-app.use(express.static(path.join(__dirname, 'spa-dashboard')));
+// Single source of truth: serves the built dashboard from dashboard-temp/dist
+const SPA_DIST = path.join(__dirname, '..', 'dashboard-temp', 'dist');
+app.use(express.static(SPA_DIST));
 app.get(/^\/(?!api\/|status|send|privacy|terms|data|logo|manifest|sw|webhooks).*/, (req, res) => {
-  res.sendFile(path.join(__dirname, 'spa-dashboard', 'index.html'));
+  res.sendFile(path.join(SPA_DIST, 'index.html'));
 });
 
 // ── Start server ──────────────────────────────────────────────────────────
