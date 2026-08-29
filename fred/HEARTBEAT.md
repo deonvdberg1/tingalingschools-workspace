@@ -248,3 +248,10 @@ Mr D's 4 requests shipped:
 3. **Notebook delete ✕** — hover any note OR highlight entry → ✕ top-right (highlight entries are now divs, not nested buttons — fixes invalid HTML); deletes instantly.
 4. **Resizable section borders** — drag handles between Documents | Viewer | Chat columns (cursor: col-resize, gold highlight on hover); widths persist in localStorage (left 160–400px, right 280–580px). Only on desktop; mobile unaffected.
 - **Deploy:** bundle index-rzgHpwfZ.js live. Verified E2E: checkboxes, selection bar, multi-doc answer with doc-named sources, grid 230→310px on drag, note ✕ delete, highlight ✕ delete, 0 console errors. Test data cleaned.
+
+## 2026-08-29 15:02 — Post power-off restart ✅ (resume point)
+
+- Mac back on. All healthy: API 200, portal bundle index-rzgHpwfZ.js (v4.2), Ollama qwen3-embedding up, tunnels whatsapp/store/files all 200.
+- Git: v4.2 backend committed + pushed (defeb73). dashboard-temp submodule pointer ffa554a recorded.
+- ⚠️ KNOWN GAP: dashboard-temp (portal source) remote still points to TailAdmin template repo (push fails, auth). Portal code only exists locally + gitlink hash — NOT backed up to GitHub. TODO: create deonvdberg1/autoeffortless-portal repo (gh auth needs re-login) and repoint remote. Storefront/website pushed via their own repos.
+- Resume file: memory/current_task.md — next up: chat history library, markdown answers, export, folders/tags.
