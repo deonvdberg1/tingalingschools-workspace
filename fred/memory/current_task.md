@@ -22,7 +22,8 @@ Everything below is deployed and verified. Power was turned off by Mr D after th
 ## Infrastructure (all LaunchAgents auto-start on boot)
 - API: com.autoeffortless.api → port 3001 (dashboard-api/)
 - Portal: dashboard-temp/dist served by whatsapp-server (port 3000) via main tunnel
-- Storefront: com.autoeffortless.storefront (8092) — store.autoeffortless.com
+- Unified site: com.autoeffortless.website (site-server, 8092) — autoeffortless.com (marketing at /) + store.autoeffortless.com (store SPA at root, host-routed) + /apps (store SPA)
+- Old com.autoeffortless.storefront vite agent: DISABLED 2026-08-29 (superseded by site-server; plist kept)
 - Files: com.autoeffortless.fileserver (8099) + cloudflared-files tunnel
 - Main tunnel: com.autoeffortless.cloudflared-main (remote config — don't edit config.yml)
 - OCR deps: poppler + tesseract installed via Homebrew (/opt/homebrew/bin) — reinstall if Mac reset

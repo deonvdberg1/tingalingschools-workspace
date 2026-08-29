@@ -169,10 +169,18 @@ Use the existing `requireAuth` + `requireRole` middleware for dashboard routes.
 ## Google Places API Key
 
 Created 2026-05-31 by Mr D. Used for address autocomplete in delivery creation.
-- **Key:** AIzaSy…u0ks
-- **Free credits:** $300 USD
+- **Key:** AIzaSy…u0ks (full key: AIzaSyB51Khe3T_6W5ECKk0fEWE3GhrrqfnDnP0)
+- **Free credits:** $300 USD (one-time signup credit)
 - **Expiry:** 2026-08-29 (90 days from 2026-05-31)
 - **Plan after:** Switch to Mapbox Geocoding API (100k free requests/month, no expiry)
+
+### 2026-08-29 — Credit expiry verified (no action needed)
+
+- **Status: GREEN.** $300 credit expired today as expected. Google then draws on the recurring **$200/month free tier** (every billed GCP project gets it). Service does NOT stop.
+- **Live-tested the key today:** Places (New) Autocomplete ✅ (Richards Bay suggestions returned), Places searchText geocoding ✅ (Arboretum → -28.7615, 32.0591). Legacy Geocoding API not activated on project — irrelevant, app never calls it.
+- **Where Google APIs are used (single key):** `dashboard-temp/src/components/AddressSearch.tsx` (autocomplete), `DeliveryMap.tsx` + `tracking-driver/index.html` (Maps JS API), Routes API for ETA.
+- **Risk only if:** monthly usage exceeds $200 (≈11.7k autocomplete calls/mo) or GCP billing is touched.
+- **Recommended:** set GCP budget alert (~$50) as tripwire; switch autocomplete to Mapbox before first paying client (per original plan). Full maps→MapLibre/OpenFreeMap migration still queued (bigger task, needs Mr D go-ahead).
 
 ---
 
