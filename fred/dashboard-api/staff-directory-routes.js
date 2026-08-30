@@ -351,13 +351,12 @@ export default function setupStaffDirectoryRoutes(app, { query, run, saveDb, req
         ? query('SELECT product_key FROM staff_directory_apps WHERE staff_id = ? AND enabled = 1', [member.id]).map((r) => r.product_key)
         : fallback
       const registry = new Map(STAFF_APPS_MAP.map((a) => [a.key, a]))
-      // Staff ONLY see apps that have a working staff version — never "coming soon"
-      res.json(grants
-        .map((key) => {
-          const reg = registry.get(key)
-          return { key, name: APP_NAME_MAP[key] || key, icon: reg?.icon || 'box', staffPath: reg?.staffPath || null, blurb: reg?.blurb || 'Access granted — the staff view is on its way.' }
-        })
-        .filter((a) => a.staffPath))
+      // Staff see EXACTLY the apps the admin selected for them — all of them.
+      // Apps without a staff version yet carry staffPath=null (shown, not openable).
+      res.json(grants.map((key) => {
+        const reg = registry.get(key)
+        return { key, name: APP_NAME_MAP[key] || key, icon: reg?.icon || 'box', staffPath: reg?.staffPath || null, blurb: reg?.blurb || 'The staff version of this app is on its way.' }
+      }))
     } catch (e) {
       console.error('[StaffDirectory] my-apps error:', e.message)
       res.status(500).json({ error: e.message })
