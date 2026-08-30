@@ -72,6 +72,7 @@ export const SINGLE_USE_PRICES = {
   'simple-crm': 'R99',
   'stock-inventory': 'R79',
   'small-team-hr': 'R79',
+  'attendance': 'R99',
   'booking-calendar': 'R79',
   'school-admin': 'R149',
   'church-manager': 'R149',
@@ -301,6 +302,28 @@ export const PRODUCTS = [
       'Payslip records',
       'Documents per employee',
       'Contract expiry alerts'
+    ],
+    ai: false,
+    categories: ['business']
+  },
+  {
+    id: 'attendance',
+    slug: 'attendance',
+    name: 'Attendance & Time Tracking',
+    tier: 'business',
+    price: 'R149/mo',
+    icon: 'clock',
+    emoji: '⏰',
+    tagline: 'Clock staff in and out — QR, tap or code.',
+    description:
+      'Let staff clock in and out by scanning their personal QR code, tapping their name on the clock station, or entering a code. Every shift is logged automatically — hours, late arrivals and timesheets in one place.',
+    features: [
+      'QR code per staff member (printable)',
+      'Clock station — scan, tap or code entry',
+      'Live view of who is on shift',
+      'Timesheets with daily/weekly summaries',
+      'Manual corrections for mistakes',
+      'CSV export for payroll'
     ],
     ai: false,
     categories: ['business']

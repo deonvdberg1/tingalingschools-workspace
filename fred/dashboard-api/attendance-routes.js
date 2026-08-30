@@ -1,0 +1,347 @@
+// ── Attendance & Time Tracking app ──
+// Staff clock in/out via QR code scan (Clock Station), tap, or manual code.
+// Admin dashboard: who's in now, timesheets, per-staff summaries, CSV export.
+// Entitlement: active 'attendance' purchase (store buyer) OR overlord OR
+// client subscribed product 'attendance' (e.g. Ting-A-Ling pilot).
+
+import express from 'express'
+import crypto from 'crypto'
+import QRCode from 'qrcode'
+
+const router = express.Router()
+
+function hasEntitlement(query, user) {
+  if (!user) return false
+  if (user.role === 'overlord') return true
+  const owned = query(
+    "SELECT id FROM purchases WHERE email = ? AND product_key = 'attendance' AND status = 'active'",
+    [user.email]
+  ).length > 0
+  if (owned) return true
+  if (user.client_id) {
+    const cp = query(
+      "SELECT id FROM client_products WHERE client_id = ? AND product_key = 'attendance' AND status = 'active'",
+      [user.client_id]
+    ).length > 0
+    return cp > 0
+  }
+  return false
+}
+
+function genCode() {
+  // Unique-ish short code: e.g. "X7K2QP" (no 0/O/1/I to avoid scanning confusion)
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  let out = ''
+  for (let i = 0; i < 6; i++) out += alphabet[crypto.randomInt(alphabet.length)]
+  return out
+}
+
+// Serialize a record row with computed hours + staff name (shared by several endpoints)
+function withStaff(query, rows) {
+  return rows.map((r) => {
+    const staff = r.staff_id ? query('SELECT name, position, code FROM attendance_staff WHERE id = ?', [r.staff_id])[0] : null
+    let hours = 0
+    if (r.clock_in && r.clock_out) {
+      hours = Math.max(0, (new Date(r.clock_out.replace(' ', 'T') + 'Z').getTime() - new Date(r.clock_in.replace(' ', 'T') + 'Z').getTime()) / 3600000)
+    }
+    return {
+      ...r,
+      staff_name: staff?.name || 'Unknown',
+      staff_position: staff?.position || '',
+      staff_code: staff?.code || '',
+      hours: Math.round(hours * 100) / 100,
+      duration_min: Math.round(hours * 60),
+    }
+  })
+}
+
+export default function setupAttendanceRoutes(app, { query, run, saveDb, requireAuth }) {
+  let tableChecked = false
+  function ensureTable() {
+    if (tableChecked) return
+    run(`CREATE TABLE IF NOT EXISTS attendance_staff (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT NOT NULL,
+      name TEXT NOT NULL,
+      position TEXT DEFAULT '',
+      phone TEXT DEFAULT '',
+      code TEXT UNIQUE NOT NULL,
+      active INTEGER DEFAULT 1,
+      created_at TEXT DEFAULT (datetime('now'))
+    )`)
+    run(`CREATE TABLE IF NOT EXISTS attendance_records (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      staff_id INTEGER NOT NULL,
+      email TEXT NOT NULL,
+      clock_in TEXT NOT NULL,
+      clock_out TEXT,
+      method TEXT DEFAULT 'tap',
+      note TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    )`)
+    run('CREATE INDEX IF NOT EXISTS idx_att_records_staff ON attendance_records(staff_id)')
+    run('CREATE INDEX IF NOT EXISTS idx_att_records_email ON attendance_records(email, clock_in)')
+    if (saveDb) saveDb()
+    tableChecked = true
+  }
+
+  function requireEntitlement(req, res, next) {
+    if (!hasEntitlement(query, req.user)) {
+      return res.status(403).json({ error: 'Attendance purchase required' })
+    }
+    next()
+  }
+
+  const utcNow = () => new Date().toISOString().slice(0, 19).replace('T', ' ')
+
+  // ── Staff CRUD ──
+  app.get('/api/app/attendance/staff', requireAuth, requireEntitlement, (req, res) => {
+    ensureTable()
+    const rows = query(
+      'SELECT id, name, position, phone, code, active, created_at FROM attendance_staff WHERE email = ? ORDER BY name COLLATE NOCASE',
+      [req.user.email]
+    )
+    // Attach open-record flag (is currently clocked in)
+    const out = rows.map((s) => {
+      const open = query('SELECT id FROM attendance_records WHERE staff_id = ? AND clock_out IS NULL', [s.id])[0]
+      return { ...s, clocked_in: !!open, open_record_id: open?.id || null }
+    })
+    res.json(out)
+  })
+
+  app.post('/api/app/attendance/staff', requireAuth, requireEntitlement, (req, res) => {
+    try {
+      ensureTable()
+      const name = String(req.body?.name || '').trim().slice(0, 120)
+      if (!name) return res.status(400).json({ error: 'Name is required' })
+      const position = String(req.body?.position || '').trim().slice(0, 120)
+      const phone = String(req.body?.phone || '').trim().slice(0, 40)
+      let code = genCode()
+      // Regenerate on the (very unlikely) collision
+      for (let i = 0; i < 5; i++) {
+        const exists = query('SELECT id FROM attendance_staff WHERE code = ?', [code])[0]
+        if (!exists) break
+        code = genCode()
+      }
+      run('INSERT INTO attendance_staff (email, name, position, phone, code) VALUES (?, ?, ?, ?, ?)',
+        [req.user.email, name, position, phone, code])
+      if (saveDb) saveDb()
+      const staff = query('SELECT * FROM attendance_staff WHERE email = ? ORDER BY id DESC LIMIT 1', [req.user.email])[0]
+      res.json(staff)
+    } catch (e) {
+      console.error('[Attendance] staff add error:', e.message)
+      res.status(500).json({ error: e.message })
+    }
+  })
+
+  app.put('/api/app/attendance/staff/:id', requireAuth, requireEntitlement, (req, res) => {
+    try {
+      ensureTable()
+      const staff = query('SELECT id FROM attendance_staff WHERE id = ? AND email = ?', [req.params.id, req.user.email])[0]
+      if (!staff) return res.status(404).json({ error: 'Staff member not found' })
+      const name = String(req.body?.name ?? '').trim().slice(0, 120)
+      const position = String(req.body?.position ?? '').trim().slice(0, 120)
+      const phone = String(req.body?.phone ?? '').trim().slice(0, 40)
+      const active = req.body?.active === undefined ? 1 : (req.body.active ? 1 : 0)
+      run('UPDATE attendance_staff SET name = ?, position = ?, phone = ?, active = ? WHERE id = ? AND email = ?',
+        [name || query('SELECT name FROM attendance_staff WHERE id = ?', [req.params.id])[0].name, position, phone, active, req.params.id, req.user.email])
+      if (saveDb) saveDb()
+      res.json(query('SELECT * FROM attendance_staff WHERE id = ?', [req.params.id])[0])
+    } catch (e) {
+      console.error('[Attendance] staff update error:', e.message)
+      res.status(500).json({ error: e.message })
+    }
+  })
+
+  app.delete('/api/app/attendance/staff/:id', requireAuth, requireEntitlement, (req, res) => {
+    ensureTable()
+    const staff = query('SELECT id FROM attendance_staff WHERE id = ? AND email = ?', [req.params.id, req.user.email])[0]
+    if (!staff) return res.status(404).json({ error: 'Staff member not found' })
+    // Close any open record before deleting
+    run('UPDATE attendance_records SET clock_out = datetime(\'now\') WHERE staff_id = ? AND clock_out IS NULL', [req.params.id])
+    run('DELETE FROM attendance_staff WHERE id = ? AND email = ?', [req.params.id, req.user.email])
+    if (saveDb) saveDb()
+    res.json({ ok: true })
+  })
+
+  // ── QR code for a staff member (PNG data URL — printable) ──
+  app.get('/api/app/attendance/staff/:id/qrcode', requireAuth, requireEntitlement, async (req, res) => {
+    try {
+      ensureTable()
+      const staff = query('SELECT * FROM attendance_staff WHERE id = ? AND email = ?', [req.params.id, req.user.email])[0]
+      if (!staff) return res.status(404).json({ error: 'Staff member not found' })
+      const payload = `ATT:${staff.code}`
+      const dataUrl = await QRCode.toDataURL(payload, { width: 512, margin: 2, errorCorrectionLevel: 'M' })
+      res.json({ code: staff.code, payload, qr: dataUrl, name: staff.name, position: staff.position })
+    } catch (e) {
+      console.error('[Attendance] qrcode error:', e.message)
+      res.status(500).json({ error: e.message })
+    }
+  })
+
+  // ── Clock in / out (the one action the station + staff use) ──
+  // Body: { code?: string, staffId?: number, method?: 'qr'|'tap'|'code'|'app', note?: string }
+  app.post('/api/app/attendance/clock', requireAuth, requireEntitlement, (req, res) => {
+    try {
+      ensureTable()
+      const { code, staffId, method, note } = req.body || {}
+      let staff = null
+      if (staffId) {
+        staff = query('SELECT * FROM attendance_staff WHERE id = ? AND email = ?', [staffId, req.user.email])[0]
+      } else if (code) {
+        const c = String(code).trim().toUpperCase()
+        // Accept both "ATT:XXXXXX" (scanned payload) and bare "XXXXXX"
+        const bare = c.startsWith('ATT:') ? c.slice(4) : c
+        staff = query('SELECT * FROM attendance_staff WHERE code = ? AND email = ?', [bare, req.user.email])[0]
+      }
+      if (!staff) return res.status(404).json({ error: 'Staff member not found — check the code' })
+      if (!staff.active) return res.status(400).json({ error: 'This staff member is inactive' })
+
+      const m = String(method || 'tap').slice(0, 10)
+      const noteText = String(note || '').trim().slice(0, 500)
+      const open = query('SELECT * FROM attendance_records WHERE staff_id = ? AND clock_out IS NULL', [staff.id])[0]
+
+      if (open) {
+        // Clock out
+        run("UPDATE attendance_records SET clock_out = datetime('now'), method = ?, note = ? WHERE id = ?",
+          [m, noteText, open.id])
+        if (saveDb) saveDb()
+        const rec = withStaff(query, [query('SELECT * FROM attendance_records WHERE id = ?', [open.id])[0]])[0]
+        return res.json({ action: 'out', record: rec, staff: { id: staff.id, name: staff.name } })
+      }
+
+      // Clock in
+      const now = utcNow()
+      run('INSERT INTO attendance_records (staff_id, email, clock_in, method, note) VALUES (?, ?, ?, ?, ?)',
+        [staff.id, req.user.email, now, m, noteText])
+      if (saveDb) saveDb()
+      const rec = query('SELECT * FROM attendance_records WHERE staff_id = ? ORDER BY id DESC LIMIT 1', [staff.id])[0]
+      res.json({ action: 'in', record: withStaff(query, [rec])[0], staff: { id: staff.id, name: staff.name } })
+    } catch (e) {
+      console.error('[Attendance] clock error:', e.message)
+      res.status(500).json({ error: e.message })
+    }
+  })
+
+  // ── Who's clocked in right now ──
+  app.get('/api/app/attendance/status', requireAuth, requireEntitlement, (req, res) => {
+    ensureTable()
+    const rows = query(
+      `SELECT r.*, s.name AS staff_name, s.position FROM attendance_records r
+       JOIN attendance_staff s ON s.id = r.staff_id
+       WHERE r.email = ? AND r.clock_out IS NULL ORDER BY r.clock_in DESC`,
+      [req.user.email]
+    )
+    res.json(withStaff(query, rows))
+  })
+
+  // ── Timesheet records (date range filter, optional staff filter) ──
+  app.get('/api/app/attendance/records', requireAuth, requireEntitlement, (req, res) => {
+    ensureTable()
+    const { from, to, staff_id } = req.query
+    let sql = 'SELECT r.* FROM attendance_records r JOIN attendance_staff s ON s.id = r.staff_id WHERE r.email = ?'
+    const params = [req.user.email]
+    if (from) { sql += ' AND r.clock_in >= ?'; params.push(`${from} 00:00:00`) }
+    if (to) { sql += ' AND r.clock_in <= ?'; params.push(`${to} 23:59:59`) }
+    if (staff_id) { sql += ' AND r.staff_id = ?'; params.push(parseInt(staff_id, 10)) }
+    sql += ' ORDER BY r.clock_in DESC LIMIT 2000'
+    const rows = query(sql, params)
+    res.json(withStaff(query, rows))
+  })
+
+  // ── Per-staff summary over a range (days worked, total hours, avg/day) ──
+  app.get('/api/app/attendance/summary', requireAuth, requireEntitlement, (req, res) => {
+    ensureTable()
+    const { from, to } = req.query
+    const staff = query('SELECT id, name, position, active FROM attendance_staff WHERE email = ? ORDER BY name COLLATE NOCASE', [req.user.email])
+    let sql = 'SELECT r.staff_id, r.clock_in, r.clock_out FROM attendance_records r WHERE r.email = ?'
+    const params = [req.user.email]
+    if (from) { sql += ' AND r.clock_in >= ?'; params.push(`${from} 00:00:00`) }
+    if (to) { sql += ' AND r.clock_in <= ?'; params.push(`${to} 23:59:59`) }
+    const records = query(sql, params)
+
+    const byStaff = {}
+    for (const s of staff) {
+      byStaff[s.id] = {
+        staff_id: s.id, name: s.name, position: s.position, active: s.active,
+        days: 0, total_hours: 0, total_min: 0, late_days: 0, open: 0,
+      }
+    }
+    const seenDays = {} // staff_id -> Set(day)
+    for (const r of records) {
+      const row = byStaff[r.staff_id]
+      if (!row) continue
+      if (!r.clock_out) { row.open++; continue }
+      const mins = Math.max(0, Math.round((new Date(r.clock_out.replace(' ', 'T') + 'Z').getTime() - new Date(r.clock_in.replace(' ', 'T') + 'Z').getTime()) / 60000))
+      row.total_min += mins
+      row.total_hours = Math.round((row.total_min / 60) * 100) / 100
+      const day = r.clock_in.slice(0, 10)
+      if (!seenDays[r.staff_id]) seenDays[r.staff_id] = new Set()
+      if (!seenDays[r.staff_id].has(day)) { seenDays[r.staff_id].add(day); row.days++ }
+    }
+    res.json(Object.values(byStaff).sort((a, b) => b.total_min - a.total_min))
+  })
+
+  // ── Correction: admin edits a record's times ──
+  app.put('/api/app/attendance/records/:id', requireAuth, requireEntitlement, (req, res) => {
+    try {
+      ensureTable()
+      const rec = query('SELECT * FROM attendance_records WHERE id = ? AND email = ?', [req.params.id, req.user.email])[0]
+      if (!rec) return res.status(404).json({ error: 'Record not found' })
+      const ts = (v) => {
+        if (!v) return null
+        const s = String(v).trim()
+        // Accept "YYYY-MM-DD HH:MM" (assume :00) or full "YYYY-MM-DD HH:MM:SS"
+        const full = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2})?$/.test(s)
+        if (!full) return null
+        return s.length === 16 ? `${s}:00` : s
+      }
+      const clockIn = ts(req.body?.clock_in)
+      const clockOut = ts(req.body?.clock_out)
+      if (clockIn) run('UPDATE attendance_records SET clock_in = ? WHERE id = ?', [clockIn, rec.id])
+      if (req.body?.clock_out !== undefined) {
+        run('UPDATE attendance_records SET clock_out = ? WHERE id = ?', [clockOut, rec.id])
+      }
+      const note = req.body?.note !== undefined ? String(req.body.note).trim().slice(0, 500) : null
+      if (note !== null) run('UPDATE attendance_records SET note = ? WHERE id = ?', [note, rec.id])
+      if (saveDb) saveDb()
+      const updated = query('SELECT * FROM attendance_records WHERE id = ?', [rec.id])[0]
+      res.json(withStaff(query, [updated])[0])
+    } catch (e) {
+      console.error('[Attendance] record update error:', e.message)
+      res.status(500).json({ error: e.message })
+    }
+  })
+
+  app.delete('/api/app/attendance/records/:id', requireAuth, requireEntitlement, (req, res) => {
+    ensureTable()
+    const rec = query('SELECT id FROM attendance_records WHERE id = ? AND email = ?', [req.params.id, req.user.email])[0]
+    if (!rec) return res.status(404).json({ error: 'Record not found' })
+    run('DELETE FROM attendance_records WHERE id = ? AND email = ?', [req.params.id, req.user.email])
+    if (saveDb) saveDb()
+    res.json({ ok: true })
+  })
+
+  // ── CSV export ──
+  app.get('/api/app/attendance/export', requireAuth, requireEntitlement, (req, res) => {
+    ensureTable()
+    const { from, to } = req.query
+    let sql = 'SELECT r.* FROM attendance_records r JOIN attendance_staff s ON s.id = r.staff_id WHERE r.email = ?'
+    const params = [req.user.email]
+    if (from) { sql += ' AND r.clock_in >= ?'; params.push(`${from} 00:00:00`) }
+    if (to) { sql += ' AND r.clock_in <= ?'; params.push(`${to} 23:59:59`) }
+    sql += ' ORDER BY r.clock_in ASC'
+    const rows = withStaff(query, query(sql, params))
+    const lines = ['Staff,Position,Date,Clock In,Clock Out,Hours,Method,Note']
+    for (const r of rows) {
+      const date = (r.clock_in || '').slice(0, 10)
+      const h = String(r.hours).replace('.', ',') // SA Excel decimal comma
+      lines.push(`"${r.staff_name}","${r.staff_position}",${date},"${r.clock_in}","${r.clock_out || ''}",${h},${r.method},"${(r.note || '').replace(/"/g, '""')}"`)
+    }
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8')
+    res.setHeader('Content-Disposition', `attachment; filename="attendance-${from || 'all'}-${to || ''}.csv"`)
+    res.send(lines.join('\n'))
+  })
+
+  return {}
+}

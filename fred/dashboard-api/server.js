@@ -12,6 +12,7 @@ import setupGoogleRoutes from './google-api.js';
 import setupBillingRoutes from './billing-routes.js';
 import setupPaystackRoutes from './paystack-routes.js';
 import setupDocChatRoutes from './docchat-routes.js';
+import setupAttendanceRoutes from './attendance-routes.js';
 import setupPortalRoutes from './portal-routes.js';
 import { setupSiteAnalyticsRoutes, logAuthEvent } from './site-analytics.js';
 import { setupContactRoutes } from './contact-routes.js';
@@ -115,6 +116,7 @@ setupTrackingRoutes(app, { query, run, saveDb });
 setupBillingRoutes(app, { query, run, saveDb });
 setupPaystackRoutes(app, { query, run, saveDb });
 setupDocChatRoutes(app, { query, run, saveDb, requireAuth });
+setupAttendanceRoutes(app, { query, run, saveDb, requireAuth });
 
 // ── School portal routes (Ting-A-Ling staff/admin/parent dashboard) ──
 setupPortalRoutes(app, { query, run, saveDb, requireAuth, requireRole, hashPassword });
