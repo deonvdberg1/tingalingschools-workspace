@@ -3,7 +3,7 @@
 ## Status: ATTENDANCE APP SHIPPED ✅ + DocChat v4.2 live
 
 ## 🕔 Attendance & Time Tracking — LIVE (2026-08-30, built same-day)
-- **Portal app:** `/app/attendance` (app.autoeffortless.com) — bundle index-Bp_WisSU.js
+- **Portal app:** `/app/attendance` (app.autoeffortless.com) — bundle index-HQ80B6-r.js
 - **Backend:** `dashboard-api/attendance-routes.js` (mounted in server.js)
 - **Tables:** attendance_staff, attendance_records (auto-created)
 - **Entitlement:** active 'attendance' purchase OR overlord OR client product 'attendance' (Ting-A-Ling pilot seeded: client_products id 5)
@@ -13,6 +13,8 @@
 - **My Apps:** APP_CATALOG + Open app → /app/attendance; Sidebar: Attendance item for overlord + clients with 'attendance' product
 - **E2E verified** (puppeteer, real login): add staff → clock in tap → clock out tap → timesheet record; 0 console errors. Test data cleaned.
 - **Commits:** workspace 377c9a3 (backend+storefront+db), website repo 8c776b2 (storefront dist → /apps)
+- **12:33 QR enhancements (dashboard-temp 4654f14 / workspace 46e2b15):** auto-open QR on staff add, labeled QR button, Print all cards
+- **12:28 Apps menu for Ting-A-Ling client portal (dashboard-temp c2b3e2f / workspace 33e6842):** client_admin+client_id sees "Apps" nav → /my-apps, 5 service cards with Open app links
 
 ## DocChat v4.2 — live (bundle index-rzgHpwfZ.js) — all features shipped & verified
 
@@ -27,7 +29,7 @@
 
 ## On restart, check
 1. `curl localhost:3001/api/health` → 200
-2. `curl https://app.autoeffortless.com` → new bundle (index-Bp_WisSU.js)
+2. `curl https://app.autoeffortless.com` → new bundle (index-HQ80B6-r.js)
 3. Ollama running (port 11434) for DocChat embeddings
 4. Tunnels up (whatsapp, files)
 
