@@ -14,6 +14,7 @@ import setupPaystackRoutes from './paystack-routes.js';
 import setupDocChatRoutes from './docchat-routes.js';
 import setupAttendanceRoutes from './attendance-routes.js';
 import setupPortalRoutes from './portal-routes.js';
+import { PRODUCTS, PACKAGES } from '../storefront/src/data/products.js';
 import { setupSiteAnalyticsRoutes, logAuthEvent } from './site-analytics.js';
 import { setupContactRoutes } from './contact-routes.js';
 import { setupSiteAIRoutes } from './site-ai-routes.js';
@@ -279,6 +280,27 @@ app.get('/api/me/purchases', requireAuth, (req, res) => {
     [req.user.email]
   );
   res.json(rows);
+});
+
+// ── App catalogue (store products + packages — for portal discovery) ──
+app.get('/api/apps/catalogue', requireAuth, (req, res) => {
+  const apps = PRODUCTS.map((p) => ({
+    slug: p.slug,
+    name: p.name,
+    price: p.price,
+    icon: p.icon,
+    tagline: p.tagline,
+    tier: p.tier,
+  }));
+  const packages = PACKAGES.map((p) => ({
+    slug: p.id,
+    name: p.name,
+    price: `R${p.price}/mo`,
+    icon: p.icon,
+    tagline: p.tagline,
+    tier: 'package',
+  }));
+  res.json({ apps, packages });
 });
 
 // ── My billing (product buyers) ──
