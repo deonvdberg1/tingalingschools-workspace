@@ -9,7 +9,6 @@ import crypto from 'crypto'
 import QRCode from 'qrcode'
 import { execFile } from 'child_process'
 import { promisify } from 'util'
-import PDFDocument from 'pdfkit'
 
 const execFileP = promisify(execFile)
 const router = express.Router()
@@ -136,6 +135,13 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
     const attCols = query('PRAGMA table_info(attendance_staff)').map((c) => c.name)
     if (!attCols.includes('staff_email')) run("ALTER TABLE attendance_staff ADD COLUMN staff_email TEXT DEFAULT ''")
     if (!attCols.includes('user_id')) run('ALTER TABLE attendance_staff ADD COLUMN user_id INTEGER')
+    // v3: personal scan token — the staff member's QR logs them in + auto-clocks (added 2026-08-30)
+    if (!attCols.includes('scan_token')) run('ALTER TABLE attendance_staff ADD COLUMN scan_token TEXT')
+    // Backfill tokens for existing staff rows
+    const untokened = query('SELECT id FROM attendance_staff WHERE scan_token IS NULL OR scan_token = \'\'')
+    for (const row of untokened) {
+      run('UPDATE attendance_staff SET scan_token = ? WHERE id = ?', [crypto.randomBytes(16).toString('hex'), row.id])
+    }
     run(`CREATE TABLE IF NOT EXISTS attendance_records (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       staff_id INTEGER NOT NULL,
@@ -200,8 +206,8 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
       if (!exists) break
       code = genCode()
     }
-    run('INSERT INTO attendance_staff (email, name, position, phone, code, staff_email) VALUES (?, ?, ?, ?, ?, ?)',
-      [ownerEmail, cleanName, cleanPosition, cleanPhone, code, cleanEmail])
+    run('INSERT INTO attendance_staff (email, name, position, phone, code, staff_email, scan_token) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [ownerEmail, cleanName, cleanPosition, cleanPhone, code, cleanEmail, crypto.randomBytes(16).toString('hex')])
     if (saveDb) saveDb()
     const staff = query('SELECT * FROM attendance_staff WHERE email = ? ORDER BY id DESC LIMIT 1', [ownerEmail])[0]
 
@@ -480,90 +486,54 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
     return { action: 'in', record: withStaff(query, [rec])[0], staff: { id: staff.id, name: staff.name } }
   }
 
-  // ── The shared "anyone can clock in" QR + PDF poster (admin side) ──
-  app.get('/api/app/attendance/clock-in-qr', requireAuth, requireEntitlement, async (req, res) => {
+  // ── Staff's personal QR (staff side): scanning it logs them in + auto-clocks ──
+  app.get('/api/app/attendance/my-qr', requireAuth, async (req, res) => {
     try {
       ensureTable()
-      const url = `${PUBLIC_BASE}/clock-in?o=${encodeURIComponent(req.user.email)}`
+      if (req.user.role !== 'staff') return res.status(403).json({ error: 'Staff account required' })
+      const linked = query('SELECT * FROM attendance_staff WHERE user_id = ?', [req.user.id])[0]
+      if (!linked) return res.status(404).json({ error: 'No attendance profile linked to your account' })
+      if (!linked.scan_token) {
+        run('UPDATE attendance_staff SET scan_token = ? WHERE id = ?', [crypto.randomBytes(16).toString('hex'), linked.id])
+        if (saveDb) saveDb()
+        linked.scan_token = query('SELECT scan_token FROM attendance_staff WHERE id = ?', [linked.id])[0].scan_token
+      }
+      const url = `${PUBLIC_BASE}/clock-in?t=${encodeURIComponent(linked.scan_token)}`
       const qr = await QRCode.toDataURL(url, { width: 512, margin: 2, errorCorrectionLevel: 'M' })
-      res.json({ url, qr })
+      res.json({ url, qr, name: linked.name, position: linked.position })
     } catch (e) {
-      console.error('[Attendance] clock-in qr error:', e.message)
+      console.error('[Attendance] my-qr error:', e.message)
       res.status(500).json({ error: e.message })
     }
   })
 
-  app.get('/api/app/attendance/clock-in-poster.pdf', requireAuth, requireEntitlement, async (req, res) => {
+  // ── Public scan landing: personal QR → clock that staff member + log them in ──
+  // Token identifies exactly ONE staff member — nobody can clock anyone else.
+  app.post('/api/clock-in/scan', (req, res) => {
     try {
       ensureTable()
-      const url = `${PUBLIC_BASE}/clock-in?o=${encodeURIComponent(req.user.email)}`
-      const owner = query('SELECT name FROM users WHERE email = ?', [req.user.email])[0]
-      const qrPng = await QRCode.toBuffer(url, { width: 640, margin: 2, errorCorrectionLevel: 'M' })
+      const t = String(req.body?.t || '').trim()
+      if (!t) return res.status(400).json({ error: 'Missing scan token' })
+      const linked = query('SELECT * FROM attendance_staff WHERE scan_token = ?', [t])[0]
+      if (!linked) return res.status(404).json({ error: 'This QR code is no longer valid' })
+      if (!linked.active) return res.status(400).json({ error: 'This staff member is inactive' })
 
-      const doc = new PDFDocument({ size: 'A4', layout: 'landscape', margin: 48 })
-      res.setHeader('Content-Type', 'application/pdf')
-      res.setHeader('Content-Disposition', 'attachment; filename="attendance-clock-in-poster.pdf"')
-      doc.pipe(res)
-
-      doc.rect(0, 0, doc.page.width, doc.page.height).fill('#faf8f3')
-      doc
-        .fontSize(40)
-        .fillColor('#14142a')
-        .font('Helvetica-Bold')
-        .text('CLOCK IN / OUT', { align: 'center' })
-      doc
-        .fontSize(16)
-        .fillColor('#6b7280')
-        .font('Helvetica')
-        .text(`Scan this code with your phone camera — then tap your name. (${owner?.name || ''})`, { align: 'center', width: 500 })
-      doc.moveDown(1.2)
-      doc.image(qrPng, (doc.page.width - 330) / 2, doc.y, { width: 330 })
-      doc.moveDown(0.3)
-      doc
-        .fontSize(12)
-        .fillColor('#9ca3af')
-        .text('No app needed — works in any phone camera.', { align: 'center' })
-      doc.end()
-    } catch (e) {
-      console.error('[Attendance] poster pdf error:', e.message)
-      res.status(500).json({ error: e.message })
-    }
-  })
-
-  // ── Public kiosk: roster (names only, no codes) + clock in/out (no login) ──
-  app.get('/api/clock-in/roster', (req, res) => {
-    try {
-      ensureTable()
-      const ownerEmail = String(req.query.o || '').trim()
-      if (!ownerEmail) return res.status(400).json({ error: 'Missing owner' })
-      const owner = query('SELECT name FROM users WHERE email = ?', [ownerEmail])[0]
-      if (!owner) return res.status(404).json({ error: 'Unknown roster' })
-      const staff = query(
-        'SELECT id, name, position FROM attendance_staff WHERE email = ? AND active = 1 ORDER BY name COLLATE NOCASE',
-        [ownerEmail]
-      )
-      // Attach who's currently on shift
-      const out = staff.map((s) => {
-        const open = query('SELECT id FROM attendance_records WHERE staff_id = ? AND clock_out IS NULL', [s.id])[0]
-        return { ...s, clocked_in: !!open }
-      })
-      res.json({ owner: owner.name, staff: out })
-    } catch (e) {
-      console.error('[Attendance] public roster error:', e.message)
-      res.status(500).json({ error: e.message })
-    }
-  })
-
-  app.post('/api/clock-in/public', (req, res) => {
-    try {
-      ensureTable()
-      const ownerEmail = String(req.body?.o || '').trim()
-      if (!ownerEmail) return res.status(400).json({ error: 'Missing owner' })
-      const result = doClock(ownerEmail, { staffId: req.body?.staffId, code: req.body?.code, method: 'qr', note: 'public-qr' })
+      // Auto-clock THEM in/out
+      const result = doClock(linked.email, { staffId: linked.id, method: 'qr', note: 'scan' })
       if (result.error) return res.status(result.status || 400).json({ error: result.error })
-      res.json(result)
+
+      // Log them into the staff portal (their own account) — same token scheme as server.js
+      let user = null
+      if (linked.user_id) {
+        const u = query('SELECT * FROM users WHERE id = ?', [linked.user_id])[0]
+        if (u) {
+          const payload = { id: u.id, role: u.role, client_id: u.client_id }
+          user = { token: Buffer.from(JSON.stringify(payload)).toString('base64'), name: u.name, email: u.email, role: u.role }
+        }
+      }
+      res.json({ action: result.action, staff: result.staff, user })
     } catch (e) {
-      console.error('[Attendance] public clock error:', e.message)
+      console.error('[Attendance] scan error:', e.message)
       res.status(500).json({ error: e.message })
     }
   })
