@@ -19,6 +19,8 @@ This is where I keep what matters.
   - Registry: `STAFF_APPS` in attendance-routes.js — new apps with a staff side get added there when built.
   - Attendance auto-enables for staff when the first staff account is created.
 
+- **STAFF ACCESS — FINAL LOCKED MODEL (2026-08-30 22:30, Mr D — "lock into our workflow"):** Staff can ONLY see and access the apps the client admin shares. Enforced server-side: `GET /api/staff-directory/my-apps` returns ONLY granted apps (staffPath null = "Coming soon" card, never openable; unselected apps have no code path — cannot appear anywhere). Staff home routes to the clock only when Attendance is granted, else the Apps page (empty state). Directory membership ⇄ portal account role/client_id syncs on add, role change, and delete (restore on remove; overlord never touched) — no leftover buyer/client access. Client portal = admin portal for clients (one portal, full admin capability). Staff Directory (`/staff`) is the single source: add staff, set role (staff/admin), pick per-person apps; every app references it (already linked).
+
 - **Business name:** AutoEffortless
 - **Domain:** autoeffortless.com (Ionos)
 - **Tagline:** Effortless Business Communication
