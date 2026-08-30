@@ -165,6 +165,25 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
       created_at TEXT DEFAULT (datetime('now'))
     )`)
     run('CREATE UNIQUE INDEX IF NOT EXISTS idx_staff_apps_scope ON staff_apps(owner_email, product_key)')
+    // Email report settings (daily in/out times, weekly, monthly) + send log
+    run(`CREATE TABLE IF NOT EXISTS attendance_report_settings (
+      owner_email TEXT PRIMARY KEY,
+      recipient_email TEXT DEFAULT '',
+      morning_enabled INTEGER DEFAULT 0,
+      morning_time TEXT DEFAULT '08:00',
+      afternoon_enabled INTEGER DEFAULT 0,
+      afternoon_time TEXT DEFAULT '17:00',
+      weekly_enabled INTEGER DEFAULT 1,
+      monthly_enabled INTEGER DEFAULT 1,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    )`)
+    run(`CREATE TABLE IF NOT EXISTS attendance_report_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      owner_email TEXT NOT NULL,
+      report_type TEXT NOT NULL,
+      sent_at TEXT NOT NULL
+    )`)
     if (saveDb) saveDb()
     tableChecked = true
   }
@@ -392,14 +411,69 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
     }
   })
 
-  // ── Staff app access (admin side): which staff-capable apps staff may use ──
+  // ── Staff app access (admin side): the admin SHARES their own apps with staff ──
+  // Only apps that have a staff version (in STAFF_APPS) can actually be shared;
+  // the rest show as "staff version coming soon".
+  const APP_NAME_MAP = {
+    attendance: 'Attendance & Time',
+    whatsapp: 'WhatsApp AI Assistant',
+    instagram: 'Instagram Auto-Reply',
+    tracking: 'Live Delivery Tracking',
+    site_analytics: 'Website Analytics',
+    docchat: 'DocChat',
+    'contract-generator': 'Contract & Quote Generator',
+    'content-studio': 'AI Content Studio',
+    'website-builder': 'AI Website Builder',
+    'form-builder': 'AI Form Builder',
+    'invoice-app': 'Invoice & Quote App',
+    'simple-crm': 'Simple CRM',
+    'stock-inventory': 'Stock & Inventory',
+    'small-team-hr': 'Small Team HR',
+    'booking-calendar': 'Booking & Calendar',
+    'school-admin': 'School Admin',
+    'church-manager': 'Church / Org Manager',
+    'property-manager': 'Property Manager',
+    'salon-booking': 'Salon / Clinic Booking',
+    'sports-club-manager': 'Sports Club Manager',
+  }
+  function adminOwnedApps(user) {
+    const out = []
+    const seen = new Set()
+    if (user.client_id) {
+      for (const p of query("SELECT product_key, product_name FROM client_products WHERE client_id = ? AND status = 'active'", [user.client_id])) {
+        out.push({ key: p.product_key, name: p.product_name || APP_NAME_MAP[p.product_key] || p.product_key })
+        seen.add(p.product_key)
+      }
+    }
+    for (const p of query("SELECT DISTINCT product_key FROM purchases WHERE email = ? AND status = 'active'", [user.email])) {
+      if (!seen.has(p.product_key)) {
+        out.push({ key: p.product_key, name: APP_NAME_MAP[p.product_key] || p.product_key })
+      }
+    }
+    return out
+  }
+
   app.get('/api/app/attendance/staff-apps', requireAuth, requireEntitlement, (req, res) => {
     ensureTable()
-    const rows = query('SELECT product_key, enabled FROM staff_apps WHERE owner_email = ? ORDER BY product_key', [req.user.email])
+    const rows = query('SELECT product_key, enabled FROM staff_apps WHERE owner_email = ?', [req.user.email])
     const enabled = new Set(rows.filter((r) => r.enabled).map((r) => r.product_key))
-    res.json({
-      enabled: STAFF_APPS.map((a) => ({ ...a, enabled: enabled.has(a.key) })),
+    const owned = adminOwnedApps(req.user)
+    const registry = new Map(STAFF_APPS.map((a) => [a.key, a]))
+    // Attendance is always available to share (it's the app this lives in)
+    if (!owned.some((o) => o.key === 'attendance')) owned.unshift({ key: 'attendance', name: 'Attendance & Time' })
+    const apps = owned.map((o) => {
+      const reg = registry.get(o.key)
+      return {
+        key: o.key,
+        name: o.name,
+        icon: reg?.icon || 'box',
+        shareable: !!reg,
+        staffPath: reg?.staffPath || null,
+        blurb: reg?.blurb || 'This app has no staff version yet.',
+        enabled: enabled.has(o.key),
+      }
     })
+    res.json({ apps })
   })
 
   app.post('/api/app/attendance/staff-apps/:productKey', requireAuth, requireEntitlement, (req, res) => {
@@ -427,6 +501,40 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
       res.json({ ok: true, product_key: key, enabled: false })
     } catch (e) {
       console.error('[Attendance] staff-apps disable error:', e.message)
+      res.status(500).json({ error: e.message })
+    }
+  })
+
+  // ── Email report settings ──
+  app.get('/api/app/attendance/report-settings', requireAuth, requireEntitlement, (req, res) => {
+    ensureTable()
+    const row = query('SELECT * FROM attendance_report_settings WHERE owner_email = ?', [req.user.email])[0]
+    res.json(row || {
+      owner_email: req.user.email,
+      recipient_email: req.user.email,
+      morning_enabled: 0,
+      morning_time: '08:00',
+      afternoon_enabled: 0,
+      afternoon_time: '17:00',
+      weekly_enabled: 1,
+      monthly_enabled: 1,
+    })
+  })
+
+  app.put('/api/app/attendance/report-settings', requireAuth, requireEntitlement, (req, res) => {
+    try {
+      ensureTable()
+      const b = req.body || {}
+      const time = (v, fallback) => (/^([01]\d|2[0-3]):[0-5]\d$/.test(String(v || '')) ? String(v) : fallback)
+      const recipient = String(b.recipient_email || req.user.email).trim().toLowerCase().slice(0, 200)
+      run(`INSERT OR REPLACE INTO attendance_report_settings
+        (owner_email, recipient_email, morning_enabled, morning_time, afternoon_enabled, afternoon_time, weekly_enabled, monthly_enabled, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
+        [req.user.email, recipient, b.morning_enabled ? 1 : 0, time(b.morning_time, '08:00'), b.afternoon_enabled ? 1 : 0, time(b.afternoon_time, '17:00'), b.weekly_enabled === undefined ? 1 : (b.weekly_enabled ? 1 : 0), b.monthly_enabled === undefined ? 1 : (b.monthly_enabled ? 1 : 0)])
+      if (saveDb) saveDb()
+      res.json(query('SELECT * FROM attendance_report_settings WHERE owner_email = ?', [req.user.email])[0])
+    } catch (e) {
+      console.error('[Attendance] report-settings error:', e.message)
       res.status(500).json({ error: e.message })
     }
   })
@@ -659,6 +767,131 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
     res.setHeader('Content-Disposition', `attachment; filename="attendance-${from || 'all'}-${to || ''}.csv"`)
     res.send(lines.join('\n'))
   })
+
+  // ── Email report scheduler (SAST = UTC+2, no DST) ──
+  // Daily: admin-chosen morning (clock-ins) + afternoon (clock-outs) times.
+  // Weekly: Friday 10:00. Monthly: last day of month 10:00.
+  const sastNow = () => new Date(Date.now() + 2 * 3600000)
+  const pad2 = (n) => String(n).padStart(2, '0')
+  const hhmm = (d) => `${pad2(d.getUTCHours())}:${pad2(d.getUTCMinutes())}`
+  const ymd = (d) => `${d.getUTCFullYear()}-${pad2(d.getUTCMonth() + 1)}-${pad2(d.getUTCDate())}`
+
+  function reportSummary(ownerEmail, fromDate, toDate) {
+    const staff = query('SELECT id, name, position FROM attendance_staff WHERE email = ? AND active = 1 ORDER BY name COLLATE NOCASE', [ownerEmail])
+    const recs = query(
+      'SELECT staff_id, clock_in, clock_out FROM attendance_records WHERE email = ? AND clock_in >= ? AND clock_in <= ?',
+      [ownerEmail, `${fromDate} 00:00:00`, `${toDate} 23:59:59`]
+    )
+    const out = []
+    for (const s of staff) {
+      const rows = recs.filter((r) => r.staff_id === s.id && r.clock_out)
+      let min = 0
+      const days = new Set()
+      for (const r of rows) {
+        min += Math.max(0, Math.round((new Date(r.clock_out.replace(' ', 'T') + 'Z').getTime() - new Date(r.clock_in.replace(' ', 'T') + 'Z').getTime()) / 60000))
+        days.add(r.clock_in.slice(0, 10))
+      }
+      out.push({ name: s.name, position: s.position, days: days.size, hours: Math.round((min / 60) * 100) / 100 })
+    }
+    return out
+  }
+
+  function todayEvents(ownerEmail, type) {
+    const today = ymd(sastNow())
+    const rows = query(
+      `SELECT r.*, s.name AS staff_name, s.position FROM attendance_records r
+       JOIN attendance_staff s ON s.id = r.staff_id
+       WHERE r.email = ? AND r.clock_in >= ? AND r.clock_in <= ? AND r.${type} IS NOT NULL
+       ORDER BY r.${type} ASC`,
+      [ownerEmail, `${today} 00:00:00`, `${today} 23:59:59`]
+    )
+    return withStaff(query, rows)
+  }
+
+  async function sendReport(ownerEmail, type, subject, body) {
+    const s = query('SELECT * FROM attendance_report_settings WHERE owner_email = ?', [ownerEmail])[0]
+    if (!s) return
+    const owner = query('SELECT name, email FROM users WHERE email = ?', [ownerEmail])[0]
+    const recipient = s.recipient_email || ownerEmail
+    await sendEmail(recipient, subject, body)
+    run('INSERT INTO attendance_report_log (owner_email, report_type, sent_at) VALUES (?, ?, ?)', [ownerEmail, type, new Date().toISOString()])
+    if (saveDb) saveDb()
+    console.log(`[Attendance] ${type} report sent to ${recipient} (${owner?.name || ownerEmail})`)
+  }
+
+  const alreadySent = (ownerEmail, type, today) =>
+    query('SELECT id FROM attendance_report_log WHERE owner_email = ? AND report_type = ? AND sent_at >= ?', [ownerEmail, type, today])[0]
+
+  async function checkReports() {
+    try {
+      ensureTable()
+      const now = sastNow()
+      const today = ymd(now)
+      const cur = hhmm(now)
+      const weekday = now.getUTCDay() // 0=Sun … 6=Sat
+      const lastDayOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0)).getUTCDate() === now.getUTCDate()
+
+      for (const s of query('SELECT * FROM attendance_report_settings')) {
+        // Daily morning — clock-ins so far
+        if (s.morning_enabled && cur === s.morning_time && !alreadySent(s.owner_email, 'morning', today)) {
+          const ev = todayEvents(s.owner_email, 'clock_in')
+          const body = [
+            `Morning clock-ins — ${today}`,
+            '',
+            ev.length ? ev.map((r) => `• ${r.staff_name} (${r.staff_position || 'Staff'}) — ${r.clock_in.slice(11, 16)}`).join('\n') : 'No clock-ins yet.',
+            '',
+            '— AutoEffortless Attendance',
+          ].join('\n')
+          await sendReport(s.owner_email, 'morning', `Morning clock-ins — ${today}`, body)
+        }
+        // Daily afternoon — clock-outs so far
+        if (s.afternoon_enabled && cur === s.afternoon_time && !alreadySent(s.owner_email, 'afternoon', today)) {
+          const ev = todayEvents(s.owner_email, 'clock_out')
+          const body = [
+            `Afternoon clock-outs — ${today}`,
+            '',
+            ev.length
+              ? ev.map((r) => `• ${r.staff_name} (${r.staff_position || 'Staff'}) — in ${r.clock_in.slice(11, 16)} → out ${r.clock_out.slice(11, 16)} · ${r.hours}h`).join('\n')
+              : 'No clock-outs yet.',
+            '',
+            '— AutoEffortless Attendance',
+          ].join('\n')
+          await sendReport(s.owner_email, 'afternoon', `Afternoon clock-outs — ${today}`, body)
+        }
+        // Weekly — Friday 10:00
+        if (s.weekly_enabled && weekday === 5 && cur === '10:00' && !alreadySent(s.owner_email, 'weekly', today)) {
+          const mon = new Date(now.getTime() - ((weekday + 6) % 7) * 86400000)
+          const from = ymd(mon)
+          const sum = reportSummary(s.owner_email, from, today)
+          const body = [
+            `Weekly attendance summary — ${from} to ${today}`,
+            '',
+            sum.length ? sum.map((r) => `• ${r.name} (${r.position || 'Staff'}) — ${r.days} day(s), ${r.hours}h`).join('\n') : 'No staff on the roster yet.',
+            '',
+            '— AutoEffortless Attendance',
+          ].join('\n')
+          await sendReport(s.owner_email, 'weekly', `Weekly attendance summary — ${from} to ${today}`, body)
+        }
+        // Monthly — last day of month, 10:00
+        if (s.monthly_enabled && lastDayOfMonth && cur === '10:00' && !alreadySent(s.owner_email, 'monthly', today)) {
+          const from = `${now.getUTCFullYear()}-${pad2(now.getUTCMonth() + 1)}-01`
+          const sum = reportSummary(s.owner_email, from, today)
+          const body = [
+            `Monthly attendance summary — ${now.toLocaleDateString('en-ZA', { month: 'long', year: 'numeric', timeZone: 'UTC' })}`,
+            '',
+            sum.length ? sum.map((r) => `• ${r.name} (${r.position || 'Staff'}) — ${r.days} day(s), ${r.hours}h`).join('\n') : 'No staff on the roster yet.',
+            '',
+            '— AutoEffortless Attendance',
+          ].join('\n')
+          await sendReport(s.owner_email, 'monthly', `Monthly attendance summary — ${from.slice(0, 7)}`, body)
+        }
+      }
+    } catch (e) {
+      console.error('[Attendance] report scheduler error:', e.message)
+    }
+  }
+
+  setInterval(checkReports, 30000)
 
   return {}
 }
