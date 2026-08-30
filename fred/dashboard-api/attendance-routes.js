@@ -314,12 +314,14 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
   })
 
   // ── QR code for a staff member (PNG data URL — printable) ──
+  // Payload is a PUBLIC url with the staff code: scanning with ANY phone camera
+  // auto-clocks that staff member in/out (no login, no tap needed).
   app.get('/api/app/attendance/staff/:id/qrcode', requireAuth, requireEntitlement, async (req, res) => {
     try {
       ensureTable()
       const staff = query('SELECT * FROM attendance_staff WHERE id = ? AND email = ?', [req.params.id, req.user.email])[0]
       if (!staff) return res.status(404).json({ error: 'Staff member not found' })
-      const payload = `ATT:${staff.code}`
+      const payload = `${PUBLIC_BASE}/clock-in?o=${encodeURIComponent(req.user.email)}&code=${staff.code}`
       const dataUrl = await QRCode.toDataURL(payload, { width: 512, margin: 2, errorCorrectionLevel: 'M' })
       res.json({ code: staff.code, payload, qr: dataUrl, name: staff.name, position: staff.position })
     } catch (e) {
@@ -451,7 +453,12 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
     if (staffId) {
       staff = query('SELECT * FROM attendance_staff WHERE id = ? AND email = ?', [staffId, ownerEmail])[0]
     } else if (code) {
-      const c = String(code).trim().toUpperCase()
+      // Accept: "ATT:XXXXXX", bare "XXXXXX", or the public clock-in URL payload
+      // (https://app.autoeffortless.com/clock-in?o=...&code=XXXXXX) from scanned QRs.
+      let c = String(code).trim()
+      const urlMatch = c.match(/[?&]code=([A-Za-z0-9]+)/i)
+      if (urlMatch) c = urlMatch[1]
+      c = c.toUpperCase()
       const bare = c.startsWith('ATT:') ? c.slice(4) : c
       staff = query('SELECT * FROM attendance_staff WHERE code = ? AND email = ?', [bare, ownerEmail])[0]
     }
@@ -552,7 +559,7 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
       ensureTable()
       const ownerEmail = String(req.body?.o || '').trim()
       if (!ownerEmail) return res.status(400).json({ error: 'Missing owner' })
-      const result = doClock(ownerEmail, { staffId: req.body?.staffId, method: 'qr', note: 'public-qr' })
+      const result = doClock(ownerEmail, { staffId: req.body?.staffId, code: req.body?.code, method: 'qr', note: 'public-qr' })
       if (result.error) return res.status(result.status || 400).json({ error: result.error })
       res.json(result)
     } catch (e) {
