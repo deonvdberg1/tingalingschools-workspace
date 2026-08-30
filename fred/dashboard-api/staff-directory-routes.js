@@ -171,11 +171,14 @@ export default function setupStaffDirectoryRoutes(app, { query, run, saveDb, req
       const owner = req.user.role === 'overlord' ? (req.query.owner || '') : req.user.email
       const rows = query('SELECT * FROM staff_directory WHERE owner_email = ? ORDER BY name COLLATE NOCASE', [owner])
       const apps = ownerApps(owner ? { email: owner, client_id: query('SELECT client_id FROM users WHERE email = ?', [owner])[0]?.client_id || null } : req.user)
+      const registry = new Map(STAFF_APPS_MAP.map((a) => [a.key, a]))
       const out = rows.map((m) => {
         const grants = query('SELECT product_key FROM staff_directory_apps WHERE staff_id = ? AND enabled = 1', [m.id])
         return { ...m, apps: grants.map((g) => g.product_key) }
       })
-      res.json({ staff: out, available_apps: apps })
+      // available_apps = the admin's own apps; each flagged shareable if it has a staff version
+      const availableApps = apps.map((a) => ({ key: a.key, name: a.name, shareable: registry.has(a.key) }))
+      res.json({ staff: out, available_apps: availableApps })
     } catch (e) {
       console.error('[StaffDirectory] list error:', e.message)
       res.status(500).json({ error: e.message })
@@ -321,10 +324,13 @@ export default function setupStaffDirectoryRoutes(app, { query, run, saveDb, req
         ? query('SELECT product_key FROM staff_directory_apps WHERE staff_id = ? AND enabled = 1', [member.id]).map((r) => r.product_key)
         : fallback
       const registry = new Map(STAFF_APPS_MAP.map((a) => [a.key, a]))
-      res.json(grants.map((key) => {
-        const reg = registry.get(key)
-        return { key, name: APP_NAME_MAP[key] || key, icon: reg?.icon || 'box', staffPath: reg?.staffPath || null, blurb: reg?.blurb || 'Access granted — the staff view is on its way.' }
-      }))
+      // Staff ONLY see apps that have a working staff version — never "coming soon"
+      res.json(grants
+        .map((key) => {
+          const reg = registry.get(key)
+          return { key, name: APP_NAME_MAP[key] || key, icon: reg?.icon || 'box', staffPath: reg?.staffPath || null, blurb: reg?.blurb || 'Access granted — the staff view is on its way.' }
+        })
+        .filter((a) => a.staffPath))
     } catch (e) {
       console.error('[StaffDirectory] my-apps error:', e.message)
       res.status(500).json({ error: e.message })
