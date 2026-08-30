@@ -9,6 +9,7 @@ import crypto from 'crypto'
 import QRCode from 'qrcode'
 import { execFile } from 'child_process'
 import { promisify } from 'util'
+import PDFDocument from 'pdfkit'
 
 const execFileP = promisify(execFile)
 const router = express.Router()
@@ -486,54 +487,55 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
     return { action: 'in', record: withStaff(query, [rec])[0], staff: { id: staff.id, name: staff.name } }
   }
 
-  // ── Staff's personal QR (staff side): scanning it logs them in + auto-clocks ──
-  app.get('/api/app/attendance/my-qr', requireAuth, async (req, res) => {
+  // ── The ONE station QR: everyone scans it → their own portal clock app ──
+  // The QR just opens the portal; staff log in (or are already logged in on
+  // their phone) and clock in/out in THEIR OWN app. No roster, no auto-clock.
+  app.get('/api/app/attendance/station-qr', requireAuth, requireEntitlement, async (req, res) => {
     try {
       ensureTable()
-      if (req.user.role !== 'staff') return res.status(403).json({ error: 'Staff account required' })
-      const linked = query('SELECT * FROM attendance_staff WHERE user_id = ?', [req.user.id])[0]
-      if (!linked) return res.status(404).json({ error: 'No attendance profile linked to your account' })
-      if (!linked.scan_token) {
-        run('UPDATE attendance_staff SET scan_token = ? WHERE id = ?', [crypto.randomBytes(16).toString('hex'), linked.id])
-        if (saveDb) saveDb()
-        linked.scan_token = query('SELECT scan_token FROM attendance_staff WHERE id = ?', [linked.id])[0].scan_token
-      }
-      const url = `${PUBLIC_BASE}/clock-in?t=${encodeURIComponent(linked.scan_token)}`
+      const url = PUBLIC_BASE
       const qr = await QRCode.toDataURL(url, { width: 512, margin: 2, errorCorrectionLevel: 'M' })
-      res.json({ url, qr, name: linked.name, position: linked.position })
+      res.json({ url, qr })
     } catch (e) {
-      console.error('[Attendance] my-qr error:', e.message)
+      console.error('[Attendance] station qr error:', e.message)
       res.status(500).json({ error: e.message })
     }
   })
 
-  // ── Public scan landing: personal QR → clock that staff member + log them in ──
-  // Token identifies exactly ONE staff member — nobody can clock anyone else.
-  app.post('/api/clock-in/scan', (req, res) => {
+  // PDF poster for the station (A4 landscape, big QR → portal)
+  app.get('/api/app/attendance/station-poster.pdf', requireAuth, requireEntitlement, async (req, res) => {
     try {
       ensureTable()
-      const t = String(req.body?.t || '').trim()
-      if (!t) return res.status(400).json({ error: 'Missing scan token' })
-      const linked = query('SELECT * FROM attendance_staff WHERE scan_token = ?', [t])[0]
-      if (!linked) return res.status(404).json({ error: 'This QR code is no longer valid' })
-      if (!linked.active) return res.status(400).json({ error: 'This staff member is inactive' })
+      const url = PUBLIC_BASE
+      const owner = query('SELECT name FROM users WHERE email = ?', [req.user.email])[0]
+      const qrPng = await QRCode.toBuffer(url, { width: 640, margin: 2, errorCorrectionLevel: 'M' })
 
-      // Auto-clock THEM in/out
-      const result = doClock(linked.email, { staffId: linked.id, method: 'qr', note: 'scan' })
-      if (result.error) return res.status(result.status || 400).json({ error: result.error })
+      const doc = new PDFDocument({ size: 'A4', layout: 'landscape', margin: 48 })
+      res.setHeader('Content-Type', 'application/pdf')
+      res.setHeader('Content-Disposition', 'attachment; filename="attendance-clock-in-station.pdf"')
+      doc.pipe(res)
 
-      // Log them into the staff portal (their own account) — same token scheme as server.js
-      let user = null
-      if (linked.user_id) {
-        const u = query('SELECT * FROM users WHERE id = ?', [linked.user_id])[0]
-        if (u) {
-          const payload = { id: u.id, role: u.role, client_id: u.client_id }
-          user = { token: Buffer.from(JSON.stringify(payload)).toString('base64'), name: u.name, email: u.email, role: u.role }
-        }
-      }
-      res.json({ action: result.action, staff: result.staff, user })
+      doc.rect(0, 0, doc.page.width, doc.page.height).fill('#faf8f3')
+      doc
+        .fontSize(40)
+        .fillColor('#14142a')
+        .font('Helvetica-Bold')
+        .text('CLOCK IN / OUT', { align: 'center' })
+      doc
+        .fontSize(16)
+        .fillColor('#6b7280')
+        .font('Helvetica')
+        .text('Scan with your phone camera — it opens your clock app, then tap clock in or out.', { align: 'center', width: 520 })
+      doc.moveDown(1.2)
+      doc.image(qrPng, (doc.page.width - 330) / 2, doc.y, { width: 330 })
+      doc.moveDown(0.3)
+      doc
+        .fontSize(12)
+        .fillColor('#9ca3af')
+        .text(`${owner?.name || ''} · AutoEffortless Attendance`, { align: 'center' })
+      doc.end()
     } catch (e) {
-      console.error('[Attendance] scan error:', e.message)
+      console.error('[Attendance] station poster error:', e.message)
       res.status(500).json({ error: e.message })
     }
   })
