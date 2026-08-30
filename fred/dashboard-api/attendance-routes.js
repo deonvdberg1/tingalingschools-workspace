@@ -109,6 +109,14 @@ function withStaff(query, rows) {
 }
 
 export default function setupAttendanceRoutes(app, { query, run, saveDb, requireAuth }) {
+  // Registry of apps that have a STAFF side. Staff only ever see these — and
+  // only the ones the admin has enabled. The staff view is the staff-facing
+  // route, NEVER the admin view.
+  const STAFF_APPS = [
+    { key: 'attendance', name: 'Attendance & Time', icon: 'clock', staffPath: '/staff-clock', blurb: 'Clock in and out and view your shifts.' },
+    // Future admin/staff apps (e.g. HR leave requests) get added here when built.
+  ]
+
   let tableChecked = false
   function ensureTable() {
     if (tableChecked) return
@@ -138,6 +146,16 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
     )`)
     run('CREATE INDEX IF NOT EXISTS idx_att_records_staff ON attendance_records(staff_id)')
     run('CREATE INDEX IF NOT EXISTS idx_att_records_email ON attendance_records(email, clock_in)')
+    // Staff app enablement: which staff-capable apps the admin has allowed for staff
+    run(`CREATE TABLE IF NOT EXISTS staff_apps (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      owner_email TEXT NOT NULL,
+      client_id INTEGER,
+      product_key TEXT NOT NULL,
+      enabled INTEGER DEFAULT 1,
+      created_at TEXT DEFAULT (datetime('now'))
+    )`)
+    run('CREATE UNIQUE INDEX IF NOT EXISTS idx_staff_apps_scope ON staff_apps(owner_email, product_key)')
     if (saveDb) saveDb()
     tableChecked = true
   }
@@ -197,6 +215,12 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
       })
       if (account.user) {
         run('UPDATE attendance_staff SET user_id = ? WHERE id = ?', [account.user.id, staff.id])
+        if (saveDb) saveDb()
+        // Auto-enable Attendance for staff when the first staff account is created
+        ensureTable()
+        const owner = query('SELECT client_id FROM users WHERE email = ?', [ownerEmail])[0]
+        run('INSERT OR IGNORE INTO staff_apps (owner_email, client_id, product_key) VALUES (?, ?, \'attendance\')',
+          [ownerEmail, owner?.client_id || null])
         if (saveDb) saveDb()
       }
     }
@@ -379,6 +403,67 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
       })
     } catch (e) {
       console.error('[Attendance] me error:', e.message)
+      res.status(500).json({ error: e.message })
+    }
+  })
+
+  // ── Staff app access (admin side): which staff-capable apps staff may use ──
+  app.get('/api/app/attendance/staff-apps', requireAuth, requireEntitlement, (req, res) => {
+    ensureTable()
+    const rows = query('SELECT product_key, enabled FROM staff_apps WHERE owner_email = ? ORDER BY product_key', [req.user.email])
+    const enabled = new Set(rows.filter((r) => r.enabled).map((r) => r.product_key))
+    res.json({
+      enabled: STAFF_APPS.map((a) => ({ ...a, enabled: enabled.has(a.key) })),
+    })
+  })
+
+  app.post('/api/app/attendance/staff-apps/:productKey', requireAuth, requireEntitlement, (req, res) => {
+    try {
+      ensureTable()
+      const key = String(req.params.productKey || '')
+      if (!STAFF_APPS.some((a) => a.key === key)) return res.status(400).json({ error: 'Unknown staff app' })
+      const owner = query('SELECT client_id FROM users WHERE email = ?', [req.user.email])[0]
+      run('INSERT OR IGNORE INTO staff_apps (owner_email, client_id, product_key) VALUES (?, ?, ?)', [req.user.email, owner?.client_id || null, key])
+      run('UPDATE staff_apps SET enabled = 1 WHERE owner_email = ? AND product_key = ?', [req.user.email, key])
+      if (saveDb) saveDb()
+      res.json({ ok: true, product_key: key, enabled: true })
+    } catch (e) {
+      console.error('[Attendance] staff-apps enable error:', e.message)
+      res.status(500).json({ error: e.message })
+    }
+  })
+
+  app.delete('/api/app/attendance/staff-apps/:productKey', requireAuth, requireEntitlement, (req, res) => {
+    try {
+      ensureTable()
+      const key = String(req.params.productKey || '')
+      run('UPDATE staff_apps SET enabled = 0 WHERE owner_email = ? AND product_key = ?', [req.user.email, key])
+      if (saveDb) saveDb()
+      res.json({ ok: true, product_key: key, enabled: false })
+    } catch (e) {
+      console.error('[Attendance] staff-apps disable error:', e.message)
+      res.status(500).json({ error: e.message })
+    }
+  })
+
+  // ── Staff's own apps (staff side): ONLY what the admin enabled, staff view only ──
+  app.get('/api/app/attendance/my-apps', requireAuth, (req, res) => {
+    try {
+      ensureTable()
+      if (req.user.role !== 'staff') return res.status(403).json({ error: 'Staff account required' })
+      const linked = query('SELECT * FROM attendance_staff WHERE user_id = ?', [req.user.id])[0]
+      if (!linked) return res.status(404).json({ error: 'No attendance profile linked to your account' })
+      const ownerEmail = linked.email
+      const owner = query('SELECT client_id FROM users WHERE email = ?', [ownerEmail])[0]
+      // Enabled apps: owner-email scope OR owner's client scope
+      let rows = query('SELECT product_key, enabled FROM staff_apps WHERE owner_email = ?', [ownerEmail])
+      if (owner?.client_id) {
+        rows = rows.concat(query('SELECT product_key, enabled FROM staff_apps WHERE client_id = ?', [owner.client_id]))
+      }
+      const enabled = new Set(rows.filter((r) => r.enabled).map((r) => r.product_key))
+      res.json(STAFF_APPS.filter((a) => enabled.has(a.key)))
+    } catch (e) {
+      console.error('[Attendance] my-apps error:', e.message)
       res.status(500).json({ error: e.message })
     }
   })
