@@ -116,10 +116,18 @@ This is where I keep what matters.
 - **NO documents/guides** — only real usable tools (Mr D decision)
 - **PDF:** `products/AutoEffortless-Product-Portfolio-2026-08-26.pdf` (2 pages) + HTML source `products/portfolio-2026-08-26.html`
 
-**15 apps locked (3 tiers):**
+**15 apps locked (3 tiers):** *(+ attendance 2026-08-30 → 16)*
 - **Tier 1 AI:** DocChat (R99–199/mo) · Contract & Quote Generator · AI Content Studio (R199) · AI Website Builder (R299/mo) · AI Form Builder (R149)
 - **Tier 2 Business:** Invoice & Quote App (R199) · Simple CRM (R199) · Stock & Inventory (R149) · Small Team HR (R149) · Booking & Calendar (R149)
 - **Tier 3 Vertical:** School Admin (R299–499) · Church/Org Manager (R299) · Property Manager (R299) · Salon/Clinic Booking (R199) · Sports Club Manager (R149)
+
+## 🕔 Attendance & Time Tracking — APP #16, LIVE ✅ (2026-08-30)
+
+- **2nd real built app (after DocChat).** Portal route `/app/attendance`; store product autoeffortless.com/apps/attendance (R149/mo, single R99); Paystack plan PLN_i3b1v777n5f032q
+- **Backend:** `dashboard-api/attendance-routes.js` — tables `attendance_staff` (unique 6-char code per staff) + `attendance_records`. Entitlement = active purchase OR overlord OR client product 'attendance' (Ting-A-Ling pilot seeded — client_products id 5)
+- **Features:** printable QR per staff (qrcode npm), Clock Station (camera BarcodeDetector scan + code entry + tap grid), live on-shift view, timesheets with corrections, per-staff hours summary, CSV export
+- **E2E verified** (puppeteer real login): add staff → clock in → clock out → timesheet; 0 console errors. Bundle index-Bp_WisSU.js
+- **Activity-monitoring add-on (future):** per-app usage tracking = Android-only via Capacitor wrapper (iOS blocked by Apple); needs staff AUP for RICA/POPIA compliance. Network-level DNS logging needs business AP behind Ting-A-Ling's rain Loop (Loop can't do captive portal) — hardware decision pending with Mr D
 
 **Buy flow:** Stripe checkout → account auto-created → email login → self-serve setup wizard. Subscriptions auto-renew.
 **Mobile strategy (2026-08-27):** All 15 apps are browser-based SaaS — NO App Store/Google Play required. Delivered as PWAs (install-to-home-screen, full-screen, offline cache) for the native feel on iOS/Android. App Store publishing (Capacitor wrap) deferred until a flagship app has paying customers justifying the $99/yr Apple fee + review overhead.

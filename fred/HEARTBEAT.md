@@ -1,6 +1,16 @@
 # Heartbeat Monitor
 # Fred checks these on every session start
 
+## 2026-08-30 — 🕔 ATTENDANCE & TIME TRACKING APP LIVE ✅ (11:50)
+
+- **2nd real app shipped same-day** (Mr D green light 11:33 → live 11:50): `/app/attendance` on app.autoeffortless.com (bundle index-Bp_WisSU.js)
+- **Features:** staff CRUD + unique code, printable QR per staff, Clock Station (camera QR scan via BarcodeDetector + manual code + tap grid), live on-shift view, timesheets, per-staff hours summary, corrections, CSV export
+- **Backend:** `dashboard-api/attendance-routes.js` — tables attendance_staff/attendance_records; entitlement = purchase 'attendance' OR overlord OR client product (pilot seeded for Ting-A-Ling client 6)
+- **Store:** 16th product live at autoeffortless.com/apps/attendance (Tier 2 Business, R149/mo, single R99) — Paystack plan PLN_i3b1v777n5f032q
+- **Verified:** API tests via public URL + full puppeteer E2E (add→clock in→clock out→timesheet, 0 console errors). Test data cleaned. Commits: workspace 377c9a3, website 8c776b2
+- ⚠️ **qrcode npm added to dashboard-api** (package.json) — reinstall if Mac reset
+- ⏳ **Next:** Mr D tests buyer flow; WiFi login for Ting-A-Ling blocked on hardware (rain Loop can't do it — needs business AP or degraded version); activity monitoring = Android-only add-on later
+
 ## 2026-08-27 — Portfolio browser link LIVE ✅
 
 - New hostnames: **files.autoeffortless.com** + portfolio.autoeffortless.com → `fred/products/` (port 8099)
