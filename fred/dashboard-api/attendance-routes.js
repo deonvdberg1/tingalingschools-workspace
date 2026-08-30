@@ -9,9 +9,11 @@ import crypto from 'crypto'
 import QRCode from 'qrcode'
 import { execFile } from 'child_process'
 import { promisify } from 'util'
+import PDFDocument from 'pdfkit'
 
 const execFileP = promisify(execFile)
 const router = express.Router()
+const PUBLIC_BASE = 'https://app.autoeffortless.com'
 
 function hasEntitlement(query, user) {
   if (!user) return false
@@ -337,46 +339,20 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
         return res.status(403).json({ error: 'Attendance purchase required' })
       }
       const { code, staffId, method, note } = req.body || {}
-      let staff = null
+
       if (isStaff) {
         // Staff can only clock for their own linked profile
-        staff = query('SELECT * FROM attendance_staff WHERE user_id = ?', [req.user.id])[0]
-        if (!staff) return res.status(404).json({ error: 'No attendance profile linked to your account' })
-      } else if (staffId) {
-        staff = query('SELECT * FROM attendance_staff WHERE id = ? AND email = ?', [staffId, req.user.email])[0]
-      } else if (code) {
-        const c = String(code).trim().toUpperCase()
-        // Accept both "ATT:XXXXXX" (scanned payload) and bare "XXXXXX"
-        const bare = c.startsWith('ATT:') ? c.slice(4) : c
-        staff = query('SELECT * FROM attendance_staff WHERE code = ? AND email = ?', [bare, req.user.email])[0]
-      }
-      if (!staff) return res.status(404).json({ error: 'Staff member not found — check the code' })
-      if (!staff.active) return res.status(400).json({ error: 'This staff member is inactive' })
-
-      // Records belong to the attendance OWNER (staff.email = owner email), so
-      // the admin's timesheet sees them even when a staff member clocks themselves.
-      const ownerEmail = staff.email || req.user.email
-
-      const m = String(method || 'tap').slice(0, 10)
-      const noteText = String(note || '').trim().slice(0, 500)
-      const open = query('SELECT * FROM attendance_records WHERE staff_id = ? AND clock_out IS NULL', [staff.id])[0]
-
-      if (open) {
-        // Clock out
-        run("UPDATE attendance_records SET clock_out = datetime('now'), method = ?, note = ? WHERE id = ?",
-          [m, noteText, open.id])
-        if (saveDb) saveDb()
-        const rec = withStaff(query, [query('SELECT * FROM attendance_records WHERE id = ?', [open.id])[0]])[0]
-        return res.json({ action: 'out', record: rec, staff: { id: staff.id, name: staff.name } })
+        const linked = query('SELECT * FROM attendance_staff WHERE user_id = ?', [req.user.id])[0]
+        if (!linked) return res.status(404).json({ error: 'No attendance profile linked to your account' })
+        const result = doClock(linked.email, { staffId: linked.id, method, note })
+        if (result.error) return res.status(result.status || 400).json({ error: result.error })
+        return res.json(result)
       }
 
-      // Clock in
-      const now = utcNow()
-      run('INSERT INTO attendance_records (staff_id, email, clock_in, method, note) VALUES (?, ?, ?, ?, ?)',
-        [staff.id, ownerEmail, now, m, noteText])
-      if (saveDb) saveDb()
-      const rec = query('SELECT * FROM attendance_records WHERE staff_id = ? ORDER BY id DESC LIMIT 1', [staff.id])[0]
-      res.json({ action: 'in', record: withStaff(query, [rec])[0], staff: { id: staff.id, name: staff.name } })
+      // Owner / admin path: pick any of their staff by id or code
+      const result = doClock(req.user.email, { staffId, code, method, note })
+      if (result.error) return res.status(result.status || 400).json({ error: result.error })
+      res.json(result)
     } catch (e) {
       console.error('[Attendance] clock error:', e.message)
       res.status(500).json({ error: e.message })
@@ -464,6 +440,123 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
       res.json(STAFF_APPS.filter((a) => enabled.has(a.key)))
     } catch (e) {
       console.error('[Attendance] my-apps error:', e.message)
+      res.status(500).json({ error: e.message })
+    }
+  })
+
+  // ── Shared clock logic (used by the authed endpoint and the public kiosk QR) ──
+  function doClock(ownerEmail, { staffId, code, method, note }) {
+    ensureTable()
+    let staff = null
+    if (staffId) {
+      staff = query('SELECT * FROM attendance_staff WHERE id = ? AND email = ?', [staffId, ownerEmail])[0]
+    } else if (code) {
+      const c = String(code).trim().toUpperCase()
+      const bare = c.startsWith('ATT:') ? c.slice(4) : c
+      staff = query('SELECT * FROM attendance_staff WHERE code = ? AND email = ?', [bare, ownerEmail])[0]
+    }
+    if (!staff) return { error: 'Staff member not found — check the code', status: 404 }
+    if (!staff.active) return { error: 'This staff member is inactive', status: 400 }
+    const m = String(method || 'tap').slice(0, 10)
+    const noteText = String(note || '').trim().slice(0, 500)
+    const open = query('SELECT * FROM attendance_records WHERE staff_id = ? AND clock_out IS NULL', [staff.id])[0]
+    if (open) {
+      run("UPDATE attendance_records SET clock_out = datetime('now'), method = ?, note = ? WHERE id = ?", [m, noteText, open.id])
+      if (saveDb) saveDb()
+      const rec = withStaff(query, [query('SELECT * FROM attendance_records WHERE id = ?', [open.id])[0]])[0]
+      return { action: 'out', record: rec, staff: { id: staff.id, name: staff.name } }
+    }
+    const now = utcNow()
+    run('INSERT INTO attendance_records (staff_id, email, clock_in, method, note) VALUES (?, ?, ?, ?, ?)', [staff.id, ownerEmail, now, m, noteText])
+    if (saveDb) saveDb()
+    const rec = query('SELECT * FROM attendance_records WHERE staff_id = ? ORDER BY id DESC LIMIT 1', [staff.id])[0]
+    return { action: 'in', record: withStaff(query, [rec])[0], staff: { id: staff.id, name: staff.name } }
+  }
+
+  // ── The shared "anyone can clock in" QR + PDF poster (admin side) ──
+  app.get('/api/app/attendance/clock-in-qr', requireAuth, requireEntitlement, async (req, res) => {
+    try {
+      ensureTable()
+      const url = `${PUBLIC_BASE}/clock-in?o=${encodeURIComponent(req.user.email)}`
+      const qr = await QRCode.toDataURL(url, { width: 512, margin: 2, errorCorrectionLevel: 'M' })
+      res.json({ url, qr })
+    } catch (e) {
+      console.error('[Attendance] clock-in qr error:', e.message)
+      res.status(500).json({ error: e.message })
+    }
+  })
+
+  app.get('/api/app/attendance/clock-in-poster.pdf', requireAuth, requireEntitlement, async (req, res) => {
+    try {
+      ensureTable()
+      const url = `${PUBLIC_BASE}/clock-in?o=${encodeURIComponent(req.user.email)}`
+      const owner = query('SELECT name FROM users WHERE email = ?', [req.user.email])[0]
+      const qrPng = await QRCode.toBuffer(url, { width: 640, margin: 2, errorCorrectionLevel: 'M' })
+
+      const doc = new PDFDocument({ size: 'A4', layout: 'landscape', margin: 48 })
+      res.setHeader('Content-Type', 'application/pdf')
+      res.setHeader('Content-Disposition', 'attachment; filename="attendance-clock-in-poster.pdf"')
+      doc.pipe(res)
+
+      doc.rect(0, 0, doc.page.width, doc.page.height).fill('#faf8f3')
+      doc
+        .fontSize(40)
+        .fillColor('#14142a')
+        .font('Helvetica-Bold')
+        .text('CLOCK IN / OUT', { align: 'center' })
+      doc
+        .fontSize(16)
+        .fillColor('#6b7280')
+        .font('Helvetica')
+        .text(`Scan this code with your phone camera — then tap your name. (${owner?.name || ''})`, { align: 'center', width: 500 })
+      doc.moveDown(1.2)
+      doc.image(qrPng, (doc.page.width - 330) / 2, doc.y, { width: 330 })
+      doc.moveDown(0.3)
+      doc
+        .fontSize(12)
+        .fillColor('#9ca3af')
+        .text('No app needed — works in any phone camera.', { align: 'center' })
+      doc.end()
+    } catch (e) {
+      console.error('[Attendance] poster pdf error:', e.message)
+      res.status(500).json({ error: e.message })
+    }
+  })
+
+  // ── Public kiosk: roster (names only, no codes) + clock in/out (no login) ──
+  app.get('/api/clock-in/roster', (req, res) => {
+    try {
+      ensureTable()
+      const ownerEmail = String(req.query.o || '').trim()
+      if (!ownerEmail) return res.status(400).json({ error: 'Missing owner' })
+      const owner = query('SELECT name FROM users WHERE email = ?', [ownerEmail])[0]
+      if (!owner) return res.status(404).json({ error: 'Unknown roster' })
+      const staff = query(
+        'SELECT id, name, position FROM attendance_staff WHERE email = ? AND active = 1 ORDER BY name COLLATE NOCASE',
+        [ownerEmail]
+      )
+      // Attach who's currently on shift
+      const out = staff.map((s) => {
+        const open = query('SELECT id FROM attendance_records WHERE staff_id = ? AND clock_out IS NULL', [s.id])[0]
+        return { ...s, clocked_in: !!open }
+      })
+      res.json({ owner: owner.name, staff: out })
+    } catch (e) {
+      console.error('[Attendance] public roster error:', e.message)
+      res.status(500).json({ error: e.message })
+    }
+  })
+
+  app.post('/api/clock-in/public', (req, res) => {
+    try {
+      ensureTable()
+      const ownerEmail = String(req.body?.o || '').trim()
+      if (!ownerEmail) return res.status(400).json({ error: 'Missing owner' })
+      const result = doClock(ownerEmail, { staffId: req.body?.staffId, method: 'qr', note: 'public-qr' })
+      if (result.error) return res.status(result.status || 400).json({ error: result.error })
+      res.json(result)
+    } catch (e) {
+      console.error('[Attendance] public clock error:', e.message)
       res.status(500).json({ error: e.message })
     }
   })

@@ -15,6 +15,7 @@
     "multer": "^2.2.0",
     "officeparser": "^7.8.0",
     "pdf-parse": "^1.1.1",
+    "pdfkit": "^0.20.2",
     "qrcode": "^1.5.4",
     "sql.js": "^1.11.0",
     "stripe": "^22.2.0"
