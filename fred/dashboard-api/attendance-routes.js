@@ -7,7 +7,10 @@
 import express from 'express'
 import crypto from 'crypto'
 import QRCode from 'qrcode'
+import { execFile } from 'child_process'
+import { promisify } from 'util'
 
+const execFileP = promisify(execFile)
 const router = express.Router()
 
 function hasEntitlement(query, user) {
@@ -34,6 +37,56 @@ function genCode() {
   let out = ''
   for (let i = 0; i < 6; i++) out += alphabet[crypto.randomInt(alphabet.length)]
   return out
+}
+
+// ── Email via gog CLI (Gmail, info@autoeffortless.com) ──
+async function sendEmail(to, subject, body) {
+  try {
+    await execFileP('/opt/homebrew/bin/gog', ['gmail', 'send', '--account', 'info@autoeffortless.com', '--to', to, '--subject', subject, '--body', body], { timeout: 30000 })
+    return true
+  } catch (e) {
+    console.warn('[Attendance] email failed to', to, ':', e.message?.slice(0, 120))
+    return false
+  }
+}
+
+// ── Create a staff portal account + email login details ──
+// Returns { user, isNew, emailSent }. Links attendance_staff.user_id → users.id.
+async function createStaffAccount({ query, run, saveDb }, { name, email, ownerName, ownerEmail }) {
+  const em = String(email || '').trim().toLowerCase()
+  if (!em || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return { user: null, isNew: false, emailSent: false, reason: 'no-email' }
+  // Never create an account for the owner themselves
+  if (em === String(ownerEmail || '').trim().toLowerCase()) return { user: null, isNew: false, emailSent: false, reason: 'owner' }
+  const existing = query('SELECT * FROM users WHERE email = ?', [em])[0]
+  if (existing) return { user: existing, isNew: false, emailSent: false, reason: 'exists' }
+
+  const password = crypto.randomBytes(6).toString('base64url').slice(0, 10)
+  const passwordHash = crypto.createHash('sha256').update(password).digest('hex')
+  run('INSERT INTO users (email, password, name, role, client_id) VALUES (?, ?, ?, ?, NULL)', [em, passwordHash, name || em.split('@')[0], 'staff'])
+  if (saveDb) saveDb()
+  const user = query('SELECT * FROM users WHERE email = ?', [em])[0]
+
+  const body = [
+    `Hi ${user.name},`,
+    '',
+    `Your staff account for ${ownerName || 'AutoEffortless'} attendance is ready.`,
+    'Use it to clock in and out from your phone or any device.',
+    '',
+    'Sign in here:',
+    'https://app.autoeffortless.com',
+    '',
+    'Your login details:',
+    `Email: ${em}`,
+    `Password: ${password}`,
+    '',
+    'You can change your password after logging in.',
+    '',
+    'Questions? Just reply to this email.',
+    '',
+    '— The AutoEffortless Team'
+  ].join('\n')
+  const emailSent = await sendEmail(em, 'Your staff account is ready ✅', body)
+  return { user, isNew: true, emailSent }
 }
 
 // Serialize a record row with computed hours + staff name (shared by several endpoints)
@@ -69,6 +122,10 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
       active INTEGER DEFAULT 1,
       created_at TEXT DEFAULT (datetime('now'))
     )`)
+    // v2: staff email + linked portal account (added 2026-08-30)
+    const attCols = query('PRAGMA table_info(attendance_staff)').map((c) => c.name)
+    if (!attCols.includes('staff_email')) run("ALTER TABLE attendance_staff ADD COLUMN staff_email TEXT DEFAULT ''")
+    if (!attCols.includes('user_id')) run('ALTER TABLE attendance_staff ADD COLUMN user_id INTEGER')
     run(`CREATE TABLE IF NOT EXISTS attendance_records (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       staff_id INTEGER NOT NULL,
@@ -98,7 +155,7 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
   app.get('/api/app/attendance/staff', requireAuth, requireEntitlement, (req, res) => {
     ensureTable()
     const rows = query(
-      'SELECT id, name, position, phone, code, active, created_at FROM attendance_staff WHERE email = ? ORDER BY name COLLATE NOCASE',
+      'SELECT id, name, position, phone, code, active, staff_email, user_id, created_at FROM attendance_staff WHERE email = ? ORDER BY name COLLATE NOCASE',
       [req.user.email]
     )
     // Attach open-record flag (is currently clocked in)
@@ -109,27 +166,93 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
     res.json(out)
   })
 
-  app.post('/api/app/attendance/staff', requireAuth, requireEntitlement, (req, res) => {
-    try {
-      ensureTable()
-      const name = String(req.body?.name || '').trim().slice(0, 120)
-      if (!name) return res.status(400).json({ error: 'Name is required' })
-      const position = String(req.body?.position || '').trim().slice(0, 120)
-      const phone = String(req.body?.phone || '').trim().slice(0, 40)
-      let code = genCode()
-      // Regenerate on the (very unlikely) collision
-      for (let i = 0; i < 5; i++) {
-        const exists = query('SELECT id FROM attendance_staff WHERE code = ?', [code])[0]
-        if (!exists) break
-        code = genCode()
+  // Shared: insert one staff row + (optional) linked portal account
+  async function insertStaff(ownerEmail, { name, position, phone, staffEmail }) {
+    ensureTable()
+    const cleanName = String(name || '').trim().slice(0, 120)
+    if (!cleanName) return { error: 'Name is required' }
+    const cleanPosition = String(position || '').trim().slice(0, 120)
+    const cleanPhone = String(phone || '').trim().slice(0, 40)
+    const cleanEmail = String(staffEmail || '').trim().toLowerCase().slice(0, 200)
+    let code = genCode()
+    for (let i = 0; i < 5; i++) {
+      const exists = query('SELECT id FROM attendance_staff WHERE code = ?', [code])[0]
+      if (!exists) break
+      code = genCode()
+    }
+    run('INSERT INTO attendance_staff (email, name, position, phone, code, staff_email) VALUES (?, ?, ?, ?, ?, ?)',
+      [ownerEmail, cleanName, cleanPosition, cleanPhone, code, cleanEmail])
+    if (saveDb) saveDb()
+    const staff = query('SELECT * FROM attendance_staff WHERE email = ? ORDER BY id DESC LIMIT 1', [ownerEmail])[0]
+
+    // Create a staff portal account when an email was given
+    let account = null
+    if (cleanEmail) {
+      const owner = query('SELECT name FROM users WHERE email = ?', [ownerEmail])[0]
+      account = await createStaffAccount({ query, run, saveDb }, {
+        name: cleanName,
+        email: cleanEmail,
+        ownerName: owner?.name || 'AutoEffortless',
+        ownerEmail: ownerEmail,
+      })
+      if (account.user) {
+        run('UPDATE attendance_staff SET user_id = ? WHERE id = ?', [account.user.id, staff.id])
+        if (saveDb) saveDb()
       }
-      run('INSERT INTO attendance_staff (email, name, position, phone, code) VALUES (?, ?, ?, ?, ?)',
-        [req.user.email, name, position, phone, code])
-      if (saveDb) saveDb()
-      const staff = query('SELECT * FROM attendance_staff WHERE email = ? ORDER BY id DESC LIMIT 1', [req.user.email])[0]
-      res.json(staff)
+    }
+    return { staff, account }
+  }
+
+  app.post('/api/app/attendance/staff', requireAuth, requireEntitlement, async (req, res) => {
+    try {
+      const { staff, account } = await insertStaff(req.user.email, {
+        name: req.body?.name,
+        position: req.body?.position,
+        phone: req.body?.phone,
+        staffEmail: req.body?.email,
+      })
+      if (!staff) return res.status(400).json({ error: 'Name is required' })
+      res.json({ ...staff, account: account ? { created: account.isNew, email_sent: account.emailSent } : null })
     } catch (e) {
       console.error('[Attendance] staff add error:', e.message)
+      res.status(500).json({ error: e.message })
+    }
+  })
+
+  // ── BULK add staff (one request, many rows; each with optional email → account) ──
+  app.post('/api/app/attendance/staff/bulk', requireAuth, requireEntitlement, async (req, res) => {
+    try {
+      ensureTable()
+      const items = Array.isArray(req.body?.staff) ? req.body.staff : null
+      if (!items || items.length === 0) return res.status(400).json({ error: 'Send at least one staff member' })
+      if (items.length > 100) return res.status(400).json({ error: 'Max 100 staff per batch' })
+
+      const created = []
+      const errors = []
+      let accounts = 0
+      let emailsSent = 0
+      for (const it of items) {
+        try {
+          const { staff, account } = await insertStaff(req.user.email, {
+            name: it?.name,
+            position: it?.position,
+            phone: it?.phone,
+            staffEmail: it?.email,
+          })
+          if (!staff) {
+            errors.push({ name: it?.name || '?', error: 'Name is required' })
+            continue
+          }
+          created.push(staff)
+          if (account?.isNew) accounts++
+          if (account?.emailSent) emailsSent++
+        } catch (e) {
+          errors.push({ name: it?.name || '?', error: e.message })
+        }
+      }
+      res.json({ created, errors, accounts_created: accounts, emails_sent: emailsSent })
+    } catch (e) {
+      console.error('[Attendance] bulk add error:', e.message)
       res.status(500).json({ error: e.message })
     }
   })
@@ -181,12 +304,21 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
 
   // ── Clock in / out (the one action the station + staff use) ──
   // Body: { code?: string, staffId?: number, method?: 'qr'|'tap'|'code'|'app', note?: string }
-  app.post('/api/app/attendance/clock', requireAuth, requireEntitlement, (req, res) => {
+  // Staff-role users can ONLY clock themselves (their linked attendance profile).
+  app.post('/api/app/attendance/clock', requireAuth, (req, res) => {
     try {
       ensureTable()
+      const isStaff = req.user.role === 'staff'
+      if (!isStaff && !hasEntitlement(query, req.user)) {
+        return res.status(403).json({ error: 'Attendance purchase required' })
+      }
       const { code, staffId, method, note } = req.body || {}
       let staff = null
-      if (staffId) {
+      if (isStaff) {
+        // Staff can only clock for their own linked profile
+        staff = query('SELECT * FROM attendance_staff WHERE user_id = ?', [req.user.id])[0]
+        if (!staff) return res.status(404).json({ error: 'No attendance profile linked to your account' })
+      } else if (staffId) {
         staff = query('SELECT * FROM attendance_staff WHERE id = ? AND email = ?', [staffId, req.user.email])[0]
       } else if (code) {
         const c = String(code).trim().toUpperCase()
@@ -196,6 +328,10 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
       }
       if (!staff) return res.status(404).json({ error: 'Staff member not found — check the code' })
       if (!staff.active) return res.status(400).json({ error: 'This staff member is inactive' })
+
+      // Records belong to the attendance OWNER (staff.email = owner email), so
+      // the admin's timesheet sees them even when a staff member clocks themselves.
+      const ownerEmail = staff.email || req.user.email
 
       const m = String(method || 'tap').slice(0, 10)
       const noteText = String(note || '').trim().slice(0, 500)
@@ -213,12 +349,36 @@ export default function setupAttendanceRoutes(app, { query, run, saveDb, require
       // Clock in
       const now = utcNow()
       run('INSERT INTO attendance_records (staff_id, email, clock_in, method, note) VALUES (?, ?, ?, ?, ?)',
-        [staff.id, req.user.email, now, m, noteText])
+        [staff.id, ownerEmail, now, m, noteText])
       if (saveDb) saveDb()
       const rec = query('SELECT * FROM attendance_records WHERE staff_id = ? ORDER BY id DESC LIMIT 1', [staff.id])[0]
       res.json({ action: 'in', record: withStaff(query, [rec])[0], staff: { id: staff.id, name: staff.name } })
     } catch (e) {
       console.error('[Attendance] clock error:', e.message)
+      res.status(500).json({ error: e.message })
+    }
+  })
+
+  // ── Staff self-service: my profile + today's shifts (role: staff) ──
+  app.get('/api/app/attendance/me', requireAuth, (req, res) => {
+    try {
+      ensureTable()
+      if (req.user.role !== 'staff') return res.status(403).json({ error: 'Staff account required' })
+      const linked = query('SELECT * FROM attendance_staff WHERE user_id = ?', [req.user.id])[0]
+      if (!linked) return res.status(404).json({ error: 'No attendance profile linked to your account' })
+      const open = query('SELECT * FROM attendance_records WHERE staff_id = ? AND clock_out IS NULL ORDER BY clock_in DESC', [linked.id])[0]
+      const today = query(
+        "SELECT * FROM attendance_records WHERE staff_id = ? AND clock_in >= date('now') ORDER BY clock_in DESC",
+        [linked.id]
+      )
+      res.json({
+        staff: { id: linked.id, name: linked.name, position: linked.position, code: linked.code },
+        clocked_in: !!open,
+        open_record: open ? withStaff(query, [open])[0] : null,
+        today: withStaff(query, today),
+      })
+    } catch (e) {
+      console.error('[Attendance] me error:', e.message)
       res.status(500).json({ error: e.message })
     }
   })
