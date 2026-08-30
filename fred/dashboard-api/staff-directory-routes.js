@@ -25,12 +25,25 @@ async function sendEmail(to, subject, body) {
 // ── Create a portal account for a directory member ──
 // role 'staff' → users.role 'staff' (limited staff portal)
 // role 'admin' → users.role 'client_admin' with the owner's client_id (full admin portal)
+// EXISTING accounts are RECONCILED to the directory role (unless overlord) so the
+// portal mode always matches membership — never a leftover buyer/client mode.
 async function createMemberAccount({ query, run, saveDb }, { name, email, role, ownerEmail, ownerClientId }) {
   const em = String(email || '').trim().toLowerCase()
   if (!em || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return { user: null, reason: 'no-email' }
   if (em === String(ownerEmail || '').trim().toLowerCase()) return { user: null, reason: 'owner' }
   const existing = query('SELECT * FROM users WHERE email = ?', [em])[0]
-  if (existing) return { user: existing, reason: 'exists' }
+  if (existing) {
+    const prev = { role: existing.role, client_id: existing.client_id }
+    if (existing.role !== 'overlord') {
+      const portalRole = role === 'admin' ? 'client_admin' : 'staff'
+      const portalClient = role === 'admin' ? (ownerClientId || null) : null
+      if (existing.role !== portalRole || (existing.client_id || null) !== portalClient) {
+        run('UPDATE users SET role = ?, client_id = ? WHERE id = ?', [portalRole, portalClient, existing.id])
+        if (saveDb) saveDb()
+      }
+    }
+    return { user: query('SELECT * FROM users WHERE id = ?', [existing.id])[0], reason: 'exists', reconciled: true, prev }
+  }
 
   const password = crypto.randomBytes(6).toString('base64url').slice(0, 10)
   const passwordHash = crypto.createHash('sha256').update(password).digest('hex')
@@ -83,6 +96,10 @@ export default function setupStaffDirectoryRoutes(app, { query, run, saveDb, req
       user_id INTEGER,
       created_at TEXT DEFAULT (datetime('now'))
     )`)
+    const sdCols = query('PRAGMA table_info(staff_directory)').map((c) => c.name)
+    // prev_* captures the portal account's state BEFORE directory sync, so we can restore on delete
+    if (!sdCols.includes('prev_role')) run('ALTER TABLE staff_directory ADD COLUMN prev_role TEXT')
+    if (!sdCols.includes('prev_client_id')) run('ALTER TABLE staff_directory ADD COLUMN prev_client_id INTEGER')
     run(`CREATE TABLE IF NOT EXISTS staff_directory_apps (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       staff_id INTEGER NOT NULL,
@@ -210,8 +227,10 @@ export default function setupStaffDirectoryRoutes(app, { query, run, saveDb, req
           if (acct?.user) accounts++
           if (acct?.emailSent) emailsSent++
 
-          run('INSERT INTO staff_directory (owner_email, client_id, name, email, phone, position, role, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            [req.user.email, ownerClientId, name, email, phone, position, role, acct?.user?.id || null])
+          const prevRole = acct?.prev?.role || null
+          const prevClientId = acct?.prev?.client_id != null ? acct.prev.client_id : null
+          run('INSERT INTO staff_directory (owner_email, client_id, name, email, phone, position, role, user_id, prev_role, prev_client_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [req.user.email, ownerClientId, name, email, phone, position, role, acct?.user?.id || null, prevRole, prevClientId])
           if (saveDb) saveDb()
           const member = query('SELECT * FROM staff_directory WHERE owner_email = ? ORDER BY id DESC LIMIT 1', [req.user.email])[0]
 
@@ -300,6 +319,14 @@ export default function setupStaffDirectoryRoutes(app, { query, run, saveDb, req
       if (!member) return res.status(404).json({ error: 'Staff member not found' })
       unprovisionAttendance(member)
       run('DELETE FROM staff_directory_apps WHERE staff_id = ?', [member.id])
+      // Restore the portal account to its pre-directory state (unless it's the overlord)
+      if (member.user_id && member.prev_role) {
+        const u = query('SELECT * FROM users WHERE id = ?', [member.user_id])[0]
+        if (u && u.role !== 'overlord') {
+          run('UPDATE users SET role = ?, client_id = ? WHERE id = ?', [member.prev_role, member.prev_client_id || null, member.user_id])
+          if (saveDb) saveDb()
+        }
+      }
       run('DELETE FROM staff_directory WHERE id = ?', [member.id])
       if (saveDb) saveDb()
       res.json({ ok: true })

@@ -60,7 +60,15 @@ async function createStaffAccount({ query, run, saveDb }, { name, email, ownerNa
   // Never create an account for the owner themselves
   if (em === String(ownerEmail || '').trim().toLowerCase()) return { user: null, isNew: false, emailSent: false, reason: 'owner' }
   const existing = query('SELECT * FROM users WHERE email = ?', [em])[0]
-  if (existing) return { user: existing, isNew: false, emailSent: false, reason: 'exists' }
+  if (existing) {
+    // Reconcile: existing accounts must match the staff role (unless overlord) so
+    // a buyer/client account added as staff doesn't keep showing the wrong portal
+    if (existing.role !== 'overlord' && (existing.role !== 'staff' || existing.client_id)) {
+      run('UPDATE users SET role = ?, client_id = NULL WHERE id = ?', ['staff', existing.id])
+      if (saveDb) saveDb()
+    }
+    return { user: query('SELECT * FROM users WHERE id = ?', [existing.id])[0], isNew: false, emailSent: false, reason: 'exists' }
+  }
 
   const password = crypto.randomBytes(6).toString('base64url').slice(0, 10)
   const passwordHash = crypto.createHash('sha256').update(password).digest('hex')
