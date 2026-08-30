@@ -11,6 +11,8 @@ This is where I keep what matters.
 
 ## Key Decisions
 
+- **CLIENT PORTAL = ADMIN PORTAL FOR CLIENTS (LOCKED 2026-08-30, Mr D):** For clients, the client portal and the administrator portal are the SAME thing — one portal, full admin capability. No restricted "client" mode that hides admin features. The client admin can do everything (manage staff, share ANY of their apps with staff, configure apps, etc.). Overlord portal is separate (AutoEffortless-wide admin).
+
 - **STAFF ACCESS MODEL (LOCKED 2026-08-30, Mr D):** Staff accounts see ONLY the apps the admin/employer has enabled for them — never the full store catalogue. Each enabled app opens the STAFF version (e.g. attendance → `/staff-clock` clock page), NEVER the admin view. This applies to ALL apps that have an admin/staff separation, now and future.
   - Admin controls it in Attendance → **Staff Access** tab (toggle per staff-capable app; `staff_apps` table, keyed by owner email + client_id).
   - Staff `Apps` page (`/my-apps`) shows only enabled apps with "Open app" → staff path. Empty state: "No apps enabled yet".
