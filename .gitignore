@@ -80,3 +80,5 @@ fred/products/*.pdf
 
 # NG Kerk mirror (re-downloadable)
 fred/ngkerk/site/
+fred/snowman/
+!fred/snowman/site/
