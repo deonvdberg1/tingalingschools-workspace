@@ -3,251 +3,267 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="icon" href="assets/img/logo.png" /><title>Snowman — Water &amp; Ice | Ballito</title>
-<meta name="description" content="Premium ice, RO purified water, refills and branded water bottles in Ballito. In-store refill or delivery to your door." />
+<title>Snowman — Water &amp; Ice | Ballito</title>
+<meta name="description" content="Premium clear ice, RO purified water and branded bottles in Ballito. In-store refill or delivery to your door." />
+<link rel="icon" href="assets/img/logo.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root{
-    --navy:#0a1f44; --navy-2:#12305f; --ice:#f7fbff; --ice-2:#e8f2fb;
-    --orange:#da5800; --orange-2:#c04e00; --ink:#101828; --muted:#5a6b85;
-    --ice-blue:#bfe0f5; --line:#dbe7f3; --white:#ffffff;
+    --ink:#0a1424; --navy:#0a1f44; --navy-2:#10305f; --ice:#f3f7fb; --ice-2:#e5edf6;
+    --orange:#da5800; --orange-2:#ff6a00; --orange-soft:#ffe8d6;
+    --muted:#5d6f8a; --line:#d8e3ef; --white:#fff;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
-  body{font-family:'Outfit',sans-serif;color:var(--ink);background:var(--ice);line-height:1.6}
-  h1,h2,h3,.display{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.5px;line-height:1.1}
+  body{font-family:'Outfit',sans-serif;color:var(--ink);background:var(--ice);line-height:1.65;-webkit-font-smoothing:antialiased}
+  h1,h2,h3,.display{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.5px;line-height:1.02;font-weight:600}
   img{max-width:100%;display:block}
   a{text-decoration:none;color:inherit}
-  .container{max-width:1150px;margin:0 auto;padding:0 22px}
+  .container{max-width:1180px;margin:0 auto;padding:0 24px}
+  .eyebrow{font-weight:700;letter-spacing:3px;text-transform:uppercase;font-size:12.5px;color:var(--orange)}
+  .btn{display:inline-flex;align-items:center;gap:10px;font-weight:600;border-radius:999px;padding:14px 26px;font-size:15px;transition:.25s;cursor:pointer;border:none;letter-spacing:.2px}
+  .btn-wa{background:var(--orange);color:#fff;box-shadow:0 8px 22px rgba(218,88,0,.35)}
+  .btn-wa:hover{background:var(--orange-2);transform:translateY(-2px)}
+  .btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.55)}
+  .btn-ghost:hover{background:rgba(255,255,255,.12)}
+  .btn-dark{background:var(--navy);color:#fff}
+  .btn-dark:hover{background:var(--navy-2);transform:translateY(-2px)}
 
-  /* Nav */
-  nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:70px}
-  .logo{display:flex;align-items:center;gap:10px;font-family:'Oswald';font-weight:700;font-size:22px;color:var(--navy);text-transform:uppercase;letter-spacing:1px}
-  .logo img{height:38px;width:auto}
-  .nav-links{display:flex;align-items:center;gap:28px;font-weight:500;font-size:15px;color:var(--ink)}
+  /* ── Announcement marquee ── */
+  .marquee{background:var(--navy);color:#fff;overflow:hidden;padding:11px 0;white-space:nowrap}
+  .marquee span{display:inline-block;font-family:'Oswald';text-transform:uppercase;letter-spacing:2.5px;font-size:13.5px;animation:scroll 26s linear infinite}
+  .marquee b{color:var(--orange);font-weight:600}
+  @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+  /* ── Nav ── */
+  nav{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:74px}
+  .logo img{height:42px;width:auto}
+  .nav-links{display:flex;align-items:center;gap:30px;font-weight:500;font-size:14.5px;color:var(--ink)}
   .nav-links a:hover{color:var(--orange)}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:600;border-radius:10px;padding:12px 22px;font-size:15px;transition:.2s;cursor:pointer;border:none}
-  .btn-wa{background:var(--orange);color:#fff}
-  .btn-wa:hover{background:var(--orange-2)}
-  .btn-navy{background:var(--navy);color:#fff}
-  .btn-navy:hover{background:var(--navy-2)}
-  .btn-ghost{background:transparent;color:var(--navy);border:2px solid var(--navy)}
-  .btn-ghost:hover{background:var(--navy);color:#fff}
-  .burger{display:none;background:none;border:none;font-size:26px;color:var(--navy);cursor:pointer}
+  .burger{display:none;background:none;border:none;font-size:28px;color:var(--navy);cursor:pointer}
 
-  /* Hero */
-  .hero{position:relative;background:var(--navy);color:#fff;overflow:hidden}
-  .hero-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.38}
-  .hero-inner{position:relative;padding:110px 0 120px;max-width:720px}
-  .hero .kicker{display:inline-block;background:rgba(218,88,0,.9);color:#fff;font-weight:600;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;padding:7px 14px;border-radius:6px;margin-bottom:22px}
-  .hero h1{font-size:clamp(42px,7vw,76px);margin-bottom:18px}
-  .hero h1 span{color:var(--orange)}
-  .hero p{font-size:18px;color:#dbe7f3;max-width:560px;margin-bottom:30px}
-  .hero .cta{display:flex;gap:14px;flex-wrap:wrap}
+  /* ── Hero ── */
+  .hero{position:relative;min-height:88vh;display:flex;align-items:flex-end;color:#fff;overflow:hidden;background:var(--navy)}
+  .hero-bg{position:absolute;inset:0;background-size:cover;background-position:center 30%}
+  .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,20,36,.25) 0%,rgba(10,20,36,.55) 55%,rgba(10,20,36,.92) 100%)}
+  .hero-inner{position:relative;padding:120px 0 70px;width:100%}
+  .hero .kicker{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(8px);color:#fff;font-weight:600;font-size:12.5px;letter-spacing:2.5px;text-transform:uppercase;padding:9px 18px;border-radius:999px;margin-bottom:26px}
+  .hero .kicker .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);display:inline-block}
+  .hero h1{font-size:clamp(52px,9.5vw,124px);letter-spacing:1px;max-width:900px}
+  .hero h1 .thin{font-weight:400;color:rgba(255,255,255,.92)}
+  .hero h1 .accent{color:var(--orange-2)}
+  .hero p{font-size:19px;color:#dbe7f5;max-width:560px;margin:22px 0 34px;font-weight:300}
+  .hero .cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:56px}
+  .hero .stats{display:flex;gap:0;border-top:1px solid rgba(255,255,255,.22);padding-top:26px;flex-wrap:wrap}
+  .hero .stat{padding-right:44px;margin-right:44px;border-right:1px solid rgba(255,255,255,.22)}
+  .hero .stat:last-child{border-right:none;margin-right:0;padding-right:0}
+  .hero .stat b{display:block;font-family:'Oswald';font-size:34px;line-height:1;color:#fff}
+  .hero .stat small{font-size:12.5px;letter-spacing:1.6px;text-transform:uppercase;color:#aebfe0}
 
-  /* USP strip */
-  .usp{background:var(--ice-2);border-bottom:1px solid var(--line)}
-  .usp-inner{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;padding:26px 0}
-  .usp-item{display:flex;gap:12px;align-items:flex-start}
-  .usp-item .dot{flex-shrink:0;width:34px;height:34px;border-radius:9px;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px}
-  .usp-item b{display:block;font-size:14.5px;color:var(--navy)}
-  .usp-item small{font-size:13px;color:var(--muted)}
+  /* ── Sections ── */
+  section{padding:96px 0}
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;margin-bottom:46px;flex-wrap:wrap}
+  .sec-head h2{font-size:clamp(34px,5vw,58px);color:var(--navy);margin-top:10px}
+  .sec-head p{color:var(--muted);max-width:420px;font-size:15.5px}
+  .sec-head .link{color:var(--orange);font-weight:600;font-size:14.5px;white-space:nowrap}
 
-  /* Sections */
-  section{padding:84px 0}
-  .sec-head{text-align:center;max-width:640px;margin:0 auto 48px}
-  .sec-head .eyebrow{color:var(--orange);font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:13px}
-  .sec-head h2{font-size:clamp(30px,4.5vw,46px);color:var(--navy);margin:10px 0 12px}
-  .sec-head p{color:var(--muted);font-size:16px}
+  /* ── Product strip (horizontal scroll) ── */
+  .strip{display:flex;gap:22px;overflow-x:auto;padding:6px 4px 26px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+  .strip::-webkit-scrollbar{height:6px}
+  .strip::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}
+  .p-card{min-width:300px;max-width:300px;scroll-snap-align:start;background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:.3s}
+  .p-card:hover{transform:translateY(-6px);box-shadow:0 22px 48px rgba(10,31,68,.14)}
+  .p-card .imgbox{background:var(--ice-2);aspect-ratio:16/11;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .p-card .imgbox img{width:100%;height:100%;object-fit:cover;transition:.5s}
+  .p-card:hover .imgbox img{transform:scale(1.06)}
+  .p-card .body{padding:18px 18px 20px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .p-card .tag{align-self:flex-start;background:var(--orange-soft);color:var(--orange);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;padding:4px 10px;border-radius:6px}
+  .p-card h3{font-size:19px;color:var(--navy);flex:1}
+  .p-card .wa-sm{background:var(--navy);color:#fff;border:none;border-radius:999px;padding:12px 16px;font-weight:600;font-size:13.5px;cursor:pointer;text-align:center;transition:.25s}
+  .p-card .wa-sm:hover{background:var(--orange)}
 
-  /* Category tiles */
-  .cats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-  .cat{position:relative;border-radius:16px;overflow:hidden;background:var(--navy);aspect-ratio:4/4.6;display:block;box-shadow:0 10px 30px rgba(10,31,68,.15)}
-  .cat img{width:100%;height:100%;object-fit:cover;opacity:.75;transition:.4s}
-  .cat:hover img{transform:scale(1.05);opacity:.6}
-  .cat .label{position:absolute;left:14px;right:14px;bottom:14px;background:rgba(255,255,255,.95);color:var(--navy);font-family:'Oswald';font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:12px 14px;border-radius:10px;font-size:15px;display:flex;justify-content:space-between;align-items:center}
-  .cat .label .arr{color:var(--orange);font-size:18px}
+  /* ── Purity / why (split) ── */
+  .purity{background:var(--navy);color:#fff;position:relative;overflow:hidden}
+  .purity::before{content:"❄";position:absolute;right:-60px;top:-40px;font-size:340px;opacity:.05;transform:rotate(15deg)}
+  .purity-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center}
+  .purity h2{font-size:clamp(34px,4.6vw,56px);margin:14px 0 20px;color:#fff}
+  .purity .lead{font-size:17.5px;color:#c9d6ec;font-weight:300;margin-bottom:34px;max-width:480px}
+  .facts{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .fact{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);border-radius:16px;padding:20px}
+  .fact .n{font-family:'Oswald';font-size:26px;color:var(--orange-2);display:block;margin-bottom:6px}
+  .fact b{display:block;font-size:15px;color:#fff;margin-bottom:4px}
+  .fact small{color:#9fb2d2;font-size:13px}
+  .purity .pic{border-radius:24px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.4);aspect-ratio:4/5}
+  .purity .pic img{width:100%;height:100%;object-fit:cover}
 
-  /* Products grid */
-  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-  .card{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:.25s}
-  .card:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(10,31,68,.12)}
-  .card .imgbox{background:var(--ice-2);aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;padding:18px}
-  .card .imgbox img{max-height:100%;object-fit:contain}
-  .card .body{padding:16px;display:flex;flex-direction:column;flex:1;gap:10px}
-  .card h3{font-size:16.5px;color:var(--navy);line-height:1.25}
-  .card p{font-size:13px;color:var(--muted);flex:1}
-  .card .wa-sm{background:var(--orange);color:#fff;border:none;border-radius:9px;padding:10px 12px;font-weight:600;font-size:13.5px;cursor:pointer;text-align:center;transition:.2s}
-  .card .wa-sm:hover{background:var(--orange-2)}
-  .chip{display:inline-block;border:1.5px solid var(--line);background:#fff;color:var(--ink);font-weight:500;font-size:13.5px;padding:8px 16px;border-radius:999px;cursor:pointer;transition:.2s;margin:0 6px 10px 0}
-  .chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+  /* ── Bestsellers editorial grid ── */
+  .bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .bgrid .card:first-child{grid-column:span 2;grid-row:span 2}
+  .bgrid .card{position:relative;border-radius:22px;overflow:hidden;min-height:260px;display:block;background:var(--navy)}
+  .bgrid .card img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:.85;transition:.5s}
+  .bgrid .card:hover img{transform:scale(1.05);opacity:.7}
+  .bgrid .card .cap{position:absolute;left:0;right:0;bottom:0;padding:26px;background:linear-gradient(0deg,rgba(10,20,36,.88),transparent);color:#fff}
+  .bgrid .card:first-child .cap h3{font-size:34px}
+  .bgrid .card .cap h3{font-size:22px;text-transform:uppercase}
+  .bgrid .card .cap span{font-size:13px;color:var(--orange-2);font-weight:600;letter-spacing:1px;text-transform:uppercase}
 
-  /* Why us */
-  .why{background:var(--navy);color:#fff}
-  .why .sec-head h2{color:#fff}
-  .why .sec-head p{color:#aebfe0}
-  .why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:26px}
-  .why-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:26px}
-  .why-card .ic{width:46px;height:46px;border-radius:12px;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px}
-  .why-card h3{font-size:19px;margin-bottom:8px;color:#fff}
-  .why-card p{color:#c6d4ee;font-size:15px}
-
-  /* Branded water banner */
-  .branded{background:linear-gradient(120deg,var(--orange) 0%,#f0761f 100%);color:#fff;border-radius:22px;display:grid;grid-template-columns:1.2fr 1fr;align-items:center;overflow:hidden;box-shadow:0 18px 44px rgba(218,88,0,.28)}
-  .branded .txt{padding:48px}
-  .branded h2{font-size:clamp(28px,4vw,42px);margin-bottom:12px}
-  .branded p{font-size:16px;opacity:.95;margin-bottom:22px}
+  /* ── Branded band ── */
+  .branded{background:linear-gradient(120deg,var(--orange) 0%,#ff7a1a 100%);border-radius:28px;display:grid;grid-template-columns:1.1fr .9fr;align-items:stretch;overflow:hidden;box-shadow:0 30px 70px rgba(218,88,0,.35);color:#fff}
+  .branded .txt{padding:56px}
+  .branded h2{font-size:clamp(32px,4.5vw,52px);margin:12px 0 16px}
+  .branded p{font-size:16.5px;opacity:.95;max-width:430px;margin-bottom:28px}
   .branded .btn{background:#fff;color:var(--orange)}
-  .branded .pic{min-height:280px;background-size:cover;background-position:center}
+  .branded .btn:hover{transform:translateY(-2px)}
+  .branded .pic{min-height:320px;background-size:cover;background-position:center}
 
-  /* Testimonials */
+  /* ── Testimonials ── */
   .tst{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-  .t-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px}
-  .t-card .stars{color:var(--orange);font-size:16px;letter-spacing:2px}
-  .t-card p{font-size:14.5px;color:var(--ink);flex:1}
-  .t-card b{font-size:13.5px;color:var(--navy)}
+  .t-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:14px;position:relative}
+  .t-card .qm{font-family:Georgia,serif;font-size:64px;line-height:.6;color:var(--orange);opacity:.85}
+  .t-card .stars{color:var(--orange);font-size:15px;letter-spacing:3px}
+  .t-card p{font-size:15px;color:var(--ink);flex:1;font-weight:300}
+  .t-card b{font-size:14px;color:var(--navy)}
   .t-card small{color:var(--muted);font-size:12.5px}
 
-  /* FAQ */
-  .faq{max-width:760px;margin:0 auto}
-  .faq-item{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
-  .faq-item summary{cursor:pointer;padding:18px 22px;font-weight:600;font-size:15.5px;color:var(--navy);list-style:none;display:flex;justify-content:space-between;align-items:center}
+  /* ── FAQ ── */
+  .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .faq-item{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .faq-item summary{cursor:pointer;padding:20px 24px;font-weight:600;font-size:16px;color:var(--navy);list-style:none;display:flex;justify-content:space-between;align-items:center;gap:14px}
   .faq-item summary::-webkit-details-marker{display:none}
-  .faq-item summary .plus{color:var(--orange);font-size:20px;font-weight:700}
-  .faq-item[open] .plus{transform:rotate(45deg)}
-  .faq-item .a{padding:0 22px 18px;color:var(--muted);font-size:15px}
+  .faq-item summary .plus{color:var(--orange);font-size:22px;font-weight:700;transition:.2s}
+  .faq-item[open] summary .plus{transform:rotate(45deg)}
+  .faq-item .a{padding:0 24px 22px;color:var(--muted);font-size:15px}
 
-  /* Contact */
+  /* ── Contact ── */
   .contact{background:var(--ice-2);border-top:1px solid var(--line)}
-  .contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-  .c-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;text-align:center}
-  .c-card .ic{width:50px;height:50px;border-radius:14px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 14px}
-  .c-card h3{font-size:17px;color:var(--navy);margin-bottom:6px}
-  .c-card p{color:var(--muted);font-size:14.5px}
-  .c-card a{color:var(--orange);font-weight:600}
+  .c-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .c-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center}
+  .c-card .ic{width:54px;height:54px;border-radius:16px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 16px}
+  .c-card h3{font-size:18px;color:var(--navy);margin-bottom:6px}
+  .c-card p{color:var(--muted);font-size:15px}
+  .c-card a{color:var(--orange);font-weight:600;font-size:17px}
 
-  /* Footer */
-  footer{background:var(--navy);color:#aebfe0;padding:40px 0 30px;font-size:14px}
-  .foot{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap}
-  .foot b{color:#fff;font-family:'Oswald';text-transform:uppercase;letter-spacing:1px;font-size:17px}
+  /* ── Footer ── */
+  footer{background:var(--ink);color:#9fb2d2;padding:44px 0 34px;font-size:14px}
+  .foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+  .foot b{color:#fff;font-family:'Oswald';text-transform:uppercase;letter-spacing:2px;font-size:18px}
   .foot a{color:#fff}
 
-  /* Floating WhatsApp */
-  .float-wa{position:fixed;right:20px;bottom:20px;z-index:60;width:58px;height:58px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(37,211,102,.4)}
-  .float-wa svg{width:30px;height:30px;fill:#fff}
+  /* ── Floating WhatsApp ── */
+  .float-wa{position:fixed;right:22px;bottom:22px;z-index:70;width:60px;height:60px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 28px rgba(37,211,102,.45);transition:.25s}
+  .float-wa:hover{transform:scale(1.08)}
+  .float-wa svg{width:31px;height:31px;fill:#fff}
 
   @media(max-width:960px){
-    .cats,.grid,.tst{grid-template-columns:repeat(2,1fr)}
-    .usp-inner{grid-template-columns:repeat(2,1fr)}
-    .why-grid,.branded,.contact-grid{grid-template-columns:1fr}
-    .nav-links{display:none;position:absolute;top:70px;left:0;right:0;background:#fff;flex-direction:column;padding:20px;gap:16px;border-bottom:1px solid var(--line);align-items:flex-start}
+    .nav-links{display:none;position:absolute;top:74px;left:0;right:0;background:#fff;flex-direction:column;padding:22px;gap:18px;border-bottom:1px solid var(--line);align-items:flex-start}
     .nav-links.open{display:flex}
     .burger{display:block}
+    .hero{min-height:auto}
+    .purity-grid,.branded{grid-template-columns:1fr}
+    .bgrid{grid-template-columns:1fr 1fr}
+    .bgrid .card:first-child{grid-column:auto;grid-row:auto}
+    .tst,.c-grid{grid-template-columns:1fr 1fr}
+    .faq-grid{grid-template-columns:1fr}
+    section{padding:72px 0}
   }
-  @media(max-width:560px){.cats,.grid,.tst{grid-template-columns:1fr}}
+  @media(max-width:600px){
+    .tst,.c-grid{grid-template-columns:1fr}
+    .facts{grid-template-columns:1fr}
+    .hero .stat{padding-right:22px;margin-right:22px}
+    .hero .stat b{font-size:26px}
+  }
 </style>
 </head>
 <body>
 
+<!-- MARQUEE -->
+<div class="marquee"><span>
+  Premium Clear Ice <b>◆</b> RO Purified Water <b>◆</b> In-Store Refills <b>◆</b> Home Delivery <b>◆</b> Branded Bottles <b>◆</b> Ballito, KZN <b>◆</b>&nbsp;
+  Premium Clear Ice <b>◆</b> RO Purified Water <b>◆</b> In-Store Refills <b>◆</b> Home Delivery <b>◆</b> Branded Bottles <b>◆</b> Ballito, KZN <b>◆</b>&nbsp;
+</span></div>
+
+<!-- NAV -->
 <nav>
   <div class="container nav-inner">
     <a href="/" class="logo"><img src="assets/img/logo.png" alt="Snowman" /></a>
     <div class="nav-links" id="navLinks">
-      <a href="#services">What We Offer</a>
-      <a href="shop.html">Shop</a>
-      <a href="#why">Why Snowman</a>
+      <a href="#products">Products</a>
+      <a href="#purity">Purity</a>
+      <a href="#branded">Branded Water</a>
       <a href="#reviews">Reviews</a>
       <a href="#faq">FAQ</a>
-      <a href="#contact">Contact</a>
       <a class="btn btn-wa" href="https://wa.me/27832368368?text=Hi%20Snowman!%20I%27d%20like%20to%20place%20an%20order." target="_blank" rel="noopener">Order on WhatsApp</a>
     </div>
     <button class="burger" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
   </div>
 </nav>
 
-<!-- HERO -->
+<!-- HERO (real photo) -->
 <header class="hero">
-  <div class="hero-bg" style="background-image:url('assets/img/hero-10.jpeg')"></div>
+  <div class="hero-bg" style="background-image:url('assets/img/water-still-5l.png')"></div>
   <div class="container hero-inner">
-    <span class="kicker">Water &amp; Ice · Ballito</span>
-    <h1>Pure Water.<br />Premium <span>Ice.</span><br />To Your Door.</h1>
-    <p>Premium clear ice, RO purified water and custom branded bottles — in-store refill or delivery, made with the highest standards of purity and taste.</p>
+    <span class="kicker"><span class="dot"></span> Water &amp; Ice · Ballito, KwaZulu-Natal</span>
+    <h1><span class="thin">Pure Water.</span><br />Premium <span class="accent">Ice.</span></h1>
+    <p>Premium clear ice, RO purified water and custom branded bottles — in-store refill or delivery to your door, made to the highest standards of purity and taste.</p>
     <div class="cta">
       <a class="btn btn-wa" href="https://wa.me/27832368368?text=Hi%20Snowman!%20I%27d%20like%20to%20place%20an%20order." target="_blank" rel="noopener">Order on WhatsApp</a>
-      <a class="btn btn-ghost" href="shop.html" style="color:#fff;border-color:#fff">Browse the Shop</a>
+      <a class="btn btn-ghost" href="#products">Browse Products</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>2.5+</b><small>Years in Ballito</small></div>
+      <div class="stat"><b>RO</b><small>Purified Water</small></div>
+      <div class="stat"><b>24/7</b><small>Order on WhatsApp</small></div>
     </div>
   </div>
 </header>
 
-<!-- USP -->
-<div class="usp">
-  <div class="container usp-inner">
-    <div class="usp-item"><span class="dot">❄️</span><div><b>Premium clear ice</b><small>Delivered to your doorstep</small></div></div>
-    <div class="usp-item"><span class="dot">💧</span><div><b>RO purified water</b><small>In-store refill or home delivery</small></div></div>
-    <div class="usp-item"><span class="dot">🏷️</span><div><b>Branded bottles</b><small>Your logo or family emblem</small></div></div>
-    <div class="usp-item"><span class="dot">🌊</span><div><b>Ballito since 2023</b><small>Serving our community with care</small></div></div>
-  </div>
-</div>
-
-<!-- SERVICES / CATEGORIES -->
-<section id="services">
+<!-- PRODUCT STRIP -->
+<section id="products">
   <div class="container">
     <div class="sec-head">
-      <div class="eyebrow">What We Offer</div>
-      <h2>Water &amp; Ice Solutions</h2>
-      <p>A range of water and ice solutions, produced with advanced filtration and purification processes.</p>
+      <div>
+        <span class="eyebrow">The Lineup</span>
+        <h2>Water &amp; Ice</h2>
+      </div>
+      <p>Every product, one tap to order — we confirm price and delivery on WhatsApp.</p>
+      <a class="link" href="shop.html">View all 25 products →</a>
     </div>
-    <div class="cats">
-      <a class="cat" href="shop.html">
-        <img src="assets/img/hero-11.jpeg" alt="Ice" />
-        <div class="label">Ice Production &amp; Sales <span class="arr">→</span></div>
-      </a>
-      <a class="cat" href="shop.html">
-        <img src="assets/img/hero-15.jpeg" alt="RO water" />
-        <div class="label">RO Water Supply <span class="arr">→</span></div>
-      </a>
-      <a class="cat" href="shop.html">
-        <img src="assets/img/hero-OIG4-2.jpeg" alt="Branded water" />
-        <div class="label">Personal Branded Water <span class="arr">→</span></div>
-      </a>
-      <a class="cat" href="shop.html">
-        <img src="assets/img/hero-12-1.jpeg" alt="Dispensers" />
-        <div class="label">Fountains &amp; Dispensers <span class="arr">→</span></div>
-      </a>
-    </div>
+    <div class="strip" id="strip"></div>
   </div>
 </section>
 
-<!-- FEATURED -->
-<section id="featured" style="padding-top:0">
-  <div class="container">
-    <div class="sec-head">
-      <div class="eyebrow">Shop</div>
-      <h2>Bestsellers</h2>
-      <p>Order any product in one tap — we'll confirm price and delivery on WhatsApp.</p>
+<!-- PURITY -->
+<section class="purity" id="purity">
+  <div class="container purity-grid">
+    <div>
+      <span class="eyebrow">Why Snowman</span>
+      <h2>Committed to Purity &amp; Taste</h2>
+      <p class="lead">Our mission is to enhance your health. We ensure that our water and ice products meet the highest standards of purity and taste — with over 2.5 years of experience in Ballito, we know how to cater to the needs of our community with efficiency and care.</p>
+      <div class="facts">
+        <div class="fact"><span class="n">01</span><b>Advanced Purification</b><small>Produced using advanced filtration and purification processes.</small></div>
+        <div class="fact"><span class="n">02</span><b>Crystal-Clear Ice</b><small>Clear, premium ice meeting stringent quality standards.</small></div>
+        <div class="fact"><span class="n">03</span><b>Fresh, Clean Water</b><small>RO purified water for refills and home delivery.</small></div>
+        <div class="fact"><span class="n">04</span><b>Reliable Delivery</b><small>One-time or regular scheduled deliveries — we've got you covered.</small></div>
+      </div>
     </div>
-    <div class="grid" id="featuredGrid"></div>
-    <div style="text-align:center;margin-top:34px"><a class="btn btn-navy" href="shop.html">View All Products →</a></div>
+    <div class="pic"><img src="assets/img/10-litre.png" alt="Snowman 10 litre water" loading="lazy" /></div>
   </div>
 </section>
 
-<!-- WHY -->
-<section class="why" id="why">
+<!-- BESTSELLERS -->
+<section id="bestsellers" style="padding-top:0">
   <div class="container">
     <div class="sec-head">
-      <div class="eyebrow">Why Snowman</div>
-      <h2>Committed to Purity</h2>
-      <p>Our mission is to enhance your health — water and ice that meet the highest standards of purity and taste.</p>
+      <div>
+        <span class="eyebrow">Customer Favourites</span>
+        <h2>Bestsellers</h2>
+      </div>
+      <a class="link" href="shop.html">Full shop →</a>
     </div>
-    <div class="why-grid">
-      <div class="why-card"><div class="ic">💧</div><h3>Advanced Purification</h3><p>Our water and ice are produced using advanced filtration and purification processes, ensuring the highest quality and purity.</p></div>
-      <div class="why-card"><div class="ic">❄️</div><h3>Crystal-Clear Ice</h3><p>We focus on delivering crystal-clear ice and fresh, clean water that meet stringent quality standards.</p></div>
-      <div class="why-card"><div class="ic">🤝</div><h3>Community-First Service</h3><p>With over 2.5 years of experience in Ballito, we cater to the needs of our community with efficiency and care.</p></div>
-      <div class="why-card"><div class="ic">📦</div><h3>Delivery &amp; Refills</h3><p>One-time or regular scheduled deliveries of ice and water — plus convenient in-store refills.</p></div>
-    </div>
+    <div class="bgrid" id="bgrid"></div>
   </div>
 </section>
 
@@ -256,21 +272,24 @@
   <div class="container">
     <div class="branded">
       <div class="txt">
-        <h2>Personal Branded Water</h2>
-        <p>Stand out with customized water bottles featuring your family crest or business logo. Perfect for events, weddings, functions and brand promotion.</p>
+        <span class="eyebrow" style="color:#ffe0c2">Personal Branded Water</span>
+        <h2>Your Logo. Your Water.</h2>
+        <p>Customized water bottles featuring your family crest or business logo — for events, weddings, functions and brand promotion. Stand out with water that carries your name.</p>
         <a class="btn" href="https://wa.me/27832368368?text=Hi%20Snowman!%20I%27d%20like%20to%20order%20personal%20branded%20water%20bottles." target="_blank" rel="noopener">Get a Quote on WhatsApp</a>
       </div>
-      <div class="pic" style="background-image:url('assets/img/hero-OIG3-1.jpeg')"></div>
+      <div class="pic" style="background-image:url('assets/img/water-still-330ml.png')"></div>
     </div>
   </div>
 </section>
 
 <!-- TESTIMONIALS -->
-<section id="reviews" style="padding-top:0">
+<section id="reviews">
   <div class="container">
     <div class="sec-head">
-      <div class="eyebrow">Reviews</div>
-      <h2>What Our Clients Say</h2>
+      <div>
+        <span class="eyebrow">Reviews</span>
+        <h2>Loved in Ballito</h2>
+      </div>
     </div>
     <div class="tst" id="tstGrid"></div>
   </div>
@@ -280,12 +299,14 @@
 <section id="faq" style="padding-top:0">
   <div class="container">
     <div class="sec-head">
-      <div class="eyebrow">FAQ</div>
-      <h2>Frequently Asked Questions</h2>
+      <div>
+        <span class="eyebrow">FAQ</span>
+        <h2>Questions, Answered</h2>
+      </div>
     </div>
-    <div class="faq">
+    <div class="faq-grid">
       <details class="faq-item"><summary>What products and services do you offer? <span class="plus">+</span></summary><div class="a">We offer a range of water and ice solutions, including: Ice Production and Sales — premium, clear ice delivered to your doorstep. RO Water Supply — purified water available for in-store refill or home delivery. Personal Branded Water — customized water bottles with your logo or family emblem. Water-Related Products — water fountains, dispensers and RO machines for both domestic and industrial use.</div></details>
-      <details class="faq-item"><summary>What makes your water and ice different from others? <span class="plus">+</span></summary><div class="a">Our water and ice are produced using advanced filtration and purification processes, ensuring the highest quality and purity. We focus on delivering crystal-clear ice and fresh, clean water that meet stringent quality standards.</div></details>
+      <details class="faq-item"><summary>What makes your water and ice different? <span class="plus">+</span></summary><div class="a">Our water and ice are produced using advanced filtration and purification processes, ensuring the highest quality and purity. We focus on delivering crystal-clear ice and fresh, clean water that meet stringent quality standards.</div></details>
       <details class="faq-item"><summary>How can I place an order? <span class="plus">+</span></summary><div class="a">You can place an order by contacting us via phone at <a href="tel:0832368368">083 2368 368</a> or email at <a href="mailto:info@snowmankzn.co.za">info@snowmankzn.co.za</a>. You can also order on WhatsApp — simply tap the WhatsApp button and tell us what you need.</div></details>
       <details class="faq-item"><summary>Do you offer delivery services? <span class="plus">+</span></summary><div class="a">Yes, we offer reliable delivery services for both our ice and water products. Whether you need a one-time delivery or regular scheduled deliveries, we've got you covered.</div></details>
     </div>
@@ -296,13 +317,15 @@
 <section class="contact" id="contact">
   <div class="container">
     <div class="sec-head">
-      <div class="eyebrow">Contact</div>
-      <h2>Get In Touch</h2>
-      <p>Ballito, KwaZulu-Natal — we're here to help.</p>
+      <div>
+        <span class="eyebrow">Contact</span>
+        <h2>Get In Touch</h2>
+      </div>
+      <p>Ballito, KwaZulu-Natal — call, WhatsApp or email us.</p>
     </div>
-    <div class="contact-grid">
+    <div class="c-grid">
       <div class="c-card"><div class="ic">📞</div><h3>Call Us</h3><p><a href="tel:0832368368">083 2368 368</a></p></div>
-      <div class="c-card"><div class="ic">💬</div><h3>WhatsApp</h3><p><a href="https://wa.me/27832368368" target="_blank" rel="noopener">Chat on WhatsApp</a></p></div>
+      <div class="c-card"><div class="ic">💬</div><h3>WhatsApp</h3><p><a href="https://wa.me/27832368368" target="_blank" rel="noopener">Chat with us →</a></p></div>
       <div class="c-card"><div class="ic">✉️</div><h3>Email</h3><p><a href="mailto:info@snowmankzn.co.za">info@snowmankzn.co.za</a></p></div>
     </div>
   </div>
@@ -321,40 +344,54 @@
 </a>
 
 <script>
-// ── Featured products (real, from snowmankzn.co.za) ──
-const FEATURED = ["3kg-ice-delivered","dry-ice","ro-refill","water-still-5l","10l-square-with-a-tap","water-dispenser-1bottle","12-x-500ml-still","water-still-330ml"];
+// Real products from snowmankzn.co.za — real photos only
 const PRODUCTS = [
-{"name":"3kg Ice – delivered","slug":"3kg-ice-delivered","img":"3kg-ice-delivered.jpeg","desc":"Premium clear ice, delivered.","cat":"ice"},
-{"name":"DRY ICE","slug":"dry-ice","img":"dry-ice.jpeg","desc":"Dry ice for events and special use.","cat":"ice"},
-{"name":"RO Refill","slug":"ro-refill","img":"ro-refill.jpeg","desc":"Purified RO water refill.","cat":"refill"},
-{"name":"RO Refill per liter","slug":"ro-refill-per-liter","img":"ro-refill-per-liter.jpeg","desc":"Purified RO water, per litre.","cat":"refill"},
-{"name":"Water – Still – 5L","slug":"water-still-5l","img":"water-still-5l.jpeg","desc":"Still water, 5 litre.","cat":"water"},
-{"name":"10L Square With A Tap","slug":"10l-square-with-a-tap","img":"10l-square-with-a-tap.jpeg","desc":"10 litre square bottle with tap.","cat":"dispenser"},
-{"name":"Water Dispenser + 1 Bottle","slug":"water-dispenser-1bottle","img":"water-dispenser-1bottle.jpeg","desc":"Dispenser with a bottle.","cat":"dispenser"},
-{"name":"12 X 500ml Still","slug":"12-x-500ml-still","img":"12-x-500ml-still.jpeg","desc":"12 pack of 500ml still water.","cat":"water"},
-{"name":"Water – Still – 330ml","slug":"water-still-330ml","img":"water-still-330ml.jpeg","desc":"Still water, 330ml.","cat":"water"}
+{"name":"3kg Ice – delivered","slug":"3kg-ice-delivered","img":"3kg-ice-delivered.png","cat":"ice"},
+{"name":"DRY ICE","slug":"dry-ice","img":"dry-ice.jpg","cat":"ice"},
+{"name":"RO Refill","slug":"ro-refill","img":"ro-refill.png","cat":"refill"},
+{"name":"RO Refill per liter","slug":"ro-refill-per-liter","img":"ro-refill-per-liter.png","cat":"refill"},
+{"name":"Water – Still – 5L","slug":"water-still-5l","img":"water-still-5l.png","cat":"water"},
+{"name":"Water – Still – 1.5L","slug":"water-still-1-5l","img":"water-still-1-5l.png","cat":"water"},
+{"name":"Water – Still – 750ml","slug":"water-still-750ml","img":"water-still-750ml.png","cat":"water"},
+{"name":"Water – Still – 500ml","slug":"water-still-500ml","img":"water-still-500ml.png","cat":"water"},
+{"name":"Water – Still – 330ml","slug":"water-still-330ml","img":"water-still-330ml.png","cat":"water"},
+{"name":"12 X 500ml Still","slug":"12-x-500ml-still","img":"12-x-500ml-still.png","cat":"water"},
+{"name":"24 X 500ml Still","slug":"24-x-500ml-still","img":"24-x-500ml-still.png","cat":"water"},
+{"name":"6 X 750ml Pump Still","slug":"6-x-750ml-pump-still","img":"6-x-750ml-pump-still.png","cat":"water"},
+{"name":"10 Litre","slug":"10-litre","img":"10-litre.png","cat":"water"},
+{"name":"10L Square With A Tap","slug":"10l-square-with-a-tap","img":"10l-square-with-a-tap.png","cat":"dispenser"},
+{"name":"10L Drum Blue With A Tap","slug":"10l-drum-blue-with-a-tap","img":"10l-drum-blue-with-a-tap.png","cat":"dispenser"},
+{"name":"20 Litre Blue Square with Tap","slug":"20-litre-blue-square-with-tap","img":"20-litre-blue-square-with-tap.png","cat":"dispenser"},
+{"name":"20L Dispenser Bottle With Handle","slug":"20l-dispenser-bottle-with-handle","img":"20l-dispenser-bottle-with-handle.png","cat":"dispenser"},
+{"name":"Refill 20L Dispenser bottle with cap","slug":"refill-20l-dispencer-bottle-with-cap","img":"refill-20l-dispencer-bottle-with-cap.png","cat":"refill"},
+{"name":"Water Dispenser + 1 Bottle","slug":"water-dispenser-1bottle","img":"water-dispenser-1bottle.png","cat":"dispenser"}
 ];
+const CAT = {water:"Still Water",ice:"Ice",refill:"Refills",dispenser:"Dispensers & Bottles"};
+const wa = (n) => "https://wa.me/27832368368?text=" + encodeURIComponent("Hi Snowman! I'd like to order: " + n);
 
-function waOrder(name){
-  return "https://wa.me/27832368368?text=" + encodeURIComponent("Hi Snowman! I'd like to order: " + name);
-}
-function card(p){
-  return '<div class="card"><div class="imgbox"><img src="assets/img/' + p.img + '" alt="' + p.name + '" loading="lazy" /></div><div class="body"><h3>' + p.name + '</h3><p>' + p.desc + '</p><a class="wa-sm" href="' + waOrder(p.name) + '" target="_blank" rel="noopener">Order on WhatsApp</a></div></div>';
-}
-document.getElementById("featuredGrid").innerHTML = FEATURED.map(s => PRODUCTS.find(p => p.slug === s)).filter(Boolean).map(card).join("");
+// Strip
+document.getElementById("strip").innerHTML = PRODUCTS.slice(0,10).map(p =>
+  '<div class="p-card"><div class="imgbox"><img src="assets/img/' + p.img + '" alt="' + p.name + '" loading="lazy" /></div><div class="body"><span class="tag">' + CAT[p.cat] + '</span><h3>' + p.name + '</h3><a class="wa-sm" href="' + wa(p.name) + '" target="_blank" rel="noopener">Order on WhatsApp</a></div></div>'
+).join("");
 
-// ── Real testimonials from snowmankzn.co.za ──
+// Bestsellers editorial grid
+const BEST = ["3kg-ice-delivered","dry-ice","10-litre","20l-dispenser-bottle-with-handle","ro-refill","water-still-500ml","12-x-500ml-still","water-still-5l"];
+document.getElementById("bgrid").innerHTML = BEST.map(s => {
+  const p = PRODUCTS.find(x => x.slug === s);
+  return '<a class="card" href="' + wa(p.name) + '" target="_blank" rel="noopener"><img src="assets/img/' + p.img + '" alt="' + p.name + '" loading="lazy" /><div class="cap"><span>Order on WhatsApp</span><h3>' + p.name + '</h3></div></a>';
+}).join("");
+
+// Real testimonials (verbatim from snowmankzn.co.za)
 const TESTIMONIALS = [
   ["Snowman Water and Ice has been a game-changer for my family. The quality of their water and ice is unmatched, and their service is always prompt and friendly. We couldn't be happier!","Abbie Carter"],
   ["Our business relies on having a steady supply of pure water and high-quality ice, and Snowman Water and Ice never disappoints. Their personalized service and attention to detail are truly outstanding.","Dominic Peltier"],
   ["For every event we organize, Snowman Water and Ice is our go-to for ice and water. Their products are always top-notch and the team is incredibly reliable. They help make our events a success every time.","Lola Bailey"],
   ["I love the personalized branded water bottles from Snowman Water and Ice. Not only do they look great, but the water is always refreshing and pure. It's a fantastic way to promote my brand while staying hydrated.","Rajesh K."],
   ["Hi, just need to tell you how amazing Sabelo is. He is always on top of my orders and such a lovely guy.","Justin Harris","Tik Tok influencer"],
-  ["We no longer drink tap water and our preferred provider of bottled water is Snowman in Ballito. I've just been really impressed with their service and staff.","Walk In Customer"],
-  ["You guys are amazing and place a special product on the shelves, the sayings on the labels are really cool.","Walk In Customer"]
+  ["We no longer drink tap water and our preferred provider of bottled water is Snowman in Ballito. I've just been really impressed with their service and staff.","Walk In Customer"]
 ];
 document.getElementById("tstGrid").innerHTML = TESTIMONIALS.map(t =>
-  '<div class="t-card"><div class="stars">★★★★★</div><p>"' + t[0] + '"</p><b>' + t[1] + '</b>' + (t[2] ? '<small>' + t[2] + '</small>' : '') + '</div>'
+  '<div class="t-card"><div class="qm">"</div><div class="stars">★★★★★</div><p>' + t[0] + '</p><b>' + t[1] + '</b>' + (t[2] ? '<small>' + t[2] + '</small>' : '') + '</div>'
 ).join("");
 </script>
 </body>
