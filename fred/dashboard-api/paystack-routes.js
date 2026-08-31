@@ -13,6 +13,18 @@ const execFileP = promisify(execFile)
 const PAYSTACK_BASE = 'https://api.paystack.co'
 const PLANS_FILE = path.join(process.cwd(), 'data', 'plan-codes.json')
 
+// ── Snowman store orders (log-only, no account provisioning) ──
+const SNOWMAN_ORDERS_FILE = path.join(process.cwd(), 'data', 'snowman-orders.json')
+function loadSnowmanOrders() {
+  try { return JSON.parse(fs.readFileSync(SNOWMAN_ORDERS_FILE, 'utf8')) } catch { return [] }
+}
+function saveSnowmanOrder(order) {
+  const orders = loadSnowmanOrders()
+  if (orders.some((o) => o.reference === order.reference)) return
+  orders.push(order)
+  try { fs.writeFileSync(SNOWMAN_ORDERS_FILE, JSON.stringify(orders, null, 2), 'utf8') } catch (e) { console.error('[Snowman] order save error:', e.message) }
+}
+
 // Products & packages catalogue (single source: storefront data)
 import { PRODUCTS, PACKAGES, SINGLE_USE_PRICES } from '../storefront/src/data/products.js'
 
@@ -255,9 +267,28 @@ export default function setupPaystackRoutes(app, { query, run, saveDb }) {
         // Trial start: user authorised card at checkout, first charge in 7 days
         await handleProvision('subscription', `sub:${event.data.subscription_code || 'unknown'}`)
       } else if (event.event === 'charge.success') {
-        // Single purchases, or first subscription charge (trial ended)
-        const kind = event.data.metadata?.kind === 'single' ? 'single' : 'subscription'
-        await handleProvision(kind, event.data.reference)
+        if (event.data.metadata?.source === 'snowman') {
+          // Snowman store order — log only (no AutoEffortless account/purchase provisioning)
+          const meta = event.data.metadata || {}
+          let items = []
+          try { items = JSON.parse(meta.items_json || '[]') } catch {}
+          saveSnowmanOrder({
+            reference: event.data.reference,
+            email: event.data.customer?.email,
+            name: meta.customer_name || '',
+            phone: meta.customer_phone || '',
+            delivery: meta.delivery || '',
+            address: meta.address || '',
+            items,
+            amount: (event.data.amount || 0) / 100,
+            currency: event.data.currency || 'ZAR',
+            date: new Date().toISOString(),
+          })
+        } else {
+          // Single purchases, or first subscription charge (trial ended)
+          const kind = event.data.metadata?.kind === 'single' ? 'single' : 'subscription'
+          await handleProvision(kind, event.data.reference)
+        }
       } else if (event.event === 'subscription.disable' || event.event === 'subscription.cancel') {
         const email = event.data.customer?.email
         if (email) {
@@ -279,6 +310,74 @@ export default function setupPaystackRoutes(app, { query, run, saveDb }) {
       if (!getSecret()) return res.status(503).json({ error: 'Paystack not configured yet' })
       const plans = await paystack('/plan?perPage=100')
       res.json(plans)
+    } catch (e) {
+      res.status(500).json({ error: e.message })
+    }
+  })
+
+  // ── Snowman store: initialize checkout (custom amount, no plan) ──
+  app.post('/api/snowman/checkout', async (req, res) => {
+    try {
+      const { email, name, phone, delivery, address, amount_cents, items } = req.body || {}
+      if (!email || !amount_cents || amount_cents < 100) {
+        return res.status(400).json({ error: 'email and amount_cents (>= 100) are required' })
+      }
+      if (!getSecret()) return res.status(503).json({ error: 'Paystack not configured' })
+      const tx = await paystack('/transaction/initialize', 'POST', {
+        email: String(email).trim(),
+        amount: Math.round(amount_cents),
+        metadata: {
+          source: 'snowman',
+          customer_name: String(name || '').slice(0, 100),
+          customer_phone: String(phone || '').slice(0, 30),
+          delivery: String(delivery || 'pickup'),
+          address: String(address || '').slice(0, 200),
+          items_json: JSON.stringify(Array.isArray(items) ? items : []),
+        },
+        callback_url: 'https://snowman-v2.autoeffortless.com/checkout.html',
+        channels: ['card'],
+      })
+      res.json({ authorization_url: tx.authorization_url, reference: tx.reference })
+    } catch (e) {
+      console.error('[Snowman checkout] error:', e.message)
+      res.status(502).json({ error: e.message })
+    }
+  })
+
+  // ── Snowman store: verify + fetch order after payment ──
+  app.get('/api/snowman/order', async (req, res) => {
+    try {
+      const ref = String(req.query.reference || '').trim()
+      if (!ref) return res.status(400).json({ error: 'reference required' })
+      const orders = loadSnowmanOrders()
+      const order = orders.find((o) => o.reference === ref)
+      if (order) return res.json({ status: 'success', order })
+      if (!getSecret()) return res.json({ status: 'pending' })
+      try {
+        const data = await paystack(`/transaction/verify/${encodeURIComponent(ref)}`)
+        if (data.status === 'success') {
+          const meta = data.metadata || {}
+          let items = []
+          try { items = JSON.parse(meta.items_json || '[]') } catch {}
+          const o = {
+            reference: ref,
+            email: data.customer?.email || '',
+            name: meta.customer_name || '',
+            phone: meta.customer_phone || '',
+            delivery: meta.delivery || '',
+            address: meta.address || '',
+            items,
+            amount: (data.amount || 0) / 100,
+            currency: data.currency || 'ZAR',
+            date: new Date().toISOString(),
+          }
+          saveSnowmanOrder(o)
+          return res.json({ status: 'success', order: o })
+        }
+        return res.json({ status: data.status || 'pending' })
+      } catch (e) {
+        return res.json({ status: 'pending' })
+      }
     } catch (e) {
       res.status(500).json({ error: e.message })
     }

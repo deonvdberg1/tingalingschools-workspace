@@ -4,88 +4,141 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Snowman — Water &amp; Ice | Ballito</title>
-<meta name="description" content="Premium clear ice, RO purified water and branded bottles in Ballito. In-store refill or delivery to your door." />
-<link rel="icon" href="assets/img/logo.png" />
+<meta name="description" content="Premium clear ice, RO purified water and branded bottles in Ballito. Shop online or order on WhatsApp." />
+<link rel="icon" href="assets/img/logo.jpg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-  :root{
-    --ink:#0a1424; --navy:#0a1f44; --navy-2:#10305f; --ice:#f3f7fb; --ice-2:#e5edf6;
-    --orange:#da5800; --orange-2:#ff6a00; --orange-soft:#ffe8d6;
-    --muted:#5d6f8a; --line:#d8e3ef; --white:#fff;
-  }
+
+  :root{--ink:#0a1424;--navy:#0a1f44;--navy-2:#10305f;--ice:#f3f7fb;--ice-2:#e5edf6;--orange:#da5800;--orange-2:#ff6a00;--orange-soft:#ffe8d6;--muted:#5d6f8a;--line:#d8e3ef;--green:#25d366}
   *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth}
   body{font-family:'Outfit',sans-serif;color:var(--ink);background:var(--ice);line-height:1.65;-webkit-font-smoothing:antialiased}
   h1,h2,h3,.display{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:.5px;line-height:1.02;font-weight:600}
   img{max-width:100%;display:block}
   a{text-decoration:none;color:inherit}
   .container{max-width:1180px;margin:0 auto;padding:0 24px}
   .eyebrow{font-weight:700;letter-spacing:3px;text-transform:uppercase;font-size:12.5px;color:var(--orange)}
-  .btn{display:inline-flex;align-items:center;gap:10px;font-weight:600;border-radius:999px;padding:14px 26px;font-size:15px;transition:.25s;cursor:pointer;border:none;letter-spacing:.2px}
-  .btn-wa{background:var(--orange);color:#fff;box-shadow:0 8px 22px rgba(218,88,0,.35)}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-weight:600;border-radius:999px;padding:13px 24px;font-size:14.5px;transition:.25s;cursor:pointer;border:none;letter-spacing:.2px;font-family:'Outfit'}
+  .btn svg{width:17px;height:17px}
+  .btn-wa{background:var(--orange);color:#fff;box-shadow:0 8px 22px rgba(218,88,0,.32)}
   .btn-wa:hover{background:var(--orange-2);transform:translateY(-2px)}
   .btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.55)}
   .btn-ghost:hover{background:rgba(255,255,255,.12)}
   .btn-dark{background:var(--navy);color:#fff}
   .btn-dark:hover{background:var(--navy-2);transform:translateY(-2px)}
-
-  /* ── Announcement marquee ── */
   .marquee{background:var(--navy);color:#fff;overflow:hidden;padding:11px 0;white-space:nowrap}
   .marquee span{display:inline-block;font-family:'Oswald';text-transform:uppercase;letter-spacing:2.5px;font-size:13.5px;animation:scroll 26s linear infinite}
   .marquee b{color:var(--orange);font-weight:600}
   @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-
-  /* ── Nav ── */
-  nav{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
-  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:74px}
+  nav{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:74px;gap:16px}
   .logo img{height:42px;width:auto}
-  .nav-links{display:flex;align-items:center;gap:30px;font-weight:500;font-size:14.5px;color:var(--ink)}
+  .nav-links{display:flex;align-items:center;gap:28px;font-weight:500;font-size:14.5px;color:var(--ink)}
   .nav-links a:hover{color:var(--orange)}
-  .burger{display:none;background:none;border:none;font-size:28px;color:var(--navy);cursor:pointer}
-
-  /* ── Hero ── */
-  .hero{position:relative;min-height:88vh;display:flex;align-items:flex-end;color:#fff;overflow:hidden;background:var(--navy)}
-  .hero-bg{position:absolute;inset:0;background-size:cover;background-position:center 30%}
-  .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,20,36,.25) 0%,rgba(10,20,36,.55) 55%,rgba(10,20,36,.92) 100%)}
-  .hero-inner{position:relative;padding:120px 0 70px;width:100%}
-  .hero .kicker{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(8px);color:#fff;font-weight:600;font-size:12.5px;letter-spacing:2.5px;text-transform:uppercase;padding:9px 18px;border-radius:999px;margin-bottom:26px}
-  .hero .kicker .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);display:inline-block}
-  .hero h1{font-size:clamp(52px,9.5vw,124px);letter-spacing:1px;max-width:900px}
-  .hero h1 .thin{font-weight:400;color:rgba(255,255,255,.92)}
-  .hero h1 .accent{color:var(--orange-2)}
-  .hero p{font-size:19px;color:#dbe7f5;max-width:560px;margin:22px 0 34px;font-weight:300}
-  .hero .cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:56px}
-  .hero .stats{display:flex;gap:0;border-top:1px solid rgba(255,255,255,.22);padding-top:26px;flex-wrap:wrap}
-  .hero .stat{padding-right:44px;margin-right:44px;border-right:1px solid rgba(255,255,255,.22)}
-  .hero .stat:last-child{border-right:none;margin-right:0;padding-right:0}
-  .hero .stat b{display:block;font-family:'Oswald';font-size:34px;line-height:1;color:#fff}
-  .hero .stat small{font-size:12.5px;letter-spacing:1.6px;text-transform:uppercase;color:#aebfe0}
-
-  /* ── Sections ── */
+  .nav-right{display:flex;align-items:center;gap:14px}
+  .cart-btn{position:relative;background:none;border:1.5px solid var(--line);border-radius:12px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:var(--navy);cursor:pointer;transition:.2s}
+  .cart-btn:hover{border-color:var(--orange);color:var(--orange)}
+  .cart-btn svg{width:21px;height:21px}
+  .cart-badge{position:absolute;top:-7px;right:-7px;background:var(--orange);color:#fff;font-size:11px;font-weight:700;min-width:20px;height:20px;border-radius:999px;display:none;align-items:center;justify-content:center;padding:0 5px;border:2px solid #fff}
+  .burger{display:none;background:none;border:none;color:var(--navy);cursor:pointer;padding:6px}
+  .burger svg{width:26px;height:26px}
   section{padding:96px 0}
   .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;margin-bottom:46px;flex-wrap:wrap}
   .sec-head h2{font-size:clamp(34px,5vw,58px);color:var(--navy);margin-top:10px}
   .sec-head p{color:var(--muted);max-width:420px;font-size:15.5px}
   .sec-head .link{color:var(--orange);font-weight:600;font-size:14.5px;white-space:nowrap}
+  footer{background:var(--ink);color:#9fb2d2;padding:44px 0 34px;font-size:14px}
+  .foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+  .foot b{color:#fff;font-family:'Oswald';text-transform:uppercase;letter-spacing:2px;font-size:18px}
+  .foot a{color:#fff}
+  .float-wa{position:fixed;right:22px;bottom:22px;z-index:70;width:60px;height:60px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 28px rgba(37,211,102,.45);transition:.25s}
+  .float-wa:hover{transform:scale(1.08)}
+  .float-wa svg{width:31px;height:31px;fill:#fff}
+  /* Cart drawer */
+  .sc-overlay{position:fixed;inset:0;background:rgba(10,20,36,.55);z-index:80;backdrop-filter:blur(2px)}
+  .sc-drawer{position:fixed;top:0;right:0;bottom:0;width:min(430px,100vw);background:#fff;z-index:81;display:flex;flex-direction:column;box-shadow:-12px 0 40px rgba(10,20,36,.25);font-family:'Outfit'}
+  .sc-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid var(--line)}
+  .sc-head b{font-family:'Oswald';font-size:19px;color:var(--navy);text-transform:uppercase;letter-spacing:.5px}
+  .sc-head small{display:block;color:var(--muted);font-size:12.5px;font-weight:400}
+  .sc-x{background:var(--ice);border:none;border-radius:10px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:var(--navy);cursor:pointer}
+  .sc-x svg{width:18px;height:18px}
+  .sc-items{flex:1;overflow-y:auto;padding:18px 22px;display:flex;flex-direction:column;gap:14px}
+  .sc-item{display:flex;gap:14px;align-items:center;background:var(--ice);border:1px solid var(--line);border-radius:14px;padding:12px}
+  .sc-item img{width:64px;height:64px;object-fit:cover;border-radius:10px;background:#fff}
+  .sc-i-info{flex:1;min-width:0}
+  .sc-i-info b{font-size:14px;color:var(--navy);display:block;line-height:1.25}
+  .sc-i-info span{color:var(--orange);font-weight:600;font-size:13px}
+  .sc-qty{display:flex;align-items:center;gap:10px;margin-top:8px}
+  .sc-qty button{width:26px;height:26px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--navy);font-size:15px;cursor:pointer}
+  .sc-qty span{font-weight:600;min-width:18px;text-align:center}
+  .sc-i-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+  .sc-i-right b{color:var(--navy);font-size:14px}
+  .sc-del{background:none;border:none;color:#c0392b;cursor:pointer}
+  .sc-del svg{width:16px;height:16px}
+  .sc-foot{border-top:1px solid var(--line);padding:18px 22px 22px;display:flex;flex-direction:column;gap:10px}
+  .sc-total{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .sc-total span{color:var(--muted);font-weight:500}
+  .sc-total b{font-family:'Oswald';font-size:22px;color:var(--navy)}
+  .sc-checkout{background:var(--orange);color:#fff;border:none;border-radius:999px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+  .sc-checkout:hover{background:var(--orange-2)}
+  .sc-checkout svg{width:17px;height:17px}
+  .sc-checkout:disabled{opacity:.6;cursor:default}
+  .sc-wa{background:var(--green);color:#fff;border-radius:999px;padding:13px;font-weight:600;font-size:14px;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px}
+  .sc-wa svg{width:18px;height:18px}
+  .sc-empty{color:var(--muted);text-align:center;font-size:14px;padding:26px 10px}
+  .sc-form{display:flex;flex-direction:column;gap:10px;padding:16px 22px;border-top:1px dashed var(--line)}
+  .sc-form h4{font-family:'Oswald';font-size:16px;color:var(--navy);text-transform:uppercase}
+  .sc-form input{padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;font-family:'Outfit';outline:none;background:var(--ice)}
+  .sc-form input:focus{border-color:var(--orange)}
+  .sc-deliv{display:flex;gap:18px;font-size:14px;color:var(--ink);padding:2px 0}
+  .sc-deliv label{display:flex;align-items:center;gap:7px;cursor:pointer}
+  .sc-secure{font-size:11.5px;color:var(--muted);text-align:center;display:flex;align-items:center;justify-content:center;gap:5px}
+  .sc-secure svg{width:12px;height:12px}
+  @media(max-width:960px){
+    .nav-links{display:none;position:absolute;top:74px;left:0;right:0;background:#fff;flex-direction:column;padding:22px;gap:18px;border-bottom:1px solid var(--line);align-items:flex-start}
+    .nav-links.open{display:flex}
+    .burger{display:block}
+    section{padding:72px 0}
+  }
 
-  /* ── Product strip (horizontal scroll) ── */
+  .hero{position:relative;min-height:88vh;display:flex;align-items:flex-end;color:#fff;overflow:hidden;background:var(--navy)}
+  .hero-bg{position:absolute;inset:0;background-size:cover;background-position:center 28%}
+  .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,20,36,.28) 0%,rgba(10,20,36,.5) 55%,rgba(10,20,36,.94) 100%)}
+  .hero-inner{position:relative;padding:120px 0 70px;width:100%}
+  .hero .kicker{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(8px);color:#fff;font-weight:600;font-size:12.5px;letter-spacing:2.5px;text-transform:uppercase;padding:9px 18px;border-radius:999px;margin-bottom:26px}
+  .hero .kicker .dot{width:8px;height:8px;border-radius:50%;background:var(--orange-2);display:inline-block}
+  .hero h1{font-size:clamp(52px,9.5vw,124px);letter-spacing:1px;max-width:900px}
+  .hero h1 .thin{font-weight:400;color:rgba(255,255,255,.92)}
+  .hero h1 .accent{color:var(--orange-2)}
+  .hero p{font-size:19px;color:#dbe7f5;max-width:560px;margin:22px 0 34px;font-weight:300}
+  .hero .cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:56px}
+  .hero .cta .btn svg{width:18px;height:18px}
+  .hero .stats{display:flex;gap:0;border-top:1px solid rgba(255,255,255,.22);padding-top:26px;flex-wrap:wrap}
+  .hero .stat{padding-right:44px;margin-right:44px;border-right:1px solid rgba(255,255,255,.22)}
+  .hero .stat:last-child{border-right:none;margin-right:0;padding-right:0}
+  .hero .stat b{display:block;font-family:'Oswald';font-size:34px;line-height:1;color:#fff}
+  .hero .stat small{font-size:12.5px;letter-spacing:1.6px;text-transform:uppercase;color:#aebfe0}
   .strip{display:flex;gap:22px;overflow-x:auto;padding:6px 4px 26px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
   .strip::-webkit-scrollbar{height:6px}
   .strip::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}
-  .p-card{min-width:300px;max-width:300px;scroll-snap-align:start;background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:.3s}
+  .p-card{min-width:290px;max-width:290px;scroll-snap-align:start;background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:.3s}
   .p-card:hover{transform:translateY(-6px);box-shadow:0 22px 48px rgba(10,31,68,.14)}
-  .p-card .imgbox{background:var(--ice-2);aspect-ratio:16/11;overflow:hidden;display:flex;align-items:center;justify-content:center}
+  .p-card .imgbox{background:var(--ice-2);aspect-ratio:16/11;overflow:hidden}
   .p-card .imgbox img{width:100%;height:100%;object-fit:cover;transition:.5s}
   .p-card:hover .imgbox img{transform:scale(1.06)}
-  .p-card .body{padding:18px 18px 20px;display:flex;flex-direction:column;gap:12px;flex:1}
-  .p-card .tag{align-self:flex-start;background:var(--orange-soft);color:var(--orange);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;padding:4px 10px;border-radius:6px}
-  .p-card h3{font-size:19px;color:var(--navy);flex:1}
-  .p-card .wa-sm{background:var(--navy);color:#fff;border:none;border-radius:999px;padding:12px 16px;font-weight:600;font-size:13.5px;cursor:pointer;text-align:center;transition:.25s}
-  .p-card .wa-sm:hover{background:var(--orange)}
-
-  /* ── Purity / why (split) ── */
+  .p-card .body{padding:16px 16px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .row1{display:flex;justify-content:space-between;align-items:center}
+  .p-card .tag{background:var(--orange-soft);color:var(--orange);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.1px;padding:3px 9px;border-radius:6px}
+  .p-card .price{font-family:'Oswald';font-size:18px;color:var(--navy)}
+  .p-card h3{font-size:16.5px;color:var(--navy);line-height:1.25;flex:1}
+  .p-card .actions{display:flex;gap:8px}
+  .p-card .add{flex:1;background:var(--navy);color:#fff;border:none;border-radius:10px;padding:11px;font-weight:600;font-size:13.5px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;font-family:'Outfit';transition:.2s}
+  .p-card .add:hover{background:var(--orange)}
+  .p-card .add svg{width:15px;height:15px}
+  .p-card .wa-sm{width:42px;background:var(--green);color:#fff;border:none;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.2s}
+  .p-card .wa-sm:hover{opacity:.85}
+  .p-card .wa-sm svg{width:18px;height:18px}
   .purity{background:var(--navy);color:#fff;position:relative;overflow:hidden}
   .purity::before{content:"❄";position:absolute;right:-60px;top:-40px;font-size:340px;opacity:.05;transform:rotate(15deg)}
   .purity-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center}
@@ -98,19 +151,15 @@
   .fact small{color:#9fb2d2;font-size:13px}
   .purity .pic{border-radius:24px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.4);aspect-ratio:4/5}
   .purity .pic img{width:100%;height:100%;object-fit:cover}
-
-  /* ── Bestsellers editorial grid ── */
   .bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
   .bgrid .card:first-child{grid-column:span 2;grid-row:span 2}
-  .bgrid .card{position:relative;border-radius:22px;overflow:hidden;min-height:260px;display:block;background:var(--navy)}
+  .bgrid .card{position:relative;border-radius:22px;overflow:hidden;min-height:260px;display:block;background:var(--navy);border:none;cursor:pointer;padding:0}
   .bgrid .card img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;opacity:.85;transition:.5s}
   .bgrid .card:hover img{transform:scale(1.05);opacity:.7}
-  .bgrid .card .cap{position:absolute;left:0;right:0;bottom:0;padding:26px;background:linear-gradient(0deg,rgba(10,20,36,.88),transparent);color:#fff}
+  .bgrid .card .cap{position:absolute;left:0;right:0;bottom:0;padding:26px;background:linear-gradient(0deg,rgba(10,20,36,.88),transparent);color:#fff;text-align:left}
   .bgrid .card:first-child .cap h3{font-size:34px}
   .bgrid .card .cap h3{font-size:22px;text-transform:uppercase}
   .bgrid .card .cap span{font-size:13px;color:var(--orange-2);font-weight:600;letter-spacing:1px;text-transform:uppercase}
-
-  /* ── Branded band ── */
   .branded{background:linear-gradient(120deg,var(--orange) 0%,#ff7a1a 100%);border-radius:28px;display:grid;grid-template-columns:1.1fr .9fr;align-items:stretch;overflow:hidden;box-shadow:0 30px 70px rgba(218,88,0,.35);color:#fff}
   .branded .txt{padding:56px}
   .branded h2{font-size:clamp(32px,4.5vw,52px);margin:12px 0 16px}
@@ -118,8 +167,6 @@
   .branded .btn{background:#fff;color:var(--orange)}
   .branded .btn:hover{transform:translateY(-2px)}
   .branded .pic{min-height:320px;background-size:cover;background-position:center}
-
-  /* ── Testimonials ── */
   .tst{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
   .t-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:14px;position:relative}
   .t-card .qm{font-family:Georgia,serif;font-size:64px;line-height:.6;color:var(--orange);opacity:.85}
@@ -127,8 +174,6 @@
   .t-card p{font-size:15px;color:var(--ink);flex:1;font-weight:300}
   .t-card b{font-size:14px;color:var(--navy)}
   .t-card small{color:var(--muted);font-size:12.5px}
-
-  /* ── FAQ ── */
   .faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   .faq-item{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
   .faq-item summary{cursor:pointer;padding:20px 24px;font-weight:600;font-size:16px;color:var(--navy);list-style:none;display:flex;justify-content:space-between;align-items:center;gap:14px}
@@ -136,106 +181,178 @@
   .faq-item summary .plus{color:var(--orange);font-size:22px;font-weight:700;transition:.2s}
   .faq-item[open] summary .plus{transform:rotate(45deg)}
   .faq-item .a{padding:0 24px 22px;color:var(--muted);font-size:15px}
-
-  /* ── Contact ── */
   .contact{background:var(--ice-2);border-top:1px solid var(--line)}
   .c-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
   .c-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center}
-  .c-card .ic{width:54px;height:54px;border-radius:16px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 16px}
+  .c-card .ic{width:54px;height:54px;border-radius:16px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+  .c-card .ic svg{width:24px;height:24px}
   .c-card h3{font-size:18px;color:var(--navy);margin-bottom:6px}
   .c-card p{color:var(--muted);font-size:15px}
   .c-card a{color:var(--orange);font-weight:600;font-size:17px}
-
-  /* ── Footer ── */
-  footer{background:var(--ink);color:#9fb2d2;padding:44px 0 34px;font-size:14px}
-  .foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
-  .foot b{color:#fff;font-family:'Oswald';text-transform:uppercase;letter-spacing:2px;font-size:18px}
-  .foot a{color:#fff}
-
-  /* ── Floating WhatsApp ── */
-  .float-wa{position:fixed;right:22px;bottom:22px;z-index:70;width:60px;height:60px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 28px rgba(37,211,102,.45);transition:.25s}
-  .float-wa:hover{transform:scale(1.08)}
-  .float-wa svg{width:31px;height:31px;fill:#fff}
-
   @media(max-width:960px){
-    .nav-links{display:none;position:absolute;top:74px;left:0;right:0;background:#fff;flex-direction:column;padding:22px;gap:18px;border-bottom:1px solid var(--line);align-items:flex-start}
-    .nav-links.open{display:flex}
-    .burger{display:block}
     .hero{min-height:auto}
     .purity-grid,.branded{grid-template-columns:1fr}
     .bgrid{grid-template-columns:1fr 1fr}
     .bgrid .card:first-child{grid-column:auto;grid-row:auto}
     .tst,.c-grid{grid-template-columns:1fr 1fr}
     .faq-grid{grid-template-columns:1fr}
-    section{padding:72px 0}
   }
-  @media(max-width:600px){
-    .tst,.c-grid{grid-template-columns:1fr}
-    .facts{grid-template-columns:1fr}
-    .hero .stat{padding-right:22px;margin-right:22px}
-    .hero .stat b{font-size:26px}
-  }
+  @media(max-width:600px){.tst,.c-grid{grid-template-columns:1fr}.facts{grid-template-columns:1fr}.hero .stat{padding-right:22px;margin-right:22px}.hero .stat b{font-size:26px}}
 </style>
 </head>
 <body>
-
-<!-- MARQUEE -->
-<div class="marquee"><span>
-  Premium Clear Ice <b>◆</b> RO Purified Water <b>◆</b> In-Store Refills <b>◆</b> Home Delivery <b>◆</b> Branded Bottles <b>◆</b> Ballito, KZN <b>◆</b>&nbsp;
-  Premium Clear Ice <b>◆</b> RO Purified Water <b>◆</b> In-Store Refills <b>◆</b> Home Delivery <b>◆</b> Branded Bottles <b>◆</b> Ballito, KZN <b>◆</b>&nbsp;
-</span></div>
-
-<!-- NAV -->
+<div class="marquee"><span>Premium Clear Ice <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.9" y1="4.9" x2="19.1" y2="19.1"/><line x1="19.1" y1="4.9" x2="4.9" y2="19.1"/></svg> RO Purified Water <b>◆</b> In-Store Refills <b>◆</b> Home Delivery <b>◆</b> Branded Bottles <b>◆</b> Ballito, KZN <b>◆</b>&nbsp;Premium Clear Ice <b>◆</b> RO Purified Water <b>◆</b> In-Store Refills <b>◆</b> Home Delivery <b>◆</b> Branded Bottles <b>◆</b> Ballito, KZN <b>◆</b>&nbsp;</span></div>
 <nav>
   <div class="container nav-inner">
-    <a href="/" class="logo"><img src="assets/img/logo.png" alt="Snowman" /></a>
+    <a href="index.html" class="logo"><img src="assets/img/logo.jpg" alt="Snowman" /></a>
     <div class="nav-links" id="navLinks">
-      <a href="#products">Products</a>
-      <a href="#purity">Purity</a>
-      <a href="#branded">Branded Water</a>
-      <a href="#reviews">Reviews</a>
-      <a href="#faq">FAQ</a>
-      <a class="btn btn-wa" href="https://wa.me/27832368368?text=Hi%20Snowman!%20I%27d%20like%20to%20place%20an%20order." target="_blank" rel="noopener">Order on WhatsApp</a>
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="index.html#purity">Purity</a>
+      <a href="index.html#branded">Branded Water</a>
+      <a href="index.html#reviews">Reviews</a>
+      <a href="index.html#faq">FAQ</a>
+      <a href="index.html#contact">Contact</a>
     </div>
-    <button class="burger" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu">☰</button>
+    <div class="nav-right">
+      <a class="btn btn-wa" href="https://wa.me/27832368368?text=Hi%20Snowman!%20I%27d%20like%20to%20place%20an%20order." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</a>
+      <button class="cart-btn" data-cart-btn aria-label="Cart"><span class="cart-badge" data-cart-count>0</span></button>
+      <button class="burger" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    </div>
   </div>
 </nav>
 
-<!-- HERO (real photo) -->
 <header class="hero">
-  <div class="hero-bg" style="background-image:url('assets/img/water-still-5l.png')"></div>
+  <div class="hero-bg" style="background-image:url('assets/img/banner.jpg')"></div>
   <div class="container hero-inner">
     <span class="kicker"><span class="dot"></span> Water &amp; Ice · Ballito, KwaZulu-Natal</span>
     <h1><span class="thin">Pure Water.</span><br />Premium <span class="accent">Ice.</span></h1>
     <p>Premium clear ice, RO purified water and custom branded bottles — in-store refill or delivery to your door, made to the highest standards of purity and taste.</p>
     <div class="cta">
-      <a class="btn btn-wa" href="https://wa.me/27832368368?text=Hi%20Snowman!%20I%27d%20like%20to%20place%20an%20order." target="_blank" rel="noopener">Order on WhatsApp</a>
-      <a class="btn btn-ghost" href="#products">Browse Products</a>
+      <a class="btn btn-wa" href="https://wa.me/27832368368?text=Hi%20Snowman!%20I%27d%20like%20to%20place%20an%20order." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Order on WhatsApp</a>
+      <a class="btn btn-ghost" href="shop.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Shop Online</a>
     </div>
     <div class="stats">
       <div class="stat"><b>2.5+</b><small>Years in Ballito</small></div>
       <div class="stat"><b>RO</b><small>Purified Water</small></div>
-      <div class="stat"><b>24/7</b><small>Order on WhatsApp</small></div>
+      <div class="stat"><b>25</b><small>Products Online</small></div>
     </div>
   </div>
 </header>
 
-<!-- PRODUCT STRIP -->
 <section id="products">
   <div class="container">
     <div class="sec-head">
-      <div>
-        <span class="eyebrow">The Lineup</span>
-        <h2>Water &amp; Ice</h2>
-      </div>
+      <div><span class="eyebrow">The Lineup</span><h2>Water &amp; Ice</h2></div>
       <p>Every product, one tap to order — we confirm price and delivery on WhatsApp.</p>
-      <a class="link" href="shop.html">View all 25 products →</a>
+      <a class="link" href="shop.html">View all 25 products <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
     </div>
-    <div class="strip" id="strip"></div>
+    <div class="strip">
+      <div class="p-card " data-cat="water">
+  <div class="imgbox"><img src="assets/img/10-litre.jpg" alt="10 Litre" loading="lazy" /></div>
+  <div class="body">
+    <div class="row1"><span class="tag">Still Water</span><span class="price">R36.00</span></div>
+    <h3>10 Litre</h3>
+    <div class="actions">
+      <button class="add" onclick="SnowmanCart.add('10 Litre',3600,'assets/img/10-litre.jpg')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Add to Cart</button>
+      <a class="wa-sm" href="https://wa.me/27832368368?text=Hi%20Snowman%21%20I%27d%20like%20to%20order%3A%2010%20Litre" target="_blank" rel="noopener" title="Order on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+    </div>
+  </div>
+</div><div class="p-card " data-cat="water">
+  <div class="imgbox"><img src="assets/img/10-litre-10l.jpg" alt="10 Litre/10l" loading="lazy" /></div>
+  <div class="body">
+    <div class="row1"><span class="tag">Still Water</span><span class="price">R36.00</span></div>
+    <h3>10 Litre/10l</h3>
+    <div class="actions">
+      <button class="add" onclick="SnowmanCart.add('10 Litre/10l',3600,'assets/img/10-litre-10l.jpg')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Add to Cart</button>
+      <a class="wa-sm" href="https://wa.me/27832368368?text=Hi%20Snowman%21%20I%27d%20like%20to%20order%3A%2010%20Litre/10l" target="_blank" rel="noopener" title="Order on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+    </div>
+  </div>
+</div><div class="p-card " data-cat="dispenser">
+  <div class="imgbox"><img src="assets/img/10l-drum-blue-with-a-tap.jpg" alt="10L Drum Blue With A Tap" loading="lazy" /></div>
+  <div class="body">
+    <div class="row1"><span class="tag">Dispensers & Bottles</span><span class="price">R160.00</span></div>
+    <h3>10L Drum Blue With A Tap</h3>
+    <div class="actions">
+      <button class="add" onclick="SnowmanCart.add('10L Drum Blue With A Tap',16000,'assets/img/10l-drum-blue-with-a-tap.jpg')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Add to Cart</button>
+      <a class="wa-sm" href="https://wa.me/27832368368?text=Hi%20Snowman%21%20I%27d%20like%20to%20order%3A%2010L%20Drum%20Blue%20With%20A%20Tap" target="_blank" rel="noopener" title="Order on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+    </div>
+  </div>
+</div><div class="p-card " data-cat="dispenser">
+  <div class="imgbox"><img src="assets/img/10l-square-with-a-tap.jpg" alt="10L SQUARE WITH A TAP" loading="lazy" /></div>
+  <div class="body">
+    <div class="row1"><span class="tag">Dispensers & Bottles</span><span class="price">R220.00</span></div>
+    <h3>10L SQUARE WITH A TAP</h3>
+    <div class="actions">
+      <button class="add" onclick="SnowmanCart.add('10L SQUARE WITH A TAP',22000,'assets/img/10l-square-with-a-tap.jpg')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Add to Cart</button>
+      <a class="wa-sm" href="https://wa.me/27832368368?text=Hi%20Snowman%21%20I%27d%20like%20to%20order%3A%2010L%20SQUARE%20WITH%20A%20TAP" target="_blank" rel="noopener" title="Order on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+    </div>
+  </div>
+</div><div class="p-card " data-cat="water">
+  <div class="imgbox"><img src="assets/img/12-x-500ml-still.jpg" alt="12 X 500ml Still" loading="lazy" /></div>
+  <div class="body">
+    <div class="row1"><span class="tag">Still Water</span><span class="price">R84.00</span></div>
+    <h3>12 X 500ml Still</h3>
+    <div class="actions">
+      <button class="add" onclick="SnowmanCart.add('12 X 500ml Still',8400,'assets/img/12-x-500ml-still.jpg')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Add to Cart</button>
+      <a class="wa-sm" href="https://wa.me/27832368368?text=Hi%20Snowman%21%20I%27d%20like%20to%20order%3A%2012%20X%20500ml%20Still" target="_blank" rel="noopener" title="Order on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+    </div>
+  </div>
+</div><div class="p-card " data-cat="water">
+  <div class="imgbox"><img src="assets/img/12x330ml-still.jpg" alt="12X330ml STILL" loading="lazy" /></div>
+  <div class="body">
+    <div class="row1"><span class="tag">Still Water</span><span class="price">R66.00</span></div>
+    <h3>12X330ml STILL</h3>
+    <div class="actions">
+      <button class="add" onclick="SnowmanCart.add('12X330ml STILL',6600,'assets/img/12x330ml-still.jpg')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Add to Cart</button>
+      <a class="wa-sm" href="https://wa.me/27832368368?text=Hi%20Snowman%21%20I%27d%20like%20to%20order%3A%2012X330ml%20STILL" target="_blank" rel="noopener" title="Order on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+    </div>
+  </div>
+</div><div class="p-card " data-cat="water">
+  <div class="imgbox"><img src="assets/img/12x750mlstill.jpg" alt="12x750mlSTILL" loading="lazy" /></div>
+  <div class="body">
+    <div class="row1"><span class="tag">Still Water</span><span class="price">R108.00</span></div>
+    <h3>12x750mlSTILL</h3>
+    <div class="actions">
+      <button class="add" onclick="SnowmanCart.add('12x750mlSTILL',10800,'assets/img/12x750mlstill.jpg')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Add to Cart</button>
+      <a class="wa-sm" href="https://wa.me/27832368368?text=Hi%20Snowman%21%20I%27d%20like%20to%20order%3A%2012x750mlSTILL" target="_blank" rel="noopener" title="Order on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+    </div>
+  </div>
+</div><div class="p-card " data-cat="dispenser">
+  <div class="imgbox"><img src="assets/img/20-litre-blue-square-with-tap.jpg" alt="20 Litre Blue Square with Tap" loading="lazy" /></div>
+  <div class="body">
+    <div class="row1"><span class="tag">Dispensers & Bottles</span><span class="price">R190.00</span></div>
+    <h3>20 Litre Blue Square with Tap</h3>
+    <div class="actions">
+      <button class="add" onclick="SnowmanCart.add('20 Litre Blue Square with Tap',19000,'assets/img/20-litre-blue-square-with-tap.jpg')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Add to Cart</button>
+      <a class="wa-sm" href="https://wa.me/27832368368?text=Hi%20Snowman%21%20I%27d%20like%20to%20order%3A%2020%20Litre%20Blue%20Square%20with%20Tap" target="_blank" rel="noopener" title="Order on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+    </div>
+  </div>
+</div><div class="p-card " data-cat="dispenser">
+  <div class="imgbox"><img src="assets/img/20l-dispenser-bottle-with-handle.jpg" alt="20L Dispenser Bottle With Handle" loading="lazy" /></div>
+  <div class="body">
+    <div class="row1"><span class="tag">Dispensers & Bottles</span><span class="price">R265.00</span></div>
+    <h3>20L Dispenser Bottle With Handle</h3>
+    <div class="actions">
+      <button class="add" onclick="SnowmanCart.add('20L Dispenser Bottle With Handle',26500,'assets/img/20l-dispenser-bottle-with-handle.jpg')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Add to Cart</button>
+      <a class="wa-sm" href="https://wa.me/27832368368?text=Hi%20Snowman%21%20I%27d%20like%20to%20order%3A%2020L%20Dispenser%20Bottle%20With%20Handle" target="_blank" rel="noopener" title="Order on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+    </div>
+  </div>
+</div><div class="p-card " data-cat="water">
+  <div class="imgbox"><img src="assets/img/24-x-500ml-still.jpg" alt="24 X 500ml Still" loading="lazy" /></div>
+  <div class="body">
+    <div class="row1"><span class="tag">Still Water</span><span class="price">R170.00</span></div>
+    <h3>24 X 500ml Still</h3>
+    <div class="actions">
+      <button class="add" onclick="SnowmanCart.add('24 X 500ml Still',17000,'assets/img/24-x-500ml-still.jpg')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Add to Cart</button>
+      <a class="wa-sm" href="https://wa.me/27832368368?text=Hi%20Snowman%21%20I%27d%20like%20to%20order%3A%2024%20X%20500ml%20Still" target="_blank" rel="noopener" title="Order on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+    </div>
+  </div>
+</div>
+    </div>
   </div>
 </section>
 
-<!-- PURITY -->
 <section class="purity" id="purity">
   <div class="container purity-grid">
     <div>
@@ -249,25 +366,20 @@
         <div class="fact"><span class="n">04</span><b>Reliable Delivery</b><small>One-time or regular scheduled deliveries — we've got you covered.</small></div>
       </div>
     </div>
-    <div class="pic"><img src="assets/img/10-litre.png" alt="Snowman 10 litre water" loading="lazy" /></div>
+    <div class="pic"><img src="assets/img/10-litre.jpg" alt="Snowman 10 litre water" loading="lazy" /></div>
   </div>
 </section>
 
-<!-- BESTSELLERS -->
 <section id="bestsellers" style="padding-top:0">
   <div class="container">
     <div class="sec-head">
-      <div>
-        <span class="eyebrow">Customer Favourites</span>
-        <h2>Bestsellers</h2>
-      </div>
-      <a class="link" href="shop.html">Full shop →</a>
+      <div><span class="eyebrow">Customer Favourites</span><h2>Bestsellers</h2></div>
+      <a class="link" href="shop.html">Full shop <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
     </div>
-    <div class="bgrid" id="bgrid"></div>
+    <div class="bgrid"><a class="card" href="javascript:void(0)" onclick="SnowmanCart.add('3kg Ice – delivered',1200,'assets/img/3kg-ice-delivered.jpg')"><img src="assets/img/3kg-ice-delivered.jpg" alt="3kg Ice – delivered" loading="lazy" /><div class="cap"><span>R12.00 · Add to cart</span><h3>3kg Ice – delivered</h3></div></a><a class="card" href="javascript:void(0)" onclick="SnowmanCart.add('DRY ICE',5500,'assets/img/dry-ice.jpg')"><img src="assets/img/dry-ice.jpg" alt="DRY ICE" loading="lazy" /><div class="cap"><span>R55.00 · Add to cart</span><h3>DRY ICE</h3></div></a><a class="card" href="javascript:void(0)" onclick="SnowmanCart.add('10 Litre',3600,'assets/img/10-litre.jpg')"><img src="assets/img/10-litre.jpg" alt="10 Litre" loading="lazy" /><div class="cap"><span>R36.00 · Add to cart</span><h3>10 Litre</h3></div></a><a class="card" href="javascript:void(0)" onclick="SnowmanCart.add('20L Dispenser Bottle With Handle',26500,'assets/img/20l-dispenser-bottle-with-handle.jpg')"><img src="assets/img/20l-dispenser-bottle-with-handle.jpg" alt="20L Dispenser Bottle With Handle" loading="lazy" /><div class="cap"><span>R265.00 · Add to cart</span><h3>20L Dispenser Bottle With Handle</h3></div></a><a class="card" href="javascript:void(0)" onclick="SnowmanCart.add('RO Refill',200,'assets/img/ro-refill.jpg')"><img src="assets/img/ro-refill.jpg" alt="RO Refill" loading="lazy" /><div class="cap"><span>R2.00 · Add to cart</span><h3>RO Refill</h3></div></a><a class="card" href="javascript:void(0)" onclick="SnowmanCart.add('Water- Still -500ml',1200,'assets/img/water-still-500ml.jpg')"><img src="assets/img/water-still-500ml.jpg" alt="Water- Still -500ml" loading="lazy" /><div class="cap"><span>R12.00 · Add to cart</span><h3>Water- Still -500ml</h3></div></a><a class="card" href="javascript:void(0)" onclick="SnowmanCart.add('12 X 500ml Still',8400,'assets/img/12-x-500ml-still.jpg')"><img src="assets/img/12-x-500ml-still.jpg" alt="12 X 500ml Still" loading="lazy" /><div class="cap"><span>R84.00 · Add to cart</span><h3>12 X 500ml Still</h3></div></a><a class="card" href="javascript:void(0)" onclick="SnowmanCart.add('Water – Still – 5L',2000,'assets/img/water-still-5l.jpg')"><img src="assets/img/water-still-5l.jpg" alt="Water – Still – 5L" loading="lazy" /><div class="cap"><span>R20.00 · Add to cart</span><h3>Water – Still – 5L</h3></div></a></div>
   </div>
 </section>
 
-<!-- BRANDED WATER -->
 <section id="branded" style="padding-top:0">
   <div class="container">
     <div class="branded">
@@ -275,58 +387,44 @@
         <span class="eyebrow" style="color:#ffe0c2">Personal Branded Water</span>
         <h2>Your Logo. Your Water.</h2>
         <p>Customized water bottles featuring your family crest or business logo — for events, weddings, functions and brand promotion. Stand out with water that carries your name.</p>
-        <a class="btn" href="https://wa.me/27832368368?text=Hi%20Snowman!%20I%27d%20like%20to%20order%20personal%20branded%20water%20bottles." target="_blank" rel="noopener">Get a Quote on WhatsApp</a>
+        <a class="btn" href="https://wa.me/27832368368?text=Hi%20Snowman!%20I%27d%20like%20to%20order%20personal%20branded%20water%20bottles." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Get a Quote on WhatsApp</a>
       </div>
-      <div class="pic" style="background-image:url('assets/img/water-still-330ml.png')"></div>
+      <div class="pic" style="background-image:url('assets/img/water-still-330ml.jpg')"></div>
     </div>
   </div>
 </section>
 
-<!-- TESTIMONIALS -->
 <section id="reviews">
   <div class="container">
-    <div class="sec-head">
-      <div>
-        <span class="eyebrow">Reviews</span>
-        <h2>Loved in Ballito</h2>
-      </div>
-    </div>
-    <div class="tst" id="tstGrid"></div>
+    <div class="sec-head"><div><span class="eyebrow">Reviews</span><h2>Loved in Ballito</h2></div></div>
+    <div class="tst"><div class="t-card"><div class="qm">"</div><div class="stars">★★★★★</div><p>Snowman Water and Ice has been a game-changer for my family. The quality of their water and ice is unmatched, and their service is always prompt and friendly. We couldn't be happier!</p><b>Abbie Carter</b></div>
+<div class="t-card"><div class="qm">"</div><div class="stars">★★★★★</div><p>Our business relies on having a steady supply of pure water and high-quality ice, and Snowman Water and Ice never disappoints. Their personalized service and attention to detail are truly outstanding.</p><b>Dominic Peltier</b></div>
+<div class="t-card"><div class="qm">"</div><div class="stars">★★★★★</div><p>For every event we organize, Snowman Water and Ice is our go-to for ice and water. Their products are always top-notch and the team is incredibly reliable. They help make our events a success every time.</p><b>Lola Bailey</b></div>
+<div class="t-card"><div class="qm">"</div><div class="stars">★★★★★</div><p>I love the personalized branded water bottles from Snowman Water and Ice. Not only do they look great, but the water is always refreshing and pure. It's a fantastic way to promote my brand while staying hydrated.</p><b>Rajesh K.</b></div>
+<div class="t-card"><div class="qm">"</div><div class="stars">★★★★★</div><p>Hi, just need to tell you how amazing Sabelo is. He is always on top of my orders and such a lovely guy.</p><b>Justin Harris</b><small>Tik Tok influencer</small></div>
+<div class="t-card"><div class="qm">"</div><div class="stars">★★★★★</div><p>We no longer drink tap water and our preferred provider of bottled water is Snowman in Ballito. I've just been really impressed with their service and staff.</p><b>Walk In Customer</b></div></div>
   </div>
 </section>
 
-<!-- FAQ -->
 <section id="faq" style="padding-top:0">
   <div class="container">
-    <div class="sec-head">
-      <div>
-        <span class="eyebrow">FAQ</span>
-        <h2>Questions, Answered</h2>
-      </div>
-    </div>
+    <div class="sec-head"><div><span class="eyebrow">FAQ</span><h2>Questions, Answered</h2></div></div>
     <div class="faq-grid">
       <details class="faq-item"><summary>What products and services do you offer? <span class="plus">+</span></summary><div class="a">We offer a range of water and ice solutions, including: Ice Production and Sales — premium, clear ice delivered to your doorstep. RO Water Supply — purified water available for in-store refill or home delivery. Personal Branded Water — customized water bottles with your logo or family emblem. Water-Related Products — water fountains, dispensers and RO machines for both domestic and industrial use.</div></details>
       <details class="faq-item"><summary>What makes your water and ice different? <span class="plus">+</span></summary><div class="a">Our water and ice are produced using advanced filtration and purification processes, ensuring the highest quality and purity. We focus on delivering crystal-clear ice and fresh, clean water that meet stringent quality standards.</div></details>
-      <details class="faq-item"><summary>How can I place an order? <span class="plus">+</span></summary><div class="a">You can place an order by contacting us via phone at <a href="tel:0832368368">083 2368 368</a> or email at <a href="mailto:info@snowmankzn.co.za">info@snowmankzn.co.za</a>. You can also order on WhatsApp — simply tap the WhatsApp button and tell us what you need.</div></details>
+      <details class="faq-item"><summary>How can I place an order? <span class="plus">+</span></summary><div class="a">You can place an order by contacting us via phone at <a href="tel:0832368368">083 2368 368</a> or email at <a href="mailto:info@snowmankzn.co.za">info@snowmankzn.co.za</a>. You can also order on WhatsApp, or shop online — simply add products to your cart and pay securely by card.</div></details>
       <details class="faq-item"><summary>Do you offer delivery services? <span class="plus">+</span></summary><div class="a">Yes, we offer reliable delivery services for both our ice and water products. Whether you need a one-time delivery or regular scheduled deliveries, we've got you covered.</div></details>
     </div>
   </div>
 </section>
 
-<!-- CONTACT -->
 <section class="contact" id="contact">
   <div class="container">
-    <div class="sec-head">
-      <div>
-        <span class="eyebrow">Contact</span>
-        <h2>Get In Touch</h2>
-      </div>
-      <p>Ballito, KwaZulu-Natal — call, WhatsApp or email us.</p>
-    </div>
+    <div class="sec-head"><div><span class="eyebrow">Contact</span><h2>Get In Touch</h2></div><p>Ballito, KwaZulu-Natal — call, WhatsApp or email us.</p></div>
     <div class="c-grid">
-      <div class="c-card"><div class="ic">📞</div><h3>Call Us</h3><p><a href="tel:0832368368">083 2368 368</a></p></div>
-      <div class="c-card"><div class="ic">💬</div><h3>WhatsApp</h3><p><a href="https://wa.me/27832368368" target="_blank" rel="noopener">Chat with us →</a></p></div>
-      <div class="c-card"><div class="ic">✉️</div><h3>Email</h3><p><a href="mailto:info@snowmankzn.co.za">info@snowmankzn.co.za</a></p></div>
+      <div class="c-card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><h3>Call Us</h3><p><a href="tel:0832368368">083 2368 368</a></p></div>
+      <div class="c-card"><div class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></div><h3>WhatsApp</h3><p><a href="https://wa.me/27832368368" target="_blank" rel="noopener">Chat with us →</a></p></div>
+      <div class="c-card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div><h3>Email</h3><p><a href="mailto:info@snowmankzn.co.za">info@snowmankzn.co.za</a></p></div>
     </div>
   </div>
 </section>
@@ -335,64 +433,11 @@
   <div class="container foot">
     <b>Snowman Water &amp; Ice</b>
     <span>Pure water. Premium ice. Ballito.</span>
-    <span><a href="https://wa.me/27832368368" target="_blank" rel="noopener">Order on WhatsApp →</a></span>
+    <span><a href="shop.html">Shop online →</a></span>
   </div>
 </footer>
 
-<a class="float-wa" href="https://wa.me/27832368368?text=Hi%20Snowman!%20I%27d%20like%20to%20place%20an%20order." target="_blank" rel="noopener" aria-label="WhatsApp">
-  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-</a>
-
-<script>
-// Real products from snowmankzn.co.za — real photos only
-const PRODUCTS = [
-{"name":"3kg Ice – delivered","slug":"3kg-ice-delivered","img":"3kg-ice-delivered.png","cat":"ice"},
-{"name":"DRY ICE","slug":"dry-ice","img":"dry-ice.jpg","cat":"ice"},
-{"name":"RO Refill","slug":"ro-refill","img":"ro-refill.png","cat":"refill"},
-{"name":"RO Refill per liter","slug":"ro-refill-per-liter","img":"ro-refill-per-liter.png","cat":"refill"},
-{"name":"Water – Still – 5L","slug":"water-still-5l","img":"water-still-5l.png","cat":"water"},
-{"name":"Water – Still – 1.5L","slug":"water-still-1-5l","img":"water-still-1-5l.png","cat":"water"},
-{"name":"Water – Still – 750ml","slug":"water-still-750ml","img":"water-still-750ml.png","cat":"water"},
-{"name":"Water – Still – 500ml","slug":"water-still-500ml","img":"water-still-500ml.png","cat":"water"},
-{"name":"Water – Still – 330ml","slug":"water-still-330ml","img":"water-still-330ml.png","cat":"water"},
-{"name":"12 X 500ml Still","slug":"12-x-500ml-still","img":"12-x-500ml-still.png","cat":"water"},
-{"name":"24 X 500ml Still","slug":"24-x-500ml-still","img":"24-x-500ml-still.png","cat":"water"},
-{"name":"6 X 750ml Pump Still","slug":"6-x-750ml-pump-still","img":"6-x-750ml-pump-still.png","cat":"water"},
-{"name":"10 Litre","slug":"10-litre","img":"10-litre.png","cat":"water"},
-{"name":"10L Square With A Tap","slug":"10l-square-with-a-tap","img":"10l-square-with-a-tap.png","cat":"dispenser"},
-{"name":"10L Drum Blue With A Tap","slug":"10l-drum-blue-with-a-tap","img":"10l-drum-blue-with-a-tap.png","cat":"dispenser"},
-{"name":"20 Litre Blue Square with Tap","slug":"20-litre-blue-square-with-tap","img":"20-litre-blue-square-with-tap.png","cat":"dispenser"},
-{"name":"20L Dispenser Bottle With Handle","slug":"20l-dispenser-bottle-with-handle","img":"20l-dispenser-bottle-with-handle.png","cat":"dispenser"},
-{"name":"Refill 20L Dispenser bottle with cap","slug":"refill-20l-dispencer-bottle-with-cap","img":"refill-20l-dispencer-bottle-with-cap.png","cat":"refill"},
-{"name":"Water Dispenser + 1 Bottle","slug":"water-dispenser-1bottle","img":"water-dispenser-1bottle.png","cat":"dispenser"}
-];
-const CAT = {water:"Still Water",ice:"Ice",refill:"Refills",dispenser:"Dispensers & Bottles"};
-const wa = (n) => "https://wa.me/27832368368?text=" + encodeURIComponent("Hi Snowman! I'd like to order: " + n);
-
-// Strip
-document.getElementById("strip").innerHTML = PRODUCTS.slice(0,10).map(p =>
-  '<div class="p-card"><div class="imgbox"><img src="assets/img/' + p.img + '" alt="' + p.name + '" loading="lazy" /></div><div class="body"><span class="tag">' + CAT[p.cat] + '</span><h3>' + p.name + '</h3><a class="wa-sm" href="' + wa(p.name) + '" target="_blank" rel="noopener">Order on WhatsApp</a></div></div>'
-).join("");
-
-// Bestsellers editorial grid
-const BEST = ["3kg-ice-delivered","dry-ice","10-litre","20l-dispenser-bottle-with-handle","ro-refill","water-still-500ml","12-x-500ml-still","water-still-5l"];
-document.getElementById("bgrid").innerHTML = BEST.map(s => {
-  const p = PRODUCTS.find(x => x.slug === s);
-  return '<a class="card" href="' + wa(p.name) + '" target="_blank" rel="noopener"><img src="assets/img/' + p.img + '" alt="' + p.name + '" loading="lazy" /><div class="cap"><span>Order on WhatsApp</span><h3>' + p.name + '</h3></div></a>';
-}).join("");
-
-// Real testimonials (verbatim from snowmankzn.co.za)
-const TESTIMONIALS = [
-  ["Snowman Water and Ice has been a game-changer for my family. The quality of their water and ice is unmatched, and their service is always prompt and friendly. We couldn't be happier!","Abbie Carter"],
-  ["Our business relies on having a steady supply of pure water and high-quality ice, and Snowman Water and Ice never disappoints. Their personalized service and attention to detail are truly outstanding.","Dominic Peltier"],
-  ["For every event we organize, Snowman Water and Ice is our go-to for ice and water. Their products are always top-notch and the team is incredibly reliable. They help make our events a success every time.","Lola Bailey"],
-  ["I love the personalized branded water bottles from Snowman Water and Ice. Not only do they look great, but the water is always refreshing and pure. It's a fantastic way to promote my brand while staying hydrated.","Rajesh K."],
-  ["Hi, just need to tell you how amazing Sabelo is. He is always on top of my orders and such a lovely guy.","Justin Harris","Tik Tok influencer"],
-  ["We no longer drink tap water and our preferred provider of bottled water is Snowman in Ballito. I've just been really impressed with their service and staff.","Walk In Customer"]
-];
-document.getElementById("tstGrid").innerHTML = TESTIMONIALS.map(t =>
-  '<div class="t-card"><div class="qm">"</div><div class="stars">★★★★★</div><p>' + t[0] + '</p><b>' + t[1] + '</b>' + (t[2] ? '<small>' + t[2] + '</small>' : '') + '</div>'
-).join("");
-</script>
+<a class="float-wa" href="https://wa.me/27832368368?text=Hi%20Snowman!%20I%27d%20like%20to%20place%20an%20order." target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+<script src="assets/cart.js"></script>
 </body>
 </html>
