@@ -337,6 +337,26 @@ app.get('/api/clients', requireAuth, (req, res) => {
   res.json(clients);
 });
 
+app.get('/api/clients/:id/whatsapp-status', requireAuth, (req, res) => {
+  const clientId = parseInt(req.params.id);
+  if (!clientId) return res.status(400).json({ error: 'Invalid client ID' });
+  if (req.user.role !== 'overlord' && req.user.client_id !== clientId) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  const cfg = query('SELECT * FROM waba_configs WHERE client_id = ?', [clientId])[0] || null;
+  const msgCount = query('SELECT COUNT(*) AS c FROM messages WHERE client_id = ?', [clientId])[0]?.c || 0;
+  const convCount = query('SELECT COUNT(DISTINCT phone) AS c FROM messages WHERE client_id = ?', [clientId])[0]?.c || 0;
+  const connected = !!(cfg) || msgCount > 0; // legacy clients (e.g. Ting-A-Ling via .env) show connected if they have messages
+  res.json({
+    status: connected ? 'connected' : 'not_connected',
+    phoneNumberId: cfg?.phone_number_id || null,
+    wabaId: cfg?.waba_id || null,
+    displayName: cfg?.display_name || '',
+    conversations: convCount,
+    totalMessages: msgCount,
+  });
+});
+
 app.get('/api/clients/:id', requireAuth, (req, res) => {
   // Client admins can only see their own client
   if (req.user.role !== 'overlord' && req.user.client_id != req.params.id) {
@@ -344,6 +364,7 @@ app.get('/api/clients/:id', requireAuth, (req, res) => {
   }
   const clients = query('SELECT * FROM clients WHERE id = ?', [req.params.id]);
   if (clients.length === 0) return res.status(404).json({ error: 'Client not found' });
+
   res.json(clients[0]);
 });
 
