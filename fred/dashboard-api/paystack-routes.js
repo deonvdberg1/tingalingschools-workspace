@@ -20,9 +20,27 @@ function loadSnowmanOrders() {
 }
 function saveSnowmanOrder(order) {
   const orders = loadSnowmanOrders()
-  if (orders.some((o) => o.reference === order.reference)) return
+  if (orders.some((o) => o.reference === order.reference)) return false
   orders.push(order)
   try { fs.writeFileSync(SNOWMAN_ORDERS_FILE, JSON.stringify(orders, null, 2), 'utf8') } catch (e) { console.error('[Snowman] order save error:', e.message) }
+  notifySnowmanOrder(order)
+  return true
+}
+
+// ── Email notifications for Snowman orders (buyer confirmation + business alert) ──
+function notifySnowmanOrder(order) {
+  const lines = (order.items || []).map((i) => `• ${i.name} x${i.qty} — R${(Number(i.price) || 0).toFixed(2)}`).join('\n')
+  const total = `R${Number(order.amount || 0).toFixed(2)}`
+  const deliveryLine = order.delivery === 'delivery'
+    ? `Delivery to:\n${order.address || '—'}\n${order.delivery_details ? 'Details: ' + order.delivery_details + '\n' : ''}`
+    : 'Pickup in store'
+  const common = `Order: ${order.reference}\n\n${lines}\n\nTotal: ${total}\n${deliveryLine}\n\n— Snowman Water & Ice (autoeffortless.com shop)`
+  // Business alert
+  sendEmail('info@snowmankzn.co.za', `🧊 New online order ${order.reference} — ${total}`, `New order received!\n\nCustomer: ${order.name || '—'} (${order.phone || 'no phone'})\nEmail: ${order.email || '—'}\n\n${common}`)
+  // Buyer confirmation
+  if (order.email) {
+    sendEmail(order.email, `Thank you for your order — Snowman Water & Ice 🧊`, `Hi ${order.name || 'there'},\n\nThank you for shopping with Snowman Water & Ice. We've received your order and will confirm delivery/pickup shortly.\n\n${common}`)
+  }
 }
 
 // Products & packages catalogue (single source: storefront data)

@@ -1,3 +1,12 @@
 {
-  "info@autoeffortless.com": []
+  "info@autoeffortless.com": [
+    {
+      "role": "user",
+      "content": "Reply with exactly: ALL_UP_OK"
+    },
+    {
+      "role": "assistant",
+      "content": "ALL_UP_OK"
+    }
+  ]
 }
