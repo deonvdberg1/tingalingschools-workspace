@@ -14,6 +14,7 @@ import setupPaystackRoutes from './paystack-routes.js';
 import setupDocChatRoutes from './docchat-routes.js';
 import setupAttendanceRoutes from './attendance-routes.js';
 import setupStaffDirectoryRoutes from './staff-directory-routes.js';
+import setupFredChatRoutes from './fred-chat-routes.js';
 import setupPortalRoutes from './portal-routes.js';
 import { PRODUCTS, PACKAGES } from '../storefront/src/data/products.js';
 import { setupSiteAnalyticsRoutes, logAuthEvent } from './site-analytics.js';
@@ -120,6 +121,7 @@ setupPaystackRoutes(app, { query, run, saveDb });
 setupDocChatRoutes(app, { query, run, saveDb, requireAuth });
 setupAttendanceRoutes(app, { query, run, saveDb, requireAuth });
 setupStaffDirectoryRoutes(app, { query, run, saveDb, requireAuth });
+setupFredChatRoutes(app, { requireAuth, requireRole });
 
 // ── School portal routes (Ting-A-Ling staff/admin/parent dashboard) ──
 setupPortalRoutes(app, { query, run, saveDb, requireAuth, requireRole, hashPassword });

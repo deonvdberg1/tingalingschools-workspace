@@ -1,6 +1,15 @@
 # Heartbeat Monitor
 # Fred checks these on every session start
 
+## 2026-08-31 — 🤖 FRED IN-PORTAL CHAT BOT LIVE — app.autoeffortless.com (07:40)
+
+- **Mr D's real ask: Fred as a chat bot INSIDE the admin portal** (not an external link — the standalone Control UI page didn't work on iPad/iPhone Safari). Now live: floating gold rocket button (bottom-right) in the portal shell → chat drawer. Sidebar "Fred" item opens it too. Overlord-only (server-enforced 403 for clients).
+- **Backend:** `dashboard-api/fred-chat-routes.js` — GET/POST/DELETE `/api/fred/chat`, proxies to gateway `openclaw/fred` (full agent context → same memory). History persisted per-user in `data/fred-chat-history.json` (survives devices/browsers). Wired in server.js.
+- **Frontend:** `dashboard-temp/src/components/fred/FredChat.tsx` (mounted in App.tsx, opens via `fred-chat:open` event from sidebar). iOS Safari-safe: 16px input, safe-area padding, plain fetch. Bundle **index-BhGhSC1h.js** live.
+- **✅ Verified:** puppeteer E2E (login → button → panel → send → Fred replied "FRED_WIDGET_OK", 0 console errors) + public-URL API test (PUBLIC_OK). Test history cleared.
+- **⚠️ TOKEN FIX (critical):** the gateway auth token in openclaw.json was a **redacted placeholder** (`dc8ffd…5a6f`) — worked under auth:none, broke everything once auth:token was enforced. Generated a real token, stored in `secrets/OPENCLAW_GATEWAY_TOKEN.txt` + `OPENCLAW_GATEWAY_TOKEN=` in dashboard-api/.env + whatsapp-server/.env. All services restarted. No token→401, real token→200.
+- **Fred tunnel still up** (fred.autoeffortless.com, desktop browsers) as a full-Control-UI option; the portal widget is now the primary path.
+
 ## 2026-08-31 — 🚀 FRED REMOTE ACCESS LIVE — fred.autoeffortless.com (06:25)
 
 - **Mr D can now work with Fred from anywhere:** https://fred.autoeffortless.com → OpenClaw Control UI (chat) via dedicated `fred` tunnel (98008a80-4201-4bbe-890f-be60e2cc4b6d) → 127.0.0.1:18789. LaunchAgent `com.autoeffortless.cloudflared-fred` (auto-start). Healthcheck #8 added (fred-tunnel).

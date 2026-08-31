@@ -43,6 +43,13 @@ This is where I keep what matters.
 - **Logo & icons (2026-08-27):** official logo = `branding/logo-current.png`; official icon mark = `website/logo-icon.svg`/`favicon.svg` (dark badge + gold orbit + gold AE) — portal `LogoMark.tsx`. NEVER old-school/outdated icons or text-only "AE" badges; every surface uses the autoeffortless.com mark/icon style.
 - Applies to: storefront, portal, DocChat + all 15 apps, super-app, welcome emails, PDFs, future builds.
 
+## 🤖 Fred Chat Bot — IN-PORTAL (LIVE 2026-08-31 07:40, Mr D's ask)
+
+- **Fred is a chat bot INSIDE the admin portal** (app.autoeffortless.com): floating gold rocket button bottom-right + sidebar "Fred" item. Works on iPad/iPhone Safari (plain fetch, no special APIs). Overlord-only (403 for clients).
+- **API:** GET/POST/DELETE `/api/fred/chat` → proxies to gateway `openclaw/fred` (full memory context). History persisted per-user in `dashboard-api/data/fred-chat-history.json` — survives device/browser switches.
+- **Files:** backend `dashboard-api/fred-chat-routes.js`; frontend `dashboard-temp/src/components/fred/FredChat.tsx` (event `fred-chat:open`).
+- **Gateway token (real, since 2026-08-31):** in `secrets/OPENCLAW_GATEWAY_TOKEN.txt` + `OPENCLAW_GATEWAY_TOKEN=` in both .env files. ⚠️ Never use the old `dc8ffd…5a6f` placeholder.
+
 ## 🚀 Fred Remote Access — LIVE 2026-08-31
 
 - **URL:** https://fred.autoeffortless.com — OpenClaw Control UI (full chat with Fred) from any device. Dedicated tunnel `fred` (98008a80), LaunchAgent `com.autoeffortless.cloudflared-fred`, healthcheck #8.
