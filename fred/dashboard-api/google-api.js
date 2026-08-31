@@ -198,4 +198,24 @@ export default function setupGoogleRoutes(app) {
   });
 
   console.log('[Google API] Routes loaded (Routes API v2, Places API)');
+
+  // ── Address autocomplete (free OSM Nominatim — no key, SA coverage) ──
+  // Used by Snowman shop checkout delivery-address search.
+  app.get('/api/address-autocomplete', async (req, res) => {
+    const q = String(req.query.q || '').trim()
+    if (q.length < 4) return res.json({ suggestions: [] })
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q + ', South Africa')}&format=json&addressdetails=1&countrycodes=za&limit=6`
+      const r = await fetch(url, {
+        headers: {
+          'User-Agent': 'SnowmanShop/1.0 (info@autoeffortless.com)',
+          'Accept-Language': 'en',
+        },
+      })
+      const data = await r.json()
+      res.json({ suggestions: (Array.isArray(data) ? data : []).map((p) => ({ text: p.display_name, lat: p.lat, lon: p.lon })) })
+    } catch (e) {
+      res.status(502).json({ error: e.message })
+    }
+  })
 }

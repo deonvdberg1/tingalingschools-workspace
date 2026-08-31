@@ -109,15 +109,60 @@
         <input id="scPhone" placeholder="Phone / WhatsApp number" type="tel" required />
         <input id="scEmail" placeholder="Email" type="email" required />
         <div class="sc-deliv">
-          <label><input type="radio" name="scDeliv" value="pickup" checked /> Pickup</label>
-          <label><input type="radio" name="scDeliv" value="delivery" /> Delivery</label>
+          <label><input type="radio" name="scDeliv" value="pickup" checked onchange="SnowmanCart.toggleDeliv()" /> Pickup</label>
+          <label><input type="radio" name="scDeliv" value="delivery" onchange="SnowmanCart.toggleDeliv()" /> Delivery</label>
         </div>
-        <input id="scAddr" placeholder="Delivery address (if delivery)" />
+        <div id="scDelivBox" style="display:none">
+          <div class="sc-field">
+            <label>Delivery address *</label>
+            <input id="scAddr" placeholder="Start typing your address…" autocomplete="off" />
+            <div class="sc-sugg" id="scSugg"></div>
+          </div>
+          <div class="sc-field">
+            <label>Delivery details (optional but helps us find you)</label>
+            <div class="sc-details">
+              <input id="scDetailBldg" placeholder="Building / Estate / Complex" />
+              <input id="scDetailFloor" placeholder="Floor / Block / Section" />
+              <input id="scDetailUnit" placeholder="Unit / Suite / House no." />
+              <input id="scDetailLand" placeholder="Landmark / Gate code / Instructions" />
+            </div>
+          </div>
+        </div>
         <button class="sc-checkout" id="scPayBtn" onclick="SnowmanCart.pay()">${ICON.lock} Pay with card — ${money(total())}</button>
         <p class="sc-secure">${ICON.lock} Secure payment via Paystack</p>
       </div>`);
-    document.getElementById("scFoot") && (document.getElementById("scFoot").style.display = "none");
+    const foot = document.getElementById("scFoot");
+    if (foot) foot.style.display = "none";
+    document.getElementById("scAddr").addEventListener("input", debounce(onAddrInput, 350));
+    document.addEventListener("click", function handler(e) {
+      if (!e.target.closest(".sc-field")) document.getElementById("scSugg").style.display = "none";
+    });
   };
+
+  window.SnowmanCart.toggleDeliv = function () {
+    const box = document.getElementById("scDelivBox");
+    box.style.display = (document.querySelector('input[name="scDeliv"]:checked') || {}).value === "delivery" ? "block" : "none";
+  };
+
+  let addrTimer = null;
+  function debounce(fn, ms) { return function () { clearTimeout(addrTimer); addrTimer = setTimeout(fn, ms); }; }
+  async function onAddrInput() {
+    const q = document.getElementById("scAddr").value.trim();
+    const box = document.getElementById("scSugg");
+    if (q.length < 4) { box.style.display = "none"; return; }
+    try {
+      const r = await fetch(API + "/api/address-autocomplete?q=" + encodeURIComponent(q));
+      const d = await r.json();
+      const sug = d.suggestions || [];
+      box.innerHTML = sug.map((s) => `<div class="sc-sugg-item" onclick="SnowmanCart.pickAddr('${s.text.replace(/'/g, "\\'")}')">${ICON.store} <span>${s.text}</span></div>`).join("");
+      box.style.display = sug.length ? "block" : "none";
+    } catch (e) { box.style.display = "none"; }
+  }
+  window.SnowmanCart.pickAddr = function (text) {
+    document.getElementById("scAddr").value = text;
+    document.getElementById("scSugg").style.display = "none";
+  };
+
   window.SnowmanCart.pay = async function () {
     const name = document.getElementById("scName").value.trim();
     const phone = document.getElementById("scPhone").value.trim();
@@ -125,6 +170,18 @@
     const delivery = (document.querySelector('input[name="scDeliv"]:checked') || {}).value || "pickup";
     const address = document.getElementById("scAddr").value.trim();
     if (!name || !phone || !email) { alert("Please fill in your name, phone and email."); return; }
+    if (delivery === "delivery" && !address) {
+      document.getElementById("scAddr").style.borderColor = "#dc2626";
+      document.getElementById("scAddr").focus();
+      alert("Please enter your delivery address.");
+      return;
+    }
+    const delivery_details = [
+      document.getElementById("scDetailBldg").value.trim(),
+      document.getElementById("scDetailFloor").value.trim(),
+      document.getElementById("scDetailUnit").value.trim(),
+      document.getElementById("scDetailLand").value.trim(),
+    ].filter(Boolean).join(" · ");
     const btn = document.getElementById("scPayBtn");
     btn.disabled = true; btn.textContent = "Contacting payment gateway…";
     try {
@@ -132,14 +189,14 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email, name, phone, delivery, address,
+          email, name, phone, delivery, address, delivery_details,
           amount_cents: total(),
           items: cart.map((i) => ({ name: i.name, qty: i.qty, price: i.price / 100 })),
         }),
       });
       const data = await res.json();
       if (!data.authorization_url) throw new Error(data.error || "Checkout failed");
-      localStorage.setItem("snowman_pending_order", JSON.stringify({ name, phone, email, delivery, address, items: cart, total: total() }));
+      localStorage.setItem("snowman_pending_order", JSON.stringify({ name, phone, email, delivery, address, delivery_details, items: cart, total: total() }));
       location.href = data.authorization_url;
     } catch (e) {
       alert("Could not start payment: " + e.message);

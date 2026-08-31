@@ -279,6 +279,7 @@ export default function setupPaystackRoutes(app, { query, run, saveDb }) {
             phone: meta.customer_phone || '',
             delivery: meta.delivery || '',
             address: meta.address || '',
+            delivery_details: meta.delivery_details || '',
             items,
             amount: (event.data.amount || 0) / 100,
             currency: event.data.currency || 'ZAR',
@@ -318,7 +319,7 @@ export default function setupPaystackRoutes(app, { query, run, saveDb }) {
   // ── Snowman store: initialize checkout (custom amount, no plan) ──
   app.post('/api/snowman/checkout', async (req, res) => {
     try {
-      const { email, name, phone, delivery, address, amount_cents, items } = req.body || {}
+      const { email, name, phone, delivery, address, delivery_details, amount_cents, items } = req.body || {}
       if (!email || !amount_cents || amount_cents < 100) {
         return res.status(400).json({ error: 'email and amount_cents (>= 100) are required' })
       }
@@ -332,6 +333,7 @@ export default function setupPaystackRoutes(app, { query, run, saveDb }) {
           customer_phone: String(phone || '').slice(0, 30),
           delivery: String(delivery || 'pickup'),
           address: String(address || '').slice(0, 200),
+          delivery_details: String(delivery_details || '').slice(0, 300),
           items_json: JSON.stringify(Array.isArray(items) ? items : []),
         },
         callback_url: 'https://snowman-v2.autoeffortless.com/checkout.html',
@@ -366,6 +368,7 @@ export default function setupPaystackRoutes(app, { query, run, saveDb }) {
             phone: meta.customer_phone || '',
             delivery: meta.delivery || '',
             address: meta.address || '',
+            delivery_details: meta.delivery_details || '',
             items,
             amount: (data.amount || 0) / 100,
             currency: data.currency || 'ZAR',
