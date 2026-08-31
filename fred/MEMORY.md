@@ -43,6 +43,14 @@ This is where I keep what matters.
 - **Logo & icons (2026-08-27):** official logo = `branding/logo-current.png`; official icon mark = `website/logo-icon.svg`/`favicon.svg` (dark badge + gold orbit + gold AE) — portal `LogoMark.tsx`. NEVER old-school/outdated icons or text-only "AE" badges; every surface uses the autoeffortless.com mark/icon style.
 - Applies to: storefront, portal, DocChat + all 15 apps, super-app, welcome emails, PDFs, future builds.
 
+## 🚀 Fred Remote Access — LIVE 2026-08-31
+
+- **URL:** https://fred.autoeffortless.com — OpenClaw Control UI (full chat with Fred) from any device. Dedicated tunnel `fred` (98008a80), LaunchAgent `com.autoeffortless.cloudflared-fred`, healthcheck #8.
+- **Menu bar:** "Fred" in marketing site top nav + portal sidebar (overlord-only).
+- **Memory continuity:** remote = same gateway on this Mac = same agent/workspace files. One brain — nothing stored on remote devices, nothing can drift.
+- **First open on a new browser:** use tokenized link (memory/2026-08-31.md) once → token saved per browser; pairing approval may be needed (`openclaw devices approve`).
+- **⚠️ Gateway auth = token mode (2026-08-31):** internal callers (docchat, whatsapp ai-assistant, site-ai) send `Authorization: Bearer` via `OPENCLAW_GATEWAY_TOKEN` in their .env files.
+
 ## WhatsApp API — LIVE ✅
 
 - **Number:** +27 68 754 8390 (Phone ID: 1046384845235600)

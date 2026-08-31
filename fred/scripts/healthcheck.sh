@@ -91,6 +91,14 @@ else
   FAILURES="$FAILURES launchagent"
 fi
 
+# 8. Fred chat tunnel check
+if curl -sf --connect-timeout 10 https://fred.autoeffortless.com/ > /dev/null 2>&1; then
+  echo "  [OK] Fred chat tunnel live" >> "$LOG_FILE"
+else
+  echo "  [FAIL] Fred chat tunnel DOWN" >> "$LOG_FILE"
+  FAILURES="$FAILURES fred-tunnel"
+fi
+
 # ── State transition logic ──────────────────────────────────────────
 # Determine current status: "ok", "warning", or "critical"
 current_status="ok"

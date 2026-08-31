@@ -66,7 +66,8 @@ function callGateway(agentId, messages) {
       headers: {
         'Content-Type': 'application/json',
         'Content-Length': Buffer.byteLength(data),
-        'x-openclaw-light-context': 'true'
+        'x-openclaw-light-context': 'true',
+        'Authorization': 'Bearer ' + (process.env.OPENCLAW_GATEWAY_TOKEN || '')
       }
     }, res => {
       let body = '';

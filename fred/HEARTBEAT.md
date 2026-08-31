@@ -1,6 +1,14 @@
 # Heartbeat Monitor
 # Fred checks these on every session start
 
+## 2026-08-31 — 🚀 FRED REMOTE ACCESS LIVE — fred.autoeffortless.com (06:25)
+
+- **Mr D can now work with Fred from anywhere:** https://fred.autoeffortless.com → OpenClaw Control UI (chat) via dedicated `fred` tunnel (98008a80-4201-4bbe-890f-be60e2cc4b6d) → 127.0.0.1:18789. LaunchAgent `com.autoeffortless.cloudflared-fred` (auto-start). Healthcheck #8 added (fred-tunnel).
+- **"Fred" in menu bars:** marketing site top nav (website/index.html, pushed ec7f1fb) + portal sidebar (AppSidebar.tsx — external href item, overlord-only in practice via existing role filter; bundle index-C5MLeMHV.js deployed via deploy-dashboard.sh).
+- **⚠️ SECURITY UPGRADE:** gateway auth `none`→`token` (loopback was wide open — chatCompletions API unauthenticated). All 3 internal callers now send `Authorization: Bearer` (docchat-routes.js, ai-assistant.js, site-ai-routes.js); token added as `OPENCLAW_GATEWAY_TOKEN` to dashboard-api/.env + whatsapp-server/.env. Verified: no token=401, with token=200, docchat chat works.
+- **🧠 Memory continuity (Mr D's ask):** remote chat = SAME gateway on this Mac = same Fred agent = same workspace (MEMORY.md, memory/*.md, HEARTBEAT.md, session JSONL). No memory can be lost between remote and local — it's one brain. Remote device stores nothing.
+- **First connect from a NEW browser:** open the private tokenized link (see MEMORY.md) once → token stored per browser; may need device pairing approval (`openclaw devices approve <requestId>`) — Fred handles on request.
+
 ## 2026-08-30 — 🕔 ATTENDANCE & TIME TRACKING APP LIVE ✅ (11:50)
 
 - **2nd real app shipped same-day** (Mr D green light 11:33 → live 11:50): `/app/attendance` on app.autoeffortless.com (bundle index-Bp_WisSU.js)
