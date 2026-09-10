@@ -97,7 +97,7 @@ This is where I keep what matters.
 - **API:** Express server at localhost:3001 (ES modules)
 - **DB:** SQLite at `dashboard-api/data/autoeffortless.db`
 - **Admin login:** info@autoeffortless.com / admin123
-- **Client login example:** info@tingalingschools.com / Tingaling2026!
+- **Client login example:** info@tingalingschools.com / 1KRkT2qn1S3vUY
 
 ### Auth & Onboarding
 - AuthContext with token persistence in localStorage
@@ -182,7 +182,7 @@ This is where I keep what matters.
   - Geen WhatsApp/tunnel nie — net lokaal vir nou
 
 ### Ting-A-Ling Schools (ID: 6)
-- **Login:** info@tingalingschools.com / Tingaling2026!
+- **Login:** info@tingalingschools.com / 1KRkT2qn1S3vUY
 - **Role:** client_admin
 - **WhatsApp number:** +27 68 754 8390
 - **Contact phone:** +27615274429
@@ -253,7 +253,7 @@ Ting-A-Ling now has its OWN portal on tingalingschools.com — no redirect to Au
 - **Staff panel:** announcements, events, submit + track leave requests
 - **Parent panel:** announcements, events, report absence (prefilled WhatsApp to 061 527 4429), self-register at /register
 - **Accounts:**
-  - Admin: info@tingalingschools.com / Tingaling2026!
+  - Admin: info@tingalingschools.com / 1KRkT2qn1S3vUY
   - Staff: staff@tingalingschools.com / Staff2026!
   - Parent: parent@tingalingschools.com / Parent2026!
 - **Backend:** dashboard-api (port 3001) — new `portal-routes.js` + tables (portal_announcements, portal_events, leave_requests, portal_registrations). API base in SPA: `https://app.autoeffortless.com/api` (internal infra, invisible to users).
