@@ -518,45 +518,5 @@
     "lastSeen": "2026-08-27T15:59:35.649Z",
     "autoReplied": 9,
     "humanRequests": 2
-  },
-  "27672610783": {
-    "name": "kuben Moodley",
-    "phone": "27672610783",
-    "messages": [
-      {
-        "direction": "in",
-        "text": "Hi do you remember me",
-        "timestamp": "2026-06-13T21:41:41.503Z"
-      },
-      {
-        "direction": "out",
-        "text": "Hi there! I'm afraid I don't have a record of our previous conversations at the moment — my memory index needs a refresh. So I'd love it if you could remind me who you are! 😊\n\nIs there something I can help you with regarding Ting-A-Ling Schools?",
-        "timestamp": "2026-06-13T21:41:41.503Z"
-      },
-      {
-        "direction": "in",
-        "text": "Is your name luyanda",
-        "timestamp": "2026-06-13T21:42:22.263Z"
-      },
-      {
-        "direction": "out",
-        "text": "My name is TingAI — I'm the school assistant for Ting-A-Ling Schools. Not Luyanda, but I'm happy to help you with whatever you need! 😊",
-        "timestamp": "2026-06-13T21:42:22.263Z"
-      },
-      {
-        "direction": "in",
-        "text": "Wrong number sorry",
-        "timestamp": "2026-06-13T21:42:43.035Z"
-      },
-      {
-        "direction": "out",
-        "text": "No problem at all — have a good day! 😊",
-        "timestamp": "2026-06-13T21:42:43.035Z"
-      }
-    ],
-    "firstSeen": "2026-06-13T21:41:41.503Z",
-    "lastSeen": "2026-06-13T21:42:43.035Z",
-    "autoReplied": 3,
-    "humanRequests": 0
   }
 }
