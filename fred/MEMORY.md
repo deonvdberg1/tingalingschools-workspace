@@ -475,3 +475,19 @@ Each client agent has:
 ---
 
 *Last updated 2026-05-28 18:45 SAST — CIPC approved. AutoEffortless registered. POPIA docs drafted.*
+
+---
+
+## 🎨 MANGA STUDIO — Mr D's personal project (started 2026-09-13)
+
+- **Mr D is writing a manga.** Locked: format = **manga** (RTL, B5), language = **English**, and the model is **COLLABORATIVE — Mr D draws, Fred assembles** (script, layout, lettering, clean-up, export, publishing).
+- **Workspace:** `manga/` · ops manual `manga/STUDIO.md` · loop `manga/WORKFLOW.md`.
+- **Pipeline (built + verified 2026-09-13):**
+  - `tools/ingest-art.sh` — photo/scan of Mr D's drawing → clean print panel (deskew, lighting flatten, paper→white, ink→black; modes line/tone/raw)
+  - `tools/build-page.mjs` — page spec JSON → print-ready RTL page PNG (bubbles, tails, SFX, effects, mono)
+  - `tools/make-brief.mjs` — printable drawing brief Mr D draws from (shot/action/emotion/dialogue + exact panel ratios)
+  - `tools/make-blueprints.mjs` — 5 standard B5 page layouts → PNG + PDF
+- **HOUSE RULE:** text is **never** AI-drawn — all lettering is typeset in the compositor. This manga is Mr D's art; no AI art for it unless he asks.
+- **Publishing rules (2026):** KDP requires AI-generated disclosure; Webtoon Canvas requires the "AI-assisted" tag; Gumroad unrestricted.
+- Shared assets: https://files.autoeffortless.com/manga/
+- **Next:** awaiting Mr D's story ideas; then story bible + chapter 1 scripts + drawing briefs.
