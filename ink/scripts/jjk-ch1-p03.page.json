@@ -1,0 +1,28 @@
+{
+  "title": "jjk-ch1-p03",
+  "page": 3, "width": 1200, "height": 1750,
+  "gutter": 16, "border": 4, "fontSize": 21, "reading": "rtl",
+  "rows": [
+    { "height": 0.55, "panels": [
+      { "span": 1, "shot": "wide / from cover",
+        "action": "Across the wet street, Aya stands in deep shadow under a dripping awning, watching the glowing stall.",
+        "emotion": "the hunter announcing herself by not hiding",
+        "art": "art/pages/jjk-ch1-p03-c1.jpg", "focus": "50% 46%", "zoom": 1.03,
+        "effects": [{ "type": "tone" }],
+        "bubbles": [
+          { "type": "caption", "x": 4, "y": 5, "w": 34, "text": "02:40" },
+          { "type": "thought", "x": 40, "y": 80, "w": 56, "text": "It already knows. Let it." }
+        ] }
+    ] },
+    { "height": 0.45, "panels": [
+      { "span": 1, "shot": "close-up",
+        "action": "The porcelain mask turns slowly over its shoulder, straight at camera. Steam.",
+        "emotion": "the moment the trap closes the wrong way",
+        "art": "art/pages/jjk-ch1-p03-c2.jpg", "focus": "50% 44%", "zoom": 1.06,
+        "bubbles": [
+          { "type": "sfx", "x": 24, "y": 20, "text": "tsss…", "size": 54, "rotate": 6 },
+          { "type": "speech", "x": 4, "y": 66, "w": 62, "text": "Ah. The girl who tastes things.", "tail": { "dir": "bl", "x": 30 } }
+        ] }
+    ] }
+  ]
+}

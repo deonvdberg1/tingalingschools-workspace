@@ -1,0 +1,34 @@
+{
+  "title": "jjk-ch1-p02",
+  "page": 2, "width": 1200, "height": 1750,
+  "gutter": 16, "border": 4, "fontSize": 21, "reading": "rtl",
+  "rows": [
+    { "height": 0.52, "panels": [
+      { "span": 1, "shot": "medium two-shot",
+        "action": "Grain-silo academy. Goose leans on a desk, grinning; Aya stands with her arms crossed.",
+        "emotion": "the calm before the drop",
+        "art": "art/pages/jjk-ch1-p02-b1.jpg", "focus": "50% 40%", "zoom": 1.03,
+        "bubbles": [
+          { "type": "speech", "x": 50, "y": 7, "w": 46, "text": "Grade Two. It's eaten four people this week. Made each of them smile first.", "tail": { "dir": "br", "x": 60 } },
+          { "type": "speech", "x": 4, "y": 68, "w": 40, "text": "And I'm Grade Three.", "tail": { "dir": "bl", "x": 26 } }
+        ] }
+    ] },
+    { "height": 0.48, "panels": [
+      { "span": 1, "shot": "close-up",
+        "action": "Goose, sunglasses on indoors, bandaged hand raised — still grinning",
+        "emotion": "menace in a smile",
+        "art": "art/pages/jjk-ch1-p02-b2.jpg", "focus": "50% 40%", "zoom": 1.06,
+        "bubbles": [
+          { "type": "speech", "x": 4, "y": 6, "w": 58, "text": "You are. That's exactly why it's you.", "tail": { "dir": "bl", "x": 34 } }
+        ] },
+      { "span": 1, "shot": "extreme close-up",
+        "action": "Aya's open hand: a small wrapped cursed object. Her eyes lit from below.",
+        "emotion": "the price, understood in advance",
+        "art": "art/pages/jjk-ch1-p02-b3.jpg", "focus": "50% 46%", "zoom": 1.06,
+        "bubbles": [
+          { "type": "caption", "x": 4, "y": 4, "w": 62, "text": "SECOND HELPING — one taste, one technique" },
+          { "type": "thought", "x": 40, "y": 70, "w": 56, "text": "One bite. One memory gone." }
+        ] }
+    ] }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "title": "jjk-ch1-p04",
+  "page": 4, "width": 1200, "height": 1750,
+  "gutter": 16, "border": 4, "fontSize": 21, "reading": "rtl",
+  "rows": [
+    { "height": 0.34, "panels": [
+      { "span": 1, "shot": "dynamic action / dutch angle",
+        "action": "Aya launches through the rain, cursed energy erupting off her hands",
+        "emotion": "release",
+        "art": "art/pages/jjk-ch1-p04-d1.jpg", "focus": "50% 42%", "zoom": 1.05,
+        "effects": [{ "type": "speedlines" }],
+        "bubbles": [
+          { "type": "shout", "x": 4, "y": 6, "w": 46, "text": "SECOND HELPING—!" }
+        ] }
+    ] },
+    { "height": 0.30, "panels": [
+      { "span": 1, "shot": "extreme close-up",
+        "action": "Her teeth close on the cursed object. Her eyes flare white; cursed energy crawls her cheek.",
+        "emotion": "the trade being made",
+        "art": "art/pages/jjk-ch1-p04-d2.jpg", "focus": "50% 44%", "zoom": 1.08,
+        "effects": [{ "type": "flash" }],
+        "bubbles": [
+          { "type": "shout", "x": 54, "y": 8, "w": 44, "text": "—TASTE IT.", "tail": { "dir": "bl", "x": 20 } },
+          { "type": "caption", "x": 4, "y": 84, "w": 60, "text": "second memory lost" }
+        ] }
+    ] },
+    { "height": 0.36, "panels": [
+      { "span": 1, "shot": "impact / climax",
+        "action": "The stall detonates outward — broth, shadow, debris; the curse hurled back",
+        "emotion": "the hit that ends it",
+        "art": "art/pages/jjk-ch1-p04-d3.jpg", "focus": "50% 48%", "zoom": 1.05,
+        "effects": [{ "type": "speedlines" }],
+        "bubbles": [
+          { "type": "sfx", "x": 40, "y": 22, "text": "DOOOOM", "size": 104, "rotate": -6 }
+        ] }
+    ] }
+  ]
+}

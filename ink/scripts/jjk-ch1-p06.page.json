@@ -1,0 +1,27 @@
+{
+  "title": "jjk-ch1-p06",
+  "page": 6, "width": 1200, "height": 1750,
+  "gutter": 16, "border": 4, "fontSize": 21, "reading": "rtl",
+  "rows": [
+    { "height": 0.5, "panels": [
+      { "span": 1, "shot": "medium / dawn",
+        "action": "Empty street at first light. Goose rests a hand on Aya's head; both small under a vast grey sky.",
+        "emotion": "the lesson that costs more than it teaches",
+        "art": "art/pages/jjk-ch1-p06-f1.jpg", "focus": "50% 42%", "zoom": 1.03,
+        "bubbles": [
+          { "type": "speech", "x": 6, "y": 7, "w": 60, "text": "That's the tax, kid. Every technique takes a memory.", "tail": { "dir": "br", "x": 66 } }
+        ] }
+    ] },
+    { "height": 0.5, "panels": [
+      { "span": 1, "shot": "extreme close-up / hook",
+        "action": "Her trembling hand held up to the light — something faintly moving beneath the skin.",
+        "emotion": "the chapter's real ending",
+        "art": "art/pages/jjk-ch1-p06-f2.jpg", "focus": "50% 48%", "zoom": 1.08,
+        "bubbles": [
+          { "type": "sfx", "x": 24, "y": 22, "text": "…thump.", "size": 56, "rotate": -5 },
+          { "type": "caption", "x": 6, "y": 76, "w": 78, "text": "SOMETHING SHE ATE IS STILL HUNGRY" },
+          { "type": "caption", "x": 6, "y": 88, "w": 78, "text": "END OF CHAPTER ONE" }
+        ] }
+    ] }
+  ]
+}

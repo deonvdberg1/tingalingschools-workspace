@@ -1,0 +1,27 @@
+{
+  "title": "jjk-ch1-p05",
+  "page": 5, "width": 1200, "height": 1750,
+  "gutter": 16, "border": 4, "fontSize": 21, "reading": "rtl",
+  "rows": [
+    { "height": 0.54, "panels": [
+      { "span": 1, "shot": "medium / aftermath",
+        "action": "The Cook kneels in the ruin, mask cracking apart into steam. Almost peaceful.",
+        "emotion": "grief, not victory",
+        "art": "art/pages/jjk-ch1-p05-e1.jpg", "focus": "50% 46%", "zoom": 1.04,
+        "bubbles": [
+          { "type": "caption", "x": 4, "y": 5, "w": 44, "text": "GRADE TWO — EXORCISED" },
+          { "type": "speech", "x": 52, "y": 68, "w": 44, "text": "…thank you.", "tail": { "dir": "bl", "x": 30 } }
+        ] }
+    ] },
+    { "height": 0.46, "panels": [
+      { "span": 1, "shot": "extreme close-up",
+        "action": "Aya crying in the rain — with completely empty eyes. She doesn't know why.",
+        "emotion": "the cost, arriving quietly",
+        "art": "art/pages/jjk-ch1-p05-e2.jpg", "focus": "50% 44%", "zoom": 1.06,
+        "bubbles": [
+          { "type": "thought", "x": 40, "y": 6, "w": 56, "text": "Why am I crying?" },
+          { "type": "caption", "x": 6, "y": 84, "w": 72, "text": "the face she just lost" }
+        ] }
+    ] }
+  ]
+}

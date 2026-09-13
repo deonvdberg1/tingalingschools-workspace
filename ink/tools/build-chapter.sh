@@ -7,7 +7,7 @@
 #        webtoon strip (top-to-bottom) -> contact sheet -> copy to the share folder.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-CH="${1:-ch1}"; PUBLISH="${2:-}"
+CH="${1:-ch1}"; PUBLISH="${2:-}"; SLUG="${3:-$CH}"
 OUT="output/$CH"; mkdir -p "$OUT" output/briefs
 FONT=/System/Library/Fonts/Supplemental/Arial.ttf
 
@@ -26,11 +26,11 @@ echo "rendered ${#pages[@]} page(s)"
 
 # print PDF — one page per sheet, B5-ish at 300dpi
 magick -density 300 -units PixelsPerInch "${pages[@]}" -compress JPEG -quality 90 \
-  "$OUT/SALT-AND-STATIC-$CH-print.pdf"
+  "$OUT/$SLUG-print.pdf"
 
 # webtoon strip — 800px wide, top to bottom
 magick "${pages[@]}" -resize 800x -background white -append -compress JPEG -quality 86 \
-  "$OUT/SALT-AND-STATIC-$CH-webtoon.jpg"
+  "$OUT/$SLUG-webtoon.jpg"
 
 # contact sheet
 magick montage -font "$FONT" -tile 3x -geometry 560x+10+10 -background '#ffffff' \
@@ -38,16 +38,16 @@ magick montage -font "$FONT" -tile 3x -geometry 560x+10+10 -background '#ffffff'
 magick "${pages[@]}" -resize 1200x -background '#ffffff' -append -compress JPEG -quality 88 \
   "$OUT/$CH-pages-stack.jpg"
 
-echo "→ $OUT/SALT-AND-STATIC-$CH-print.pdf"
-echo "→ $OUT/SALT-AND-STATIC-$CH-webtoon.jpg"
+echo "→ $OUT/$SLUG-print.pdf"
+echo "→ $OUT/$SLUG-webtoon.jpg"
 echo "→ $OUT/$CH-contact-sheet.jpg"
 
 if [ "$PUBLISH" = "--publish" ]; then
   DEST=/Users/deonvandenberg/.openclaw/workspace/fred/products/manga
   mkdir -p "$DEST"
-  cp "$OUT/SALT-AND-STATIC-$CH-print.pdf"   "$DEST/SALT-AND-STATIC-ch1-print.pdf"
-  cp "$OUT/$CH-contact-sheet.jpg"           "$DEST/SALT-AND-STATIC-ch1-contact-sheet.jpg"
-  cp "$OUT/SALT-AND-STATIC-$CH-webtoon.jpg" "$DEST/SALT-AND-STATIC-ch1-webtoon.jpg"
-  cp output/briefs/$CH-p01-01-brief.png     "$DEST/SALT-AND-STATIC-ch1-p01-drawing-brief.png" 2>/dev/null || true
+  cp "$OUT/$SLUG-print.pdf"   "$DEST/$CH-print.pdf"
+  cp "$OUT/$CH-contact-sheet.jpg"           "$DEST/$CH-contact-sheet.jpg"
+  cp "$OUT/$SLUG-webtoon.jpg" "$DEST/$CH-webtoon.jpg"
+  cp output/briefs/$CH-p01-01-brief.png     "$DEST/$CH-p01-drawing-brief.png" 2>/dev/null || true
   echo "published to $DEST"
 fi

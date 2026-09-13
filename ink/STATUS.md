@@ -53,6 +53,15 @@ dead second line, and the lighthouse that went dark 30 years ago turns back on.
 2. **On any drawing arriving:** archive → `ingest-art.sh` → letter a real page. Fastest proof.
 3. **On any story material arriving:** bible first, then page scripts, then briefs.
 
+## ASH & APPETITE — Ch1 "One More Bite" (2026-09-13, later)
+Second test chapter, **Jujutsu Kaisen register** — dark urban supernatural, cursed techniques,
+ranked sorcerers, the cost of power. Original story/cast by Ink. Local only: Mr D said no
+uploading/publishing, so this one is **not** on the share — artifacts in `output/jjk-ch1/`.
+- Setting Durban, SA · cursed technique "SECOND HELPING" (taste a cursed object, copy its
+technique, lose a memory) · Aya Ntombela (16), Goose (mentor), the Cook (Grade 2 curse).
+- 6 pages + cover, RTL, B5, 2400×3500. Art is AI PLACEHOLDER (declared on the cover).
+- Bible: `bible/ash-appetite.md` · script: `scripts/jjk-ch1-script.md`.
+
 ## Environment / gotchas (new this session)
 - **Pollinations rate-limits anonymous bursts hard** (HTTP 429). Generate **sequentially** with
   sleep + retry; expect ~1 in 3 requests to fail. ~768px output regardless of requested size —

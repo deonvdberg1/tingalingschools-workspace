@@ -1,0 +1,14 @@
+{
+  "title": "jjk-ch1-p00-cover",
+  "page": 0,
+  "width": 1200, "height": 1750,
+  "gutter": 0, "border": 0, "reading": "rtl", "contrast": 1.20,
+  "rows": [ { "height": 1.0, "panels": [ { "span": 1, "art": "art/pages/jjk-ch1-cover.jpg", "focus": "50% 38%", "zoom": 1.04 } ] } ],
+  "overlays": [
+    { "text": "ASH &amp; APPETITE", "x": 4, "y": 6, "w": 92, "size": 96, "family": "Bangers", "align": "center", "color": "#ffffff", "stroke": 3, "strokeColor": "#0b0b0b", "letterSpacing": "0.02em", "lineHeight": 0.95 },
+    { "text": "CHAPTER ONE", "x": 4, "y": 22.5, "w": 92, "size": 25, "family": "Outfit", "align": "center", "color": "#0b0b0b", "letterSpacing": "0.35em" },
+    { "text": "ONE MORE BITE", "x": 4, "y": 25.6, "w": 92, "size": 50, "family": "Bangers", "align": "center", "color": "#ffffff", "stroke": 3, "strokeColor": "#0b0b0b" },
+    { "text": "a manga by Mr D   ·   assembled by Ink", "x": 4, "y": 87, "w": 92, "size": 17, "family": "Outfit", "align": "center", "color": "#0b0b0b" },
+    { "text": "TEST RUN — panel art is AI PLACEHOLDER, not the artist's hand", "x": 4, "y": 91, "w": 92, "size": 13, "family": "Outfit", "align": "center", "color": "#0b0b0b", "letterSpacing": "0.06em" }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "title": "jjk-ch1-p01",
+  "page": 1, "width": 1200, "height": 1750,
+  "gutter": 16, "border": 4, "fontSize": 21, "reading": "rtl",
+  "rows": [
+    { "height": 0.5, "panels": [
+      { "span": 1, "shot": "extreme wide / cold open",
+        "action": "A rain-soaked alley at 2am. One tiny ramen stall glows against the dark, a lone customer hunched at the counter.",
+        "emotion": "dread dressed up as comfort",
+        "art": "art/pages/jjk-ch1-p01-a1.jpg", "focus": "50% 52%", "zoom": 1.03,
+        "effects": [{ "type": "tone" }],
+        "bubbles": [
+          { "type": "caption", "x": 4, "y": 5, "w": 54, "text": "UMGENI WARD, DURBAN — 02:11" },
+          { "type": "caption", "x": 4, "y": 82, "w": 60, "text": "THE CITY IS ASLEEP. ITS HUNGER ISN'T." }
+        ] }
+    ] },
+    { "height": 0.5, "panels": [
+      { "span": 1, "shot": "medium",
+        "action": "The Cook ladles broth with too many arms, porcelain smile fixed, steam pouring off its shoulders",
+        "emotion": "wrongness under warmth",
+        "art": "art/pages/jjk-ch1-p01-a2.jpg", "focus": "50% 42%", "zoom": 1.05,
+        "bubbles": [
+          { "type": "speech", "x": 4, "y": 8, "w": 54, "text": "Sit. You look like you're missing something.", "tail": { "dir": "br", "x": 58 } }
+        ] },
+      { "span": 1, "shot": "extreme close-up / horror beat",
+        "action": "The bowl. The broth is crowded with black strands and small floating eyes.",
+        "emotion": "the comfort curdles",
+        "art": "art/pages/jjk-ch1-p01-a3.jpg", "focus": "50% 48%", "zoom": 1.08,
+        "bubbles": [
+          { "type": "sfx", "x": 26, "y": 22, "text": "glk…", "size": 58, "rotate": -6 },
+          { "type": "caption", "x": 6, "y": 80, "w": 74, "text": "The broth blinks back." }
+        ] }
+    ] }
+  ]
+}
