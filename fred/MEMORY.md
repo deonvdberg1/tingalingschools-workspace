@@ -491,3 +491,11 @@ Each client agent has:
 - **Publishing rules (2026):** KDP requires AI-generated disclosure; Webtoon Canvas requires the "AI-assisted" tag; Gumroad unrestricted.
 - Shared assets: https://files.autoeffortless.com/manga/
 - **Next:** awaiting Mr D's story ideas; then story bible + chapter 1 scripts + drawing briefs.
+
+## 🖋️ MANGA STUDIO → OWN AGENT: **Ink** (2026-09-13 17:25)
+
+- Mr D handed the manga project to a **dedicated agent: `ink`** ("Ink", 🖋️). Workspace `/Users/deonvandenberg/.openclaw/workspace/ink`, registered in openclaw.json.
+- Whole studio moved `fred/manga/` → `ink/`. Ink owns it; Fred no longer holds the pipeline.
+- Ink's brief: IDENTITY/SOUL/AGENTS/USER/TOOLS/MEMORY/**STATUS.md** (handover state) + the tools/scripts/art/output.
+- ⚠️ Registered but needs a **gateway restart** to go live (`agent not found: ink` until then).
+- File sharing for Mr D stays at fred/products/manga/ → https://files.autoeffortless.com/manga/ — that's the handoff point, nothing else of Fred's is involved.

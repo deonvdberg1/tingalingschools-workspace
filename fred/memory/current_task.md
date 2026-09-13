@@ -1,16 +1,12 @@
-# Current Task — 2026-09-13 17:20 SAST
+# Current Task — 2026-09-13 17:25 SAST
 
-## 🎨 MANGA STUDIO — NEW PERSONAL PROJECT (active, Mr D)
-- Mr D is writing a manga. **Format: manga (RTL, B5). Language: English. Mr D draws, Fred assembles.**
-- Story/premise: Mr D still developing it — awaiting his ideas.
-- Pipeline built + proven end-to-end (see `manga/STUDIO.md`, `manga/WORKFLOW.md`):
-  - `tools/ingest-art.sh` — his photo/scan → clean print-ready panel (lighting flatten, deskew, paper→white, ink→black; modes line/tone/raw)
-  - `tools/build-page.mjs` — page spec JSON → print-ready page PNG (RTL flow, bubbles, SFX, effects, mono)
-  - `tools/make-brief.mjs` — printable **drawing brief** for Mr D (shot/action/emotion/dialogue + exact box ratios)
-  - `tools/make-blueprints.mjs` — 5 standard B5 layouts → PNG + PDF
-  - `tools/gen-art.sh` — free AI panel art (only used if Mr D asks; this manga is HIS art)
-- Demo page + brief + blueprint pack live at https://files.autoeffortless.com/manga/
-- **NEXT:** when Mr D sends story ideas/drawings → story bible + chapter 1 page scripts + briefs. When he sends any drawing photo → run ingest, show him his art on a real lettered page.
+## 🖋️ MANGA STUDIO → HANDED TO A NEW AGENT: **Ink** (DONE 2026-09-13 17:25)
+- Mr D asked to hand the manga project to a dedicated agent. **Created agent `ink`** (name: **Ink**, emoji 🖋️), workspace `/Users/deonvandenberg/.openclaw/workspace/ink`, agent dir `~/.openclaw/agents/ink/agent`, model deepseek/deepseek-v4-flash, registered in openclaw.json + identity set.
+- **The whole studio was MOVED** from `fred/manga/` → `ink/` (tools, scripts, art, output, templates, STUDIO.md, WORKFLOW.md). Nothing left behind in fred.
+- Ink's workspace seeded with: IDENTITY.md, SOUL.md, AGENTS.md (full pipeline manual + page-spec schema), USER.md, TOOLS.md (toolchain + gotchas), MEMORY.md (locked decisions + technical lessons), **STATUS.md (the "where we are now" handover brief)**, HEARTBEAT.md.
+- ⚠️ **REGISTERED BUT NOT LIVE YET** — `sessions_send agentId=ink` → `agent not found: ink`. The running gateway needs a **restart** to load the new agent. Asked Mr D for the nod (same restart also clears the stale memory_search index).
+- Public share stays at `fred/products/manga/` → https://files.autoeffortless.com/manga/ (that's the handoff point for files, not Fred's workspace).
+- **Verification pending:** once live, have Ink run `build-page.mjs` + `make-brief.mjs` itself and report back (handshake test).
 
 ## AutoEffortless (steady state)
 - All systems green (7 services + 6 tunnels 200), backups current.
