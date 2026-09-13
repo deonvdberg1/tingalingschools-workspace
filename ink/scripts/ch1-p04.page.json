@@ -1,0 +1,39 @@
+{
+  "title": "ch1-p04",
+  "page": 4,
+  "width": 1200, "height": 1750,
+  "gutter": 16, "border": 4, "fontSize": 21,
+  "reading": "rtl",
+  "rows": [
+    { "height": 0.5, "panels": [
+      {
+        "span": 1,
+        "shot": "extreme close-up",
+        "action": "Nandi's eyes go wide, headset pressed hard to her ear, console glow on her skin",
+        "emotion": "shock — someone answered from the other side",
+        "art": "art/pages/ch1-p04-d1.jpg",
+        "focus": "50% 42%", "zoom": 1.05,
+        "effects": [{ "type": "speedlines" }],
+        "bubbles": [
+          { "type": "shout", "x": 4, "y": 5, "w": 46, "text": "—HELLO?" },
+          { "type": "speech", "x": 46, "y": 74, "w": 50, "text": "You're on the air." }
+        ]
+      }
+    ] },
+    { "height": 0.5, "panels": [
+      {
+        "span": 1,
+        "shot": "abstract close-up",
+        "action": "The earpiece; a CRT waveform of static that briefly holds the shape of a standing man",
+        "emotion": "the wrongness made visible",
+        "art": "art/pages/ch1-p04-d2.jpg",
+        "focus": "50% 46%", "zoom": 1.06,
+        "effects": [{ "type": "tone" }],
+        "bubbles": [
+          { "type": "sfx", "x": 22, "y": 20, "text": "KSSSSHHH", "size": 58, "rotate": 7 },
+          { "type": "speech", "x": 46, "y": 62, "w": 50, "text": "Co-ordinates as follows. Read them back." }
+        ]
+      }
+    ] }
+  ]
+}

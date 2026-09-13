@@ -1,0 +1,48 @@
+{
+  "title": "ch1-p06",
+  "page": 6,
+  "width": 1200, "height": 1750,
+  "gutter": 16, "border": 4, "fontSize": 21,
+  "reading": "rtl",
+  "rows": [
+    { "height": 0.44, "panels": [
+      {
+        "span": 1,
+        "shot": "wide / empty room",
+        "action": "An empty dark room. The phone lies off the hook on the floor. Static light washes in from off-frame.",
+        "emotion": "the voice has left the booth and is now everywhere",
+        "art": "art/pages/ch1-p06-f1.jpg",
+        "focus": "50% 50%", "zoom": 1.04,
+        "effects": [{ "type": "tone" }],
+        "bubbles": [
+          { "type": "speech", "x": 30, "y": 34, "w": 40, "text": "Nandi." }
+        ]
+      }
+    ] },
+    { "height": 0.56, "panels": [
+      {
+        "span": 1,
+        "shot": "medium",
+        "action": "Gogga frozen in the doorway, pale, gripping the frame",
+        "emotion": "thirty years of dread arriving at once",
+        "art": "art/pages/ch1-p06-f2.jpg",
+        "focus": "50% 42%", "zoom": 1.04,
+        "bubbles": [
+          { "type": "speech", "x": 5, "y": 6, "w": 56, "text": "…you answered it.", "tail": { "dir": "br", "x": 62 } }
+        ]
+      },
+      {
+        "span": 1,
+        "shot": "close-up / from below",
+        "action": "Nandi lit by the static glow, caught between wonder and terror",
+        "emotion": "the hook landing — end of chapter",
+        "art": "art/pages/ch1-p06-f3.jpg",
+        "focus": "50% 44%", "zoom": 1.05,
+        "bubbles": [
+          { "type": "thought", "x": 38, "y": 6, "w": 58, "text": "How does it know my name?" },
+          { "type": "caption", "x": 8, "y": 84, "w": 84, "text": "END OF CHAPTER ONE" }
+        ]
+      }
+    ] }
+  ]
+}

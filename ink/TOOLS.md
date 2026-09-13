@@ -37,11 +37,20 @@ This trick is why the scripts work without a local `node_modules`. Keep it if yo
   consistency ever needs to be much better, that is the upgrade path: local ComfyUI + a LoRA
   trained on Mr D's own character sheet. Free, ~10GB download, needs his approval.
 
+## Lettering fonts
+`assets/fonts/` — **Comic Neue** (dialogue/captions), **Bangers** (SFX), **Outfit** (titles/credits).
+All OFL. `tools/build-page.mjs` inlines them as base64 data URIs (see gotcha 5).
+
 ## Known gotchas (learned the hard way)
 1. **ImageMagick `montage` fails with "unable to read font"** — always pass `-font /System/Library/Fonts/Supplemental/Arial.ttf`, or just use `+append` / `-append` instead.
 2. **Lighting flattening must be followed by `-auto-level`.** Divide-by-blur alone leaves dark paper; without auto-level the threshold turns the whole page black. Order: `divide composite → -auto-level → threshold`.
 3. **LaunchAgents have a minimal PATH** — if a script runs from cron/LaunchAgent, use absolute binary paths (`/opt/homebrew/bin/magick`).
-4. **Playwright screenshots**: set `deviceScaleFactor: 2` for print resolution (B5 page CSS 1075×1518 → 2150×3035 px).
+4. **Playwright screenshots**: set `deviceScaleFactor: 2` for print resolution (B5 page CSS 1075×1518 → 2150×3035 px). Page specs use 1200×1750 CSS → 2400×3500 px at dpr 2.
+5. **Chromium blocks `file://` @font-face.** A page can look fine but silently use a fallback
+   sans. Inline fonts as **base64 data URIs**. Verify with a width test (Comic Neue ≠ sans-serif).
+6. **Pollinations rate-limits anonymous bursts** (all-parallel = all 429). Generate **sequentially**
+   with sleep + retry (≈6s apart, doubling backoff). Output is ~768px however big you ask;
+   upscale: `-filter Lanczos -resize 1536x -unsharp 0x1+0.55+0.02`.
 
 ## Sharing with Mr D
 - Copy finished artifacts to `/Users/deonvandenberg/.openclaw/workspace/fred/products/manga/`

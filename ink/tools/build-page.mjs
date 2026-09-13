@@ -37,6 +37,21 @@ const H = spec.height || 1750;
 const GUTTER = spec.gutter ?? 16;
 const INK = '#0b0b0b';
 
+// Local lettering fonts (OFL), inlined as data URIs so Chromium never blocks them.
+const FONTDIR = path.join(ROOT, 'assets', 'fonts');
+const face = (family, file, weight) => {
+  const p = path.join(FONTDIR, file);
+  if (!fs.existsSync(p)) return '';
+  const b64 = fs.readFileSync(p).toString('base64');
+  return `@font-face{font-family:'${family}';src:url(data:font/ttf;base64,${b64}) format('truetype');font-weight:${weight || 400};font-style:normal;}`;
+};
+const FONT_FACES = [
+  face('Comic Neue', 'ComicNeue-Regular.ttf', 400),
+  face('Comic Neue', 'ComicNeue-Bold.ttf', 700),
+  face('Bangers', 'Bangers-Regular.ttf', 400),
+  face('Outfit', 'Outfit.ttf', 400),
+].join('\n');
+
 const esc = (s = '') => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 
 function absArt(p) {
@@ -74,6 +89,16 @@ function panelHTML(p) {
   return `<div class="panel" style="flex:${p.span || 1};${p.notes ? '' : ''}">${inner}${fx}${bubbles}</div>`;
 }
 
+// Free overlays (chapter title pages, credits, end marks). Absolute on the page.
+const overlayHTML = (spec.overlays || []).map(o => {
+  const fam = o.family ? `'${o.family}',` : '';
+  return `<div class="ov" style="left:${o.x ?? 0}%;top:${o.y ?? 0}%;width:${o.w ?? 100}%;` +
+    `font-family:${fam}'Comic Neue',sans-serif;font-size:${o.size ?? 40}px;font-weight:${o.weight ?? 800};` +
+    `text-align:${o.align || 'center'};line-height:${o.lineHeight ?? 1.1};letter-spacing:${o.letterSpacing || '0'};` +
+    `color:${o.color || '#fff'};-webkit-text-stroke:${o.stroke ?? 0}px ${o.strokeColor || INK};` +
+    `transform:rotate(${o.rotate ?? 0}deg);">${esc(o.text)}</div>`;
+}).join('\n');
+
 const rowsHTML = (spec.rows || []).map(r => {
   const h = r.height ? `height:${r.height * 100}%;` : 'flex:1;';
   const dir = spec.reading === 'rtl' ? 'row-reverse' : 'row';
@@ -83,6 +108,7 @@ const rowsHTML = (spec.rows || []).map(r => {
 const html = `<!doctype html>
 <html><head><meta charset="utf-8">
 <style>
+  ${FONT_FACES}
   *{box-sizing:border-box;margin:0;padding:0;}
   html,body{width:${W}px;height:${H}px;background:#fff;overflow:hidden;}
   body{font-family:'Comic Neue','Anime Ace','Outfit',sans-serif;}
@@ -104,15 +130,16 @@ const html = `<!doctype html>
     clip-path:polygon(0% 0%,100% 0%,30% 100%);}
   .tail-bl{bottom:-24px;transform:rotate(20deg);}
   .tail-br{bottom:-24px;transform:rotate(-20deg);}
-  .sfx{position:absolute;font-family:'Impact','Anton','Outfit',sans-serif;font-weight:900;letter-spacing:-.02em;white-space:nowrap;}
+  .sfx{position:absolute;font-family:'Bangers','Impact','Anton','Outfit',sans-serif;font-weight:400;letter-spacing:.02em;white-space:nowrap;}
   .fx{position:absolute;pointer-events:none;}
   .fx-speedlines{background:repeating-conic-gradient(from 0deg at 50% 50%,#0b0b0b 0deg 1.1deg,transparent 1.1deg 5deg);opacity:.55;
     -webkit-mask-image:radial-gradient(circle at 50% 50%,transparent 26%,#000 62%);mask-image:radial-gradient(circle at 50% 50%,transparent 26%,#000 62%);}
   .fx-tone{background-image:radial-gradient(#111 .9px,transparent .9px);background-size:5px 5px;opacity:.32;}
   .fx-flash{background:radial-gradient(circle at 65% 40%,rgba(255,255,255,.95),rgba(255,255,255,0) 62%);}
   .pg{position:absolute;right:10px;bottom:-2px;font:600 15px/1 'Outfit',sans-serif;color:#7a7a7a;}
+  .ov{position:absolute;pointer-events:none;}
 </style></head>
-<body><div class="page">${rowsHTML}</div>
+<body><div class="page">${rowsHTML}</div>${overlayHTML}
 <div class="pg">${spec.page ? ('— ' + spec.page + ' —') : ''}</div>
 </body></html>`;
 

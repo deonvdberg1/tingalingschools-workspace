@@ -1,81 +1,48 @@
 {
-  "title": "demo-style-test",
+  "title": "ch1-p01",
   "page": 1,
-  "width": 1200,
-  "height": 1750,
-  "gutter": 16,
-  "border": 4,
-  "fontSize": 21,
-  "bubblePadding": 14,
+  "width": 1200, "height": 1750,
+  "gutter": 16, "border": 4, "fontSize": 21,
   "reading": "rtl",
   "rows": [
-    {
-      "height": 0.34,
-      "panels": [
-        {
-          "span": 1,
-          "shot": "wide / establishing",
-          "action": "Thandi stands alone on a rusted dock, dwarfed by the dormant harbour crane",
-          "emotion": "quiet unease, dawn",
-          "art": "art/pages/ch1-p1.jpg",
-          "focus": "50% 42%",
-          "zoom": 1.02,
-          "bubbles": [
-            { "type": "caption", "x": 4, "y": 4, "w": 44, "text": "RICHARDS BAY — 04:40" },
-            { "type": "speech", "x": 54, "y": 8, "w": 42, "text": "The harbour never sleeps. It just… waits.", "tail": { "dir": "bl", "x": 22 } }
-          ]
-        }
-      ]
-    },
-    {
-      "height": 0.33,
-      "panels": [
-        {
-          "span": 1,
-          "shot": "extreme close-up",
-          "action": "Her eyes go wide as blue light reflects in them",
-          "emotion": "shock",
-          "art": "art/pages/ch1-p2.jpg",
-          "focus": "50% 45%",
-          "zoom": 1.06,
-          "effects": [{ "type": "speedlines" }],
-          "bubbles": [
-            { "type": "shout", "x": 8, "y": 6, "w": 46, "text": "IT'S AWAKE." }
-          ]
-        },
-        {
-          "span": 1,
-          "shot": "low angle / heroic",
-          "action": "The dead crane shudders awake — sparks and steam",
-          "emotion": "awe, scale",
-          "art": "art/pages/ch1-p3.jpg",
-          "focus": "50% 50%",
-          "zoom": 1.02,
-          "bubbles": [
-            { "type": "sfx", "x": 26, "y": 20, "text": "KRRRK", "size": 92, "rotate": -9 },
-            { "type": "sfx", "x": 78, "y": 78, "text": "SHHHH", "size": 54, "rotate": 7 }
-          ]
-        }
-      ]
-    },
-    {
-      "height": 0.33,
-      "panels": [
-        {
-          "span": 1,
-          "shot": "medium close",
-          "action": "She reaches out; a small orb of light floats between her fingers",
-          "emotion": "wonder, first contact",
-          "art": "art/pages/ch1-p4.jpg",
-          "focus": "50% 40%",
-          "zoom": 1.04,
-          "effects": [{ "type": "flash" }, { "type": "tone" }],
-          "bubbles": [
-            { "type": "thought", "x": 4, "y": 6, "w": 40, "text": "Steel doesn't hum. Steel doesn't… breathe." },
-            { "type": "speech", "x": 62, "y": 70, "w": 32, "text": "…hello?", "tail": { "dir": "br", "x": 60 } }
-          ]
-        }
-      ]
-    }
+    { "height": 0.56, "panels": [
+      {
+        "span": 1,
+        "shot": "extreme wide / establishing",
+        "action": "Umoya Bay at 4am — rain, the radio mast's red light blinking over the harbour warehouse, ships waiting on a black sea",
+        "emotion": "desolation, patience, the town asleep",
+        "art": "art/pages/ch1-p01-a1.jpg",
+        "focus": "50% 55%", "zoom": 1.02,
+        "effects": [{ "type": "tone" }],
+        "bubbles": [
+          { "type": "caption", "x": 4, "y": 5, "w": 48, "text": "UMOYA BAY — 04:12" },
+          { "type": "caption", "x": 4, "y": 80, "w": 56, "text": "THE LAST ANALOGUE VOICE ON THE COAST" }
+        ]
+      }
+    ] },
+    { "height": 0.44, "panels": [
+      {
+        "span": 1,
+        "shot": "medium",
+        "action": "Nandi alone in the booth, leaning into the mic, VU meters glowing, wall of request notes behind her",
+        "emotion": "quiet loneliness, routine courage",
+        "art": "art/pages/ch1-p01-a2.jpg",
+        "focus": "50% 38%", "zoom": 1.04,
+        "bubbles": [
+          { "type": "speech", "x": 46, "y": 8, "w": 50, "text": "This is Coast AM, 1215 kilohertz. Nobody's awake but me.", "tail": { "dir": "bl", "x": 18 } }
+        ]
+      },
+      {
+        "span": 1,
+        "shot": "extreme close-up",
+        "action": "The condenser mic, the little red ON-AIR tally glowing in the dark",
+        "emotion": "intimacy — she is talking to no one, on purpose",
+        "art": "art/pages/ch1-p01-a3.jpg",
+        "focus": "50% 45%", "zoom": 1.05,
+        "bubbles": [
+          { "type": "thought", "x": 5, "y": 6, "w": 58, "text": "So say something worth hearing." }
+        ]
+      }
+    ] }
   ]
 }

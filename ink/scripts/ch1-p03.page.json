@@ -1,0 +1,37 @@
+{
+  "title": "ch1-p03",
+  "page": 3,
+  "width": 1200, "height": 1750,
+  "gutter": 16, "border": 4, "fontSize": 21,
+  "reading": "rtl",
+  "rows": [
+    { "height": 0.36, "panels": [
+      {
+        "span": 1,
+        "shot": "extreme close-up / insert",
+        "action": "The studio clock. Cracked face. Seconds hand caught mid-tick at 04:40.",
+        "emotion": "the beat before the cut",
+        "art": "art/pages/ch1-p03-c1.jpg",
+        "focus": "50% 45%", "zoom": 1.06,
+        "bubbles": [
+          { "type": "caption", "x": 34, "y": 74, "w": 32, "text": "04:40" }
+        ]
+      }
+    ] },
+    { "height": 0.64, "panels": [
+      {
+        "span": 1,
+        "shot": "close-up / high tension",
+        "action": "The black bakelite phone rings on its cradle — the second line, its cable frayed and unplugged. Nandi's hand hovers.",
+        "emotion": "the hook biting",
+        "art": "art/pages/ch1-p03-c2.jpg",
+        "focus": "50% 48%", "zoom": 1.04,
+        "effects": [{ "type": "speedlines" }],
+        "bubbles": [
+          { "type": "sfx", "x": 30, "y": 26, "text": "R-R-RING", "size": 78, "rotate": -8 },
+          { "type": "thought", "x": 40, "y": 76, "w": 56, "text": "Line two was never connected to anything." }
+        ]
+      }
+    ] }
+  ]
+}

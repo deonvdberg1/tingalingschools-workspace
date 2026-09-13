@@ -1,0 +1,48 @@
+{
+  "title": "ch1-p02",
+  "page": 2,
+  "width": 1200, "height": 1750,
+  "gutter": 16, "border": 4, "fontSize": 21,
+  "reading": "rtl",
+  "rows": [
+    { "height": 0.58, "panels": [
+      {
+        "span": 1,
+        "shot": "medium two-shot",
+        "action": "Gogga sets down two mugs of tea; Nandi half-turns in her chair. Steam, rain on the glass.",
+        "emotion": "warmth under threat — the last normal beat of the chapter",
+        "art": "art/pages/ch1-p02-b1.jpg",
+        "focus": "50% 42%", "zoom": 1.03,
+        "bubbles": [
+          { "type": "speech", "x": 50, "y": 7, "w": 46, "text": "Month-end, this place goes dark for good.", "tail": { "dir": "br", "x": 60 } },
+          { "type": "speech", "x": 4, "y": 62, "w": 44, "text": "Dark's fine. I work nights.", "tail": { "dir": "bl", "x": 30 } }
+        ]
+      }
+    ] },
+    { "height": 0.42, "panels": [
+      {
+        "span": 1,
+        "shot": "close-up",
+        "action": "Gogga over his taped spectacles, reluctant, deciding how much to say",
+        "emotion": "dread he's carrying alone",
+        "art": "art/pages/ch1-p02-b2.jpg",
+        "focus": "50% 40%", "zoom": 1.06,
+        "bubbles": [
+          { "type": "speech", "x": 4, "y": 6, "w": 60, "text": "…There's a reason I work it alone, girl.", "tail": { "dir": "bl", "x": 40 } }
+        ]
+      },
+      {
+        "span": 1,
+        "shot": "insert / flashback object",
+        "action": "A framed 1996 photo of the Kestrel Head crew — one face carefully scratched away",
+        "emotion": "a sealed door the reader wants open",
+        "art": "art/pages/ch1-p02-b3.jpg",
+        "focus": "50% 48%", "zoom": 1.08,
+        "bubbles": [
+          { "type": "caption", "x": 4, "y": 4, "w": 56, "text": "KESTREL HEAD CREW — 1996" },
+          { "type": "thought", "x": 42, "y": 66, "w": 54, "text": "Somebody scratched a face out." }
+        ]
+      }
+    ] }
+  ]
+}

@@ -39,12 +39,25 @@ tools/make-blueprints.mjs [outdir]
 tools/gen-art.sh <out.jpg> "<prompt>" [seed] [WxH]
     Free AI panel art (Pollinations, no key). ONLY for placeholders, style tests,
     or if Mr D explicitly asks for AI art. Never for his manga by default.
+    NOTE: rate-limits bursts — generate sequentially with sleeps + retries.
+
+tools/build-chapter.sh [ch1] [--publish]
+    Renders every scripts/chN-p*.json, then exports: print PDF (300dpi), webtoon
+    strip (800px, top-to-bottom), contact sheet; --publish copies to Fred's share.
+```
+
+## Assets
+```
+assets/fonts/   Lettering fonts (OFL): Comic Neue, Bangers, Outfit.
+                Base64-inlined by build-page.mjs — Chromium blocks file:// fonts.
 ```
 
 ## File conventions
 ```
 bible/          world, characters, arc outline, style guide
 scripts/        chNN-pXX.page.json  — the page spec (art, bubbles, SFX, effects, shot, action)
+                chNN-p00.cover.json — chapter title page (uses spec.overlays)
+                chNN-script.md      — readable chapter script
 art/incoming/   Mr D's originals — NEVER modified, never deleted
 art/clean/      my cleaned panels
 art/chars/      character reference sheets (locked once approved)

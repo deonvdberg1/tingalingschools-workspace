@@ -1,0 +1,37 @@
+{
+  "title": "ch1-p05",
+  "page": 5,
+  "width": 1200, "height": 1750,
+  "gutter": 16, "border": 4, "fontSize": 21,
+  "reading": "rtl",
+  "rows": [
+    { "height": 0.52, "panels": [
+      {
+        "span": 1,
+        "shot": "wide / from behind",
+        "action": "Nandi at the rain-streaked window, silhouette, looking out across the black bay to the headland",
+        "emotion": "the moment the impossible becomes visible",
+        "art": "art/pages/ch1-p05-e1.jpg",
+        "focus": "50% 44%", "zoom": 1.03,
+        "effects": [{ "type": "tone" }],
+        "bubbles": [
+          { "type": "speech", "x": 42, "y": 7, "w": 54, "text": "There's no power up on that head.", "tail": { "dir": "bl", "x": 24 } }
+        ]
+      }
+    ] },
+    { "height": 0.48, "panels": [
+      {
+        "span": 1,
+        "shot": "low angle / hero shot (once per chapter)",
+        "action": "Kestrel Head lighthouse — dark thirty years — burning again, its beam sweeping the storm",
+        "emotion": "awe, scale, the shiver",
+        "art": "art/pages/ch1-p05-e2.jpg",
+        "focus": "50% 46%", "zoom": 1.03,
+        "bubbles": [
+          { "type": "caption", "x": 4, "y": 4, "w": 52, "text": "KESTREL HEAD — 04:41" },
+          { "type": "thought", "x": 44, "y": 80, "w": 52, "text": "Thirty years dark." }
+        ]
+      }
+    ] }
+  ]
+}

@@ -1,55 +1,62 @@
 # STATUS.md — Where the Manga Project Is Right Now
 
-**Last updated:** 2026-09-13 17:25 SAST · **Handover:** from Fred → Ink, same day
+**Last updated:** 2026-09-13 18:20 SAST · **By:** Ink 🖋️
 
 ---
 
 ## In one line
-The production studio is **built and proven end to end**. The **story does not exist yet** — Mr D is
-writing it. Nothing is waiting on us except to be ready to catch his first idea.
+Pipeline proven, and now **there is a chapter**: a full original test chapter — *SALT & STATIC* —
+written, laid out, lettered, AI-placeholder-art, exported to print PDF + webtoon + brief.
+**Awaiting Mr D's verdict.** His real story still replaces mine the moment he sends one.
 
 ## What exists and works
 
 | Asset | State |
 |---|---|
-| Page compositor (`tools/build-page.mjs`) | ✅ Working — verified 2400×3500px RTL page |
-| Art clean-up (`tools/ingest-art.sh`) | ✅ Working — 3 modes, tuned, stress-tested |
-| Drawing brief sheets (`tools/make-brief.mjs`) | ✅ Working — labels + exact panel ratios |
-| Page blueprints (`tools/make-blueprints.mjs`) | ✅ Working — 5 standard B5 layouts |
-| Free art generation (`tools/gen-art.sh`) | ✅ Working — placeholders / style tests only |
-| Story bible (`bible/`) | ⬜ Empty — waiting on Mr D's story |
-| Chapter scripts (`scripts/`) | 🟡 One demo spec only (`ch1-p01.page.json`) |
-| Character sheets (`art/chars/`) | ⬜ Empty |
-| Mr D's drawings (`art/incoming/`) | ⬜ Nothing received yet |
+| Page compositor (`tools/build-page.mjs`) | ✅ + **embedded fonts** + **title-page overlays** |
+| Chapter export (`tools/build-chapter.sh`) | ✅ **NEW** — print PDF, webtoon strip, contact sheet, publish |
+| Art clean-up (`tools/ingest-art.sh`) | ✅ Working |
+| Drawing brief sheets (`tools/make-brief.mjs`) | ✅ Working |
+| Page blueprints (`tools/make-blueprints.mjs`) | ✅ Working |
+| Free art generation (`tools/gen-art.sh`) | ✅ Working (Pollinations now **rate-limits** — see below) |
+| Lettering fonts (`assets/fonts/`) | ✅ **NEW** — Comic Neue, Bangers, Outfit (OFL), base64-inlined |
+| Story bible (`bible/`) | 🟢 Drafted for *SALT & STATIC* (proposal, not canon) |
+| Chapter scripts (`scripts/ch1-p01..p06`) | 🟢 Drafted — proposal |
+| Character sheets (`art/chars/`) | ⬜ still empty |
+| Mr D's drawings (`art/incoming/`) | ⬜ Nothing received |
 
-## Proof artifacts (shareable links)
-- Finished sample page (4 panels, lettered, print res): https://files.autoeffortless.com/manga/demo-page-sample.png
-- Sample drawing brief: https://files.autoeffortless.com/manga/demo-style-test-01-brief.pdf
-- Blueprint pack (5 layouts, printable): https://files.autoeffortless.com/manga/manga-page-blueprints.pdf
+## SALT & STATIC — Ch1 "The 04:40" (test build)
+A coastal supernatural one-shot: a teen board-operator answers a call on the station's
+dead second line, and the lighthouse that went dark 30 years ago turns back on.
+- 6 pages + cover · RTL · B5 · 2400×3500px renders
+- **Panel art is AI PLACEHOLDER** (Pollinations/flux) — proof of machinery, *not* the book's art.
+  It is declared as such on the cover itself. Mr D draws the real pages.
 
-> ⚠️ The demo page uses **AI-generated placeholder art** purely to prove the machinery. It is *not*
-> the manga's style, art, or story, and the character in it ("Thandi") is **not** a real character.
-> Do not treat any of it as canon.
+## Shareable links (Mr D sees these)
+- **Print PDF (7 pages):** https://files.autoeffortless.com/manga/SALT-AND-STATIC-ch1-print.pdf
+- Webtoon strip (scroll): https://files.autoeffortless.com/manga/SALT-AND-STATIC-ch1-webtoon.jpg
+- Contact sheet (all pages at a glance): https://files.autoeffortless.com/manga/SALT-AND-STATIC-ch1-contact-sheet.jpg
+- Page 1: https://files.autoeffortless.com/manga/SALT-AND-STATIC-ch1-p01.png
+- Page 5 (the lighthouse): https://files.autoeffortless.com/manga/SALT-AND-STATIC-ch1-p05.png
+- Drawing brief, page 1: https://files.autoeffortless.com/manga/SALT-AND-STATIC-ch1-p01-drawing-brief.png
+- Chapter script (readable): https://files.autoeffortless.com/manga/SALT-AND-STATIC-ch1-script.md
 
 ## Decisions locked by Mr D
-1. **Manga** — RTL, B5 print. 2. **English.** 3. **He draws, we assemble.** 4. Story still in progress.
+1. **Manga** — RTL, B5 print. 2. **English.** 3. **He draws, we assemble.** 4. Story TBD by him.
 
 ## Open questions for Mr D (ask naturally, don't nag)
-1. Paper or digital drawing? (changes intake advice)
-2. Blueprint mode or free mode for pages?
-3. Publishing target once there's a story: Gumroad / KDP / Webtoon Canvas / print?
+1. Paper or digital drawing? 2. Blueprint mode or free mode? 3. Publishing target?
+4. Does he want a chapter × art style like this, or a different register entirely?
 
-## Immediate next actions (in order of when they can happen)
-1. **On any drawing arriving:** archive to `art/incoming/` → run `ingest-art.sh` → show him his own art
-   cleaned, then place it on a real lettered page. Fastest way to prove the collaboration.
-2. **On any story material arriving:** build the story bible (premise, world, cast, arc outline,
-   tone/style guide), then chapter 1 page scripts, then brief sheets for him to draw from.
-3. **Keep the demo as a smoke test** — re-run the pipeline after any tool change to confirm nothing broke.
+## Immediate next actions
+1. **On his verdict on SALT & STATIC:** keep / change / scrap. Any of the three is a fine answer.
+2. **On any drawing arriving:** archive → `ingest-art.sh` → letter a real page. Fastest proof.
+3. **On any story material arriving:** bible first, then page scripts, then briefs.
 
-## Environment notes
-- Machine: Mac mini M4, macOS (Darwin 25.6.0)
-- Everything runs locally. Cost to date: **R0**. No paid subscriptions, no external accounts.
-- Hourly backups cover this workspace (git). Originals in `art/incoming/` are never modified.
-- Sibling agents: `fred` (AutoEffortless CEO), `ngkerk`, `snowman`, `docchat`, `delivery`, `aesite`,
-  `lifeos`, `side`, `the-river-whisperer`, `tingai`, `main`, `cool`. The manga studio is independent —
-  no shared memory, no shared accounts.
+## Environment / gotchas (new this session)
+- **Pollinations rate-limits anonymous bursts hard** (HTTP 429). Generate **sequentially** with
+  sleep + retry; expect ~1 in 3 requests to fail. ~768px output regardless of requested size —
+  upscale (`-filter Lanczos -resize 1536x -unsharp`) before composing.
+- **Chromium blocks `file://` @font-face.** Fonts must be inlined as **base64 data URIs**
+  (`tools/build-page.mjs` now does this). Verified with a width/difference test.
+- Cost to date: **R0**. All local. Hourly git backups cover the studio.
