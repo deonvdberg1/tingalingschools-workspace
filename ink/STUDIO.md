@@ -1,6 +1,10 @@
 # MANGA STUDIO — Operating Manual
-**Owner:** Mr D · **Operator:** Fred · **Started:** 2026-09-13
-**Status:** pipeline proven end-to-end (demo page rendered 2026-09-13 17:12)
+**Owner:** Mr D · **Operator:** Ink (🖋️, agent `ink`) · **Started:** 2026-09-13
+**Status:** pipeline proven end-to-end (demo page 2026-09-13 17:12) · **handed from Fred to Ink 17:25**
+
+> ⚠️ **For current project state, read `STATUS.md`.** This file is the operating manual only.
+> After the handover the model is locked: **Mr D draws, Ink assembles.** AI art is never used
+> for this manga unless Mr D explicitly asks for it.
 
 ---
 
@@ -14,7 +18,7 @@ nothing we can't rebuild. We keep the *system*; any tool can be swapped.
 | Premise, world, arc, characters | Mr D (vision) + Fred (drafts, options) | Fred produces 3 pitches to choose from |
 | Chapter script (panel-by-panel) | Fred | Structured JSON, editable by Mr D in plain language |
 | Character reference sheets | Fred generates → Mr D approves | Locked once approved; never re-drawn ad hoc |
-| Panel art | AI, prompt-locked | Style block + character block, fixed seeds |
+| Panel art | **Mr D draws** | Locked. Ink cleans it (`ingest-art.sh`) and fits it. No AI art for this manga unless Mr D asks. |
 | Page layout, gutters, panel flow | Fred (`build-page.mjs`) | Layout is code, so it's consistent & reusable |
 | Lettering, bubbles, SFX, screentones | Fred (compositor) | AI never draws text — it's always typeset |
 | Creative QC | Mr D | Eyes on every page before it ships |
@@ -38,7 +42,8 @@ All assets live in the workspace and are backed up hourly to git.
 - **Reference sheet before chapter art.** No exceptions.
 - **Right-to-left** panel order for manga format (webtoon export is top-to-bottom).
 
-## 5. Art sources (ranked, we start free)
+## 5. Art sources (only relevant if Mr D ever asks for AI art)
+*This section is dormant under the locked model — Mr D draws. Kept for reference.*
 1. **Free / no key** — Pollinations (`image.pollinations.ai`) ✅ *currently wired, proven, 768px*
 2. **Best free quality** — Google AI Studio key → Gemini image models (Google API key in `dashboard-api/.env` is NOT a Generative Language key — needs a fresh AI Studio key)
 3. **Best consistency** — local ComfyUI + SDXL/Flux on the M4 + a **LoRA trained on our character sheet** (~10GB download, one-time setup, fully free after)
@@ -58,9 +63,10 @@ All assets live in the workspace and are backed up hourly to git.
 - Consistency upgrade: R0 + ~10GB download + training time
 - Print-quality shortcut: ~R180/month if we ever want a paid image model
 
-## 8. Open decisions (Mr D)
-1. **Genre + premise** — Fred drafts 3 pitches once direction is set
-2. **Format** — manga (RTL, B5 print) vs webtoon (vertical scroll) vs both
-3. **Art role** — full AI art, or Mr D draws and Fred does script/layout/lettering/export
-4. **Publishing target** — KDP / Webtoon / Gumroad / own audience first
-5. **Language** — English, Afrikaans, or both
+## 8. Locked decisions (Mr D, 2026-09-13)
+1. **Format:** manga — RTL, B5 print
+2. **Language:** English
+3. **Art:** **Mr D draws, Ink assembles** (script, layout, lettering, clean-up, export, publishing)
+4. **Story:** Mr D is still developing it
+
+Remaining open questions are tracked in `STATUS.md`, not here.

@@ -282,3 +282,10 @@ Mr D's 4 requests shipped:
 - Git: v4.2 backend committed + pushed (defeb73). dashboard-temp submodule pointer ffa554a recorded.
 - ⚠️ KNOWN GAP: dashboard-temp (portal source) remote still points to TailAdmin template repo (push fails, auth). Portal code only exists locally + gitlink hash — NOT backed up to GitHub. TODO: create deonvdberg1/autoeffortless-portal repo (gh auth needs re-login) and repoint remote. Storefront/website pushed via their own repos.
 - Resume file: memory/current_task.md — next up: chat history library, markdown answers, export, folders/tags.
+
+## 19:19 Heartbeat
+- All green: API 3001 200 (db connected), portal 3000 200, site 8092 200, files 8099 200, ollama 11434 200, fred-control 18789 200, ngkerk 8091 200.
+- Tunnels all 200 (app / autoeffortless.com / fred / files / ngkerk).
+- Disk 39Gi free (31% used), load 1.34, up 2d 5:50. 16 autoeffortless + 2 tingaling LaunchAgents up.
+- ⚠️ memory_search still unavailable (runtime: "index metadata is missing") — unchanged since 13:19. CLI index healthy (99/99 · 476 chunks · vectors ready). Root cause: gateway holds stale index state; fix = gateway restart (deferred — would briefly interrupt DocChat AI, WhatsApp ai-assistant, site-ai, fred chat). Flag for Mr D / maintenance window.
+- No action needed otherwise. Pending unchanged (Mr D side): WiFi hardware decision, Attendance buyer-flow + Excel import test, Snowman onboarding (SIM/Paystack live), Fred link test.
