@@ -11,4 +11,4 @@
 ## AutoEffortless (steady state)
 - All systems green (7 services + 6 tunnels 200), backups current (next 02:00), site-monitor OK, no fresh errors.
 - Business flat: 8 purchases (none since Aug 30), 4 leads (none since Aug 19). Recommend demand-side push when Mr D gives the word.
-- ⏳ Waiting on Mr D: WiFi/hardware decision (Ting-A-Ling), Attendance buyer-flow + Excel import test, Snowman onboarding (SIM/Paystack live), Google/Workspace pw + 2FA, Fred remote link test, demand-side push green light.
+- ⏳ Waiting on Mr D: WiFi/hardware decision (Ting-A-Ling), Attendance buyer-flow + Excel import test, Snowman onboarding (SIM/Paystack live), Google/Workspace pw + 2FA, UPS purchase decision (Takealot shortlist sent 2026-09-15 — RCT 2000VA R1,899 or EcoFlow River 2 R4,299), Fred remote link test, demand-side push green light.
