@@ -402,11 +402,41 @@
         "direction": "out",
         "text": "Hello! 😊 What can I help you with today?",
         "timestamp": "2026-08-29T19:49:39.093Z"
+      },
+      {
+        "direction": "in",
+        "text": "Hi",
+        "timestamp": "2026-09-24T13:53:03.723Z"
+      },
+      {
+        "direction": "out",
+        "text": "Hello! 😊 How can I help you with Ting-A-Ling Schools today?",
+        "timestamp": "2026-09-24T13:53:03.723Z"
+      },
+      {
+        "direction": "in",
+        "text": "Wjat are your prices?",
+        "timestamp": "2026-09-24T13:57:04.710Z"
+      },
+      {
+        "direction": "out",
+        "text": "Our fees depend on which school you're asking about 😊 For the Pre-Primary School it's R1,900 (07:00–13:00), R2,000 (07:00–15:00) or R2,200 (07:00–17:00) per month. The Special Needs School is R3,000 (07:00–13:00) or R3,300 (07:00–17:00) per month. There's also a one-time registration fee of R1,300 — which school would you",
+        "timestamp": "2026-09-24T13:57:04.710Z"
+      },
+      {
+        "direction": "in",
+        "text": "Thank you",
+        "timestamp": "2026-09-24T13:58:36.981Z"
+      },
+      {
+        "direction": "out",
+        "text": "You're most welcome! 😊 If you have any other questions about Ting-A-Ling Schools, just let me know — or you can reach the office on info@tingalingschools.com, 0615274429 / 0724561282.",
+        "timestamp": "2026-09-24T13:58:36.981Z"
       }
     ],
     "firstSeen": "2026-05-29T07:42:41.367Z",
-    "lastSeen": "2026-08-29T19:49:39.093Z",
-    "autoReplied": 38,
+    "lastSeen": "2026-09-24T13:58:36.981Z",
+    "autoReplied": 41,
     "humanRequests": 4
   },
   "27663290632": {
