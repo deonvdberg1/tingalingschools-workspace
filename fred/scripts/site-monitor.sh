@@ -103,22 +103,39 @@ else
   WARNINGS="$WARNINGS chrome-unavailable"
 fi
 
+# ── Local connectivity gate (added 2026-09-28) ──
+# If OUR Mac loses internet/DNS, a failed site probe is inconclusive — never
+# send a false "site BROKEN" alert for a problem on our side. (2026-09-28 19:04:
+# the host DNS flap produced a false 🔴 alert to Mr D.)
+NET_OK=1
+ping -c 2 -W 2000 1.1.1.1 >/dev/null 2>&1 || NET_OK=0
+DNS_OK=1
+host -W 3 tingalingschools.com >/dev/null 2>&1 || DNS_OK=0
+
 # ── State transition logic (alert only on change, no spam) ──
 current_status="ok"
 [ -n "$WARNINGS" ] && current_status="warning"
 [ -n "$FAILURES" ] && current_status="critical"
+if [ "$current_status" = "critical" ] && { [ "$NET_OK" = "0" ] || [ "$DNS_OK" = "0" ]; }; then
+  current_status="localnet"
+  echo "  [WARN] Local network/DNS unavailable on our Mac (net=$NET_OK dns=$DNS_OK) — site probe inconclusive, NOT sending a site alert" >> "$LOG_FILE"
+fi
 
 previous_status=""
 [ -f "$STATE_FILE" ] && previous_status=$(grep -o '"status":"[^"]*"' "$STATE_FILE" 2>/dev/null | cut -d'"' -f4)
 
 if [ "$current_status" != "$previous_status" ]; then
   if [ -n "$TOKEN" ] && [ -n "$PHONE_ID" ]; then
-    if [ "$current_status" = "critical" ]; then
+    if [ "$current_status" = "localnet" ]; then
+      ALERT_MSG="🟠 *Website Monitor* — our network is down\\n\\nOur Mac could not reach the internet/DNS, so the probe was inconclusive. This is NOT a confirmed website outage.\\nTime: $(date '+%Y-%m-%d %H:%M SAST')"
+    elif [ "$current_status" = "critical" ]; then
       ALERT_MSG="🔴 *Ting-A-Ling Website Alert* — tingalingschools.com BROKEN\\n\\nFailures:$FAILURES\\nTime: $(date '+%Y-%m-%d %H:%M SAST')\\n\\nCheck: $URL"
     elif [ "$current_status" = "warning" ]; then
       ALERT_MSG="🟡 *Ting-A-Ling Website Alert* — Degraded\\n\\nWarnings:$WARNINGS\\nTime: $(date '+%Y-%m-%d %H:%M SAST')"
     else
-      if [ -z "$previous_status" ]; then
+      if [ "$previous_status" = "localnet" ]; then
+        ALERT_MSG="🟢 *Website Monitor* — network restored ✅\\n\\nConnectivity is back and $URL verified healthy again.\\nTime: $(date '+%Y-%m-%d %H:%M SAST')"
+      elif [ -z "$previous_status" ]; then
         ALERT_MSG="🟢 *Ting-A-Ling Website Monitor* — Live ✅\\n\\n$URL is healthy — all checks passing (HTTP, bundle, real render).\\nTime: $(date '+%Y-%m-%d %H:%M SAST')"
       else
         ALERT_MSG="🟢 *Ting-A-Ling Website* — Restored ✅\\n\\n$URL is serving correctly again.\\nTime: $(date '+%Y-%m-%d %H:%M SAST')"
