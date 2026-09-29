@@ -1,4 +1,15 @@
-# Current Task — updated 2026-09-29 20:07 SAST
+# Current Task — updated 2026-09-29 22:05 SAST
+
+## Status: **night check done — all green, 0 user impact**; ONE flagged issue: **sustained tunnel churn tonight** (18:00–22:00 SAST, peak 19:00–20:00, DNS/QUIC signature — the standing fallback-DNS ask). Day's work committed + pushed (`91f4a2b`). Pending Mr D decisions: **CIPC option (1/2/3)**, **usage-tracking build**, **AI Editor wording**.
+
+### 22:05 SAST (Sep 29) — 🌙 Night check (Mr D: "check everything for the night")
+- **All green:** services **10/10 200** (3000/3001/8080/8091/8092/8097/8098/8099/11434/18789); hostnames **12/12 200** (site/www/app/store/files/whatsapp/tracking/dashboard/snowman/ngkerk/fred + theriverwhisperer.co.za) 0.13–0.49s; 18 LaunchAgents; 7 cloudflared procs; uptime **12:41** (post-09:17 reboot, stable); disk **30Gi free (29%)**; load 1.67/1.66/1.52; mem ~20MB free + 1.36GB inactive (fine).
+- **⚠️ SUSTAINED TUNNEL CHURN tonight (still active at check time):** per-hour ERR/WRN counts — main T16 46 / **T17 197** / T18 80 / T19 64; tracking 44/191/84/72; files 38/153; fred 39/155 (UTC → +2h SAST: event ran ~18:00–22:00 SAST, peak 19:00–20:00). Signature = `control stream encountered a failure while serving`, QUIC `timeout: no recent network activity`, `sendmsg: no route to host`, DNS `i/o timeout` (145 hits today) — same root cause as flaps #1-8 (router DNS 192.168.31.1). **Zero user impact:** 10/10 sequential requests to app.autoeffortless.com = 200; all hostnames 200 before/during/after.
+- **No app errors today:** whatsapp-server/server.log + dashboard-api/api.log = **0 ERROR/FATAL**. Backups **2026-09-29_02-00 present (51M)**; crontab 3 jobs (watchman */5, backup 02:00, site-monitor */10); **OpenClaw crons all ok** (WA health 2h, session-save-backup 6h, Ting-A-Ling daily 08:00, social-session-health 08:00, google-places-credit 09:00).
+- **Traffic/business:** 11 site_hits today; 8 purchases (last Aug 30), 19 users (last Sep 18), 4 leads (last Aug 19) — flat, no new business.
+- **🎒 Work protected:** committed + pushed today's output to the private repo — **`91f4a2b`** (pricing master + generators + archive, RB lead sheet + email-crawler + CIPC-lookup scripts + crawl data, MEMORY/TOOLS/MASTER_INVENTORY updates, .gitignore for pricing revisions + intermediate lead CSVs). 49 files, 10.3k insertions.
+- **Open asks:** (1) **fallback-DNS fix approval** (`networksetup -setdnsservers`) — churn recurring, now 4+ hrs tonight; (2) UPS R1,293; (3) CIPC route (1 = full 660 match pass free / 2 = paid directors via reseller / 3 = skip); (4) build the AI/Meta **usage tracker**; (5) confirm **AI Editor** wording.
+- **Overnight armed:** watchman */5, site-monitor */10, WA health every 2h, backup 02:00. Next user-facing report ~08:00 (or on incident → alert).
 
 ## Status: ⚠️ FLAP #9 = ~26-min REAL OUTAGE (19:11–19:40 SAST, all client sites unreachable) — recovered; plus 🆕 WA alert channel to Mr D silently failing (131047). All else green, ~10h50m post-reboot (host rebooted 09:17:10, unclean — no UPS). **`memory_search` works.** Awaiting Mr D: fallback-DNS ask (now **9 flaps**) + **UPS** rec — plus now the alert-delivery issue. Sep 29 traffic = 8 hits (all client 6, incl. real `apply-submit:PrePrimary` 14:38:59). **Ping sent at 20:07.** Next window ~22:06 or on incident.
 
