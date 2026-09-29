@@ -32,8 +32,31 @@ This is where I keep what matters.
 - **Mr D:** Sales & client intros. **Fred:** All delivery, tech, products.
 - **Demo client:** Ting-A-Ling Schools (D&S Comp, CIPC-registered)
 
+## 📞 Phone numbers (2026-09-29)
+
+- **AutoEffortless public contact = WhatsApp 061 527 4429** (`wa.me/27615274429`). Used on autoeffortless.com, the storefront, contact + AI-assistant replies, social/lead docs and the pricing PDF. **Never publish any other number as our contact.**
+- **+27 68 754 8390** = the **WhatsApp Business API sender number** (bot, Phone ID 1046384845235600) — technical only, NOT a marketing contact.
+- Changed 2026-09-29 (Mr D): the pricing doc + portal onboarding placeholder were the last places showing the old number; both fixed and redeployed.
+
+## 📊 Richards Bay lead data (2026-09-28 scan, Sheet updated 2026-09-29)
+
+- **Google Sheet:** https://docs.google.com/spreadsheets/d/1uqB9KJISKqfX-89czCZPGpVQOEDN-DCm_usjr2Yzqoc/edit — tabs Summary / No website + phone (660) / No website (711) / All scanned (1,409). Column K = **Email** (added 2026-09-29).
+- **Source:** Google Maps scan 2026-09-28 → `products/leads/gmaps_*.csv` + `Richards-Bay-businesses-without-websites.md`. Rebuild: `leads/scripts/build-rb-sheet.py`; email enrichment: `leads/scripts/crawl_emails.py` → `leads/raw/emails_by_website.jsonl`, then `leads/scripts/add_emails_to_sheet.py`.
+- **⚠️ Email coverage reality:** emails only exist for businesses that already have a website (337/698 crawled = 48%). For the **660 no-website businesses: 1 email** — Maps has no email field, SA directories block scraping (2,270 listings → 11 emails), web search yields nothing. **These leads are phone/WhatsApp-only.**
+
 ## Communication Rules
 - **Always provide clickable links — never text to copy-paste.**
+
+## 🧾 Pricing Master — single source of truth (LOCKED 2026-09-29 15:45, Mr D "lock it in")
+
+- **`products/pricing/pricing_data.py`** = the ONE place prices/wording live: `BASIC`, `SERVICES` (**23 marketed items**), `CARE` (basic care R200/mo + hosting), `WORDING` (slug-keyed), `CATEGORY_ORDER`, `RATE = 0.12`. Generators: `build-pricing-sheet.py` (xlsx → Google Sheet) + `build-website-pricing.py` (4-page A4 brand PDF; per-section Chrome print-to-pdf + pdfunite; per-page fit assertion; sentinel content check incl. "must NOT appear" leak checks).
+- **MODEL (Mr D):** **Basic = complete content-rich website** (8 pages, product/price catalogue, gallery, reviews, team, map, WhatsApp button, contact form) — **R1 500 once + R200/mo** + R200–R300/yr hosting+domain. **Add-ons = once-off + 12% per month maintenance — the rate is shown as 12% everywhere (no rand maintenance figures), no other monthly charges**; **AI/Meta (WhatsApp) API usage is charged to the relevant areas = 12% + tracked usage, quoted separately** (applies to WhatsApp Business API setup, AI Editor, the 3 WhatsApp AI agent items). **AI Editor = R1 000 + 12%.**
+- **NOT MARKETED / deleted from the master (2026-09-29 15:37, Mr D "we wont market those"):** all content extras, Care Plus/Pro, emergency fix, extra-work rate, deposit-required bookings, quote-to-payment, online store, gift cards, email/email-marketing/GBP-setup/accounting/POS integrations, the whole marketing block (SEO, Ads, social, GBP mgmt, review campaign, reports), all bundles. **Snapshot kept at `products/pricing/archive/removed-items-2026-09-29.md`.**
+- **Google Sheet (live, writer link-only):** https://docs.google.com/spreadsheets/d/1YQ9opXumAzJTIPzKpzsnQ6FFDNuRzA0TYhI2b0_Ya3w/edit — tabs Summary / Services & Prices (Active + Usage dropdowns) / Packages / Wording & Copy. Earlier sheets trashed (`1bPQuR4…`, `1_blMEscJ…`, `1f5lRmGO…`, `1JFypfH7…`).
+- **LOCKED.** Every item status = confirmed; sheet renamed "… (LOCKED 29 Sep 2026)"; PDF footnote reads "Pricing locked 29 September 2026".
+- **Website pricing PDF (4 pages):** https://files.autoeffortless.com/pricing/v7/AutoEffortless-Website-Pricing.pdf · xlsx: …/pricing/v7/AutoEffortless-Pricing-Master.xlsx
+- ⚠️ **Cloudflare caches files.autoeffortless.com 4h** — publish each revision under a NEW path (v2→…→v7). ⚠️ Reworks = new Sheet + trash the old (native Sheet content can't be replaced in place).
+- ⏳ **To build:** monthly AI/Meta **usage tracking** (for the "12% + usage, quoted separately" line).
 
 ## 🎨 Brand & Design Consistency (LOCKED 2026-08-27, Mr D)
 - **RULE: everything AutoEffortless must look like autoeffortless.com — one brand everywhere.** No exceptions.

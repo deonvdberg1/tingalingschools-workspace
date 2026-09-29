@@ -44,7 +44,7 @@
 |--------------------|-----------|---------|:---------:|
 | **Meta Business Account** | D&S Comp | Holds WABA | 🔴 |
 | **WABA** | 1124652154068427 (real: 996583169477166) | WhatsApp Business API access | 🔴 |
-| **Phone Number** | +27 68 754 8390 (ID: 1046384845235600) | The bot's number | 🔴 |
+| **Phone Number** | +27 68 754 8390 (ID: 1046384845235600) | The bot's number — ⚠️ **WhatsApp API sender only. Public contact number for AutoEffortless = 061 527 4429** (site, storefront, emails, pricing docs; changed 2026-09-29) | 🔴 |
 | **Display Name** | "Tingaling" | Shown to parents | 🔴 |
 | **Quality Rating** | GREEN | Determines messaging limits | 🟡 |
 | **Messaging Limit** | 250 conversations/day | Starter cap | 🟡 |
