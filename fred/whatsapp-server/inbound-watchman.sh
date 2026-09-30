@@ -9,7 +9,7 @@
 ENV_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/.env"
 CONV_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/conversations.json"
 LOG_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/watchman.log"
-STATE_FILE="/tmp/watchman-state.json"
+STATE_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/logs/watchman-state.json"
 SERVER_URL="http://localhost:3000/status"
 
 now=$(date +%s)

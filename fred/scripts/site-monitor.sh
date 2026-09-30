@@ -14,7 +14,7 @@
 URL="https://tingalingschools.com"
 ENV_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/.env"
 LOG_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/logs/site-monitor.log"
-STATE_FILE="/tmp/site-monitor-state.json"
+STATE_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/logs/site-monitor-state.json"
 CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 TMP_DOM="/tmp/site-monitor-dom.html"
 
@@ -125,7 +125,9 @@ previous_status=""
 [ -f "$STATE_FILE" ] && previous_status=$(grep -o '"status":"[^"]*"' "$STATE_FILE" 2>/dev/null | cut -d'"' -f4)
 
 if [ "$current_status" != "$previous_status" ]; then
-  if [ -n "$TOKEN" ] && [ -n "$PHONE_ID" ]; then
+  if [ "$current_status" = "ok" ] && [ -z "$previous_status" ]; then
+    : # no prior state known (e.g. first check after a reboot with no state file) — suppress the spurious "Live" OK message
+  elif [ -n "$TOKEN" ] && [ -n "$PHONE_ID" ]; then
     if [ "$current_status" = "localnet" ]; then
       ALERT_MSG="🟠 *Website Monitor* — our network is down\\n\\nOur Mac could not reach the internet/DNS, so the probe was inconclusive. This is NOT a confirmed website outage.\\nTime: $(date '+%Y-%m-%d %H:%M SAST')"
     elif [ "$current_status" = "critical" ]; then

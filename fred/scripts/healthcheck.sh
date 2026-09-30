@@ -8,7 +8,7 @@
 PERMANENT_URL="https://whatsapp.autoeffortless.com"
 ENV_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/.env"
 LOG_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/whatsapp-server/healthcheck.log"
-STATE_FILE="/tmp/healthcheck-state.json"
+STATE_FILE="/Users/deonvandenberg/.openclaw/workspace/fred/logs/healthcheck-state.json"
 
 TOKEN=$(grep -E '^WHATSAPP_TOKEN=' "$ENV_FILE" 2>/dev/null | sed 's/WHATSAPP_TOKEN=//')
 PHONE_ID=$(grep -E '^PHONE_NUMBER_ID=' "$ENV_FILE" 2>/dev/null | sed 's/PHONE_NUMBER_ID=//')
@@ -111,7 +111,9 @@ previous_status=""
 
 # Only alert if status CHANGED (ok→fail or fail→ok)
 if [ "$current_status" != "$previous_status" ]; then
-  if [ -n "$TOKEN" ] && [ -n "$PHONE_ID" ]; then
+  if [ "$current_status" = "ok" ] && [ -z "$previous_status" ]; then
+    : # no prior state known (e.g. first check after a reboot with no state file) — suppress the spurious "Restored" OK message
+  elif [ -n "$TOKEN" ] && [ -n "$PHONE_ID" ]; then
     if [ "$current_status" = "critical" ]; then
       ALERT_MSG="🔴 *AutoEffortless Alert* — Services DOWN\\n\\nFailures:$FAILURES\\nTime: $(date '+%Y-%m-%d %H:%M SAST')"
     elif [ "$current_status" = "warning" ]; then
