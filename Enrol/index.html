@@ -1,0 +1,667 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f766e">
+<meta name="robots" content="noindex, nofollow">
+<title>Ting-A-Ling Pre-Primary School — 2027 Online Enrolment Form</title>
+<link rel="icon" href="/logo.png">
+<link rel="stylesheet" href="form.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap narrow">
+    <img src="/logo.png" alt="Ting-A-Ling Pre-Primary School" class="logo">
+    <div>
+      <h1>2027 Enrolment Form</h1>
+      <p class="sub">Ting-A-Ling Pre-Primary School · 20 Karanteen Street, Meerensee, Richards Bay</p>
+    </div>
+  </div>
+</header>
+
+<main class="wrap narrow">
+  <div class="intro card">
+    <p>This form must be completed by the parent or legal guardian. All applicable sections must be completed for the application to be considered.</p>
+    <p class="note"><strong>Please have these documents ready</strong> — your enrolment is only complete once the school has received them: copy of I.D. documents of both parents · copy of the child's unabridged birth certificate · copy of the clinic card · proof of residence · latest school report (if possible).</p>
+    <p>Please notify the school in writing of any changes to your contact details, medical information, authorised collection arrangements or financial circumstances.</p>
+    <div class="progress" aria-hidden="true"><div class="bar" id="progressBar"></div></div>
+    <p class="help" id="progressText">0% complete</p>
+  </div>
+
+  <nav class="nav"><a class="navpill" href="#sec_child">1. Details of the child</a><a class="navpill" href="#sec_mother">2. Details of the mother</a><a class="navpill" href="#sec_father">3. Details of the father / guardian</a><a class="navpill" href="#sec_guardian">4. Legal guardian (only if applicable)</a><a class="navpill" href="#sec_emergency">5. Emergency contact</a><a class="navpill" href="#sec_transport">6. Details of transport</a><a class="navpill" href="#sec_medical">7. Medical history</a><a class="navpill" href="#sec_consent">9. Activities consent and indemnity</a><a class="navpill" href="#sec_financial">10. Financial contract</a><a class="navpill" href="#sec_acknowledge">13. Acknowledgement</a><a class="navpill" href="#sec_signatures">14. Signatures</a></nav>
+
+  <form id="enrolForm" novalidate>
+    <div style="position:absolute;left:-9999px" aria-hidden="true">
+      <label for="_hp">Do not fill this in</label>
+      <input type="text" id="_hp" name="_hp" tabindex="-1" autocomplete="off">
+    </div>
+    <section class="card" id="sec_child" data-title="1. Details of the child">
+    <h2>1. Details of the child</h2>
+    <div class="grid"><div class="field half">
+    <label class="lbl" for="f_child_surname">Surname (child) <span class="req" title="Required">*</span></label>
+    <input type="text" id="f_child_surname" name="child_surname" required>
+    
+    <p class="err" data-err-for="child_surname"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_child_full_names">Full names (child) <span class="req" title="Required">*</span></label>
+    <input type="text" id="f_child_full_names" name="child_full_names" required>
+    
+    <p class="err" data-err-for="child_full_names"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_child_known_as">Name child is known as</label>
+    <input type="text" id="f_child_known_as" name="child_known_as">
+    
+    <p class="err" data-err-for="child_known_as"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_child_dob">Date of birth <span class="req" title="Required">*</span></label>
+    <input type="date" id="f_child_dob" name="child_dob" required>
+    
+    <p class="err" data-err-for="child_dob"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_child_gender">Gender <span class="req" title="Required">*</span></label>
+    <select id="f_child_gender" name="child_gender" required><option value="">Please select…</option><option value="Female">Female</option><option value="Male">Male</option><option value="Other / prefer not to say">Other / prefer not to say</option></select>
+    
+    <p class="err" data-err-for="child_gender"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_child_home_language">Home language <span class="req" title="Required">*</span></label>
+    <input type="text" id="f_child_home_language" name="child_home_language" required>
+    
+    <p class="err" data-err-for="child_home_language"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_child_current_school">Current school (if applicable)</label>
+    <input type="text" id="f_child_current_school" name="child_current_school">
+    
+    <p class="err" data-err-for="child_current_school"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_child_grade_applied">Grade applied for <span class="req" title="Required">*</span></label>
+    <select id="f_child_grade_applied" name="child_grade_applied" required><option value="">Please select…</option><option value="Grade RRR">Grade RRR</option><option value="Grade RR">Grade RR</option><option value="Grade R">Grade R</option></select>
+    
+    <p class="err" data-err-for="child_grade_applied"></p>
+  </div></div>
+  </section>
+<section class="card" id="sec_mother" data-title="2. Details of the mother">
+    <h2>2. Details of the mother</h2>
+    <div class="grid"><div class="field half">
+    <label class="lbl" for="f_mother_surname">Mother's surname <span class="req" title="Required">*</span></label>
+    <input type="text" id="f_mother_surname" name="mother_surname" required>
+    
+    <p class="err" data-err-for="mother_surname"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_mother_names">Mother's full names <span class="req" title="Required">*</span></label>
+    <input type="text" id="f_mother_names" name="mother_names" required>
+    
+    <p class="err" data-err-for="mother_names"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_mother_id">ID number of mother</label>
+    <input type="text" id="f_mother_id" name="mother_id">
+    
+    <p class="err" data-err-for="mother_id"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_mother_marital_status">Marital status</label>
+    <select id="f_mother_marital_status" name="mother_marital_status"><option value="">Please select…</option><option value="Married">Married</option><option value="Single">Single</option><option value="Divorced">Divorced</option><option value="Widowed">Widowed</option><option value="Other">Other</option></select>
+    
+    <p class="err" data-err-for="mother_marital_status"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_mother_residential_address">Residential address</label>
+    <textarea id="f_mother_residential_address" name="mother_residential_address" rows="2"></textarea>
+    
+    <p class="err" data-err-for="mother_residential_address"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_mother_postal_address">Postal address</label>
+    <textarea id="f_mother_postal_address" name="mother_postal_address" rows="2"></textarea>
+    
+    <p class="err" data-err-for="mother_postal_address"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_mother_occupation">Occupation of mom</label>
+    <input type="text" id="f_mother_occupation" name="mother_occupation">
+    
+    <p class="err" data-err-for="mother_occupation"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_mother_employer">Employer</label>
+    <input type="text" id="f_mother_employer" name="mother_employer">
+    
+    <p class="err" data-err-for="mother_employer"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_mother_work_address">Work address</label>
+    <textarea id="f_mother_work_address" name="mother_work_address" rows="2"></textarea>
+    
+    <p class="err" data-err-for="mother_work_address"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_mother_work_tel">Work telephone no. of mom</label>
+    <input type="tel" id="f_mother_work_tel" name="mother_work_tel">
+    
+    <p class="err" data-err-for="mother_work_tel"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_mother_cell">Cell number of mom <span class="req" title="Required">*</span></label>
+    <input type="tel" id="f_mother_cell" name="mother_cell" required>
+    
+    <p class="err" data-err-for="mother_cell"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_mother_email">Email</label>
+    <input type="email" id="f_mother_email" name="mother_email">
+    
+    <p class="err" data-err-for="mother_email"></p>
+  </div></div>
+  </section>
+<section class="card" id="sec_father" data-title="3. Details of the father / guardian">
+    <h2>3. Details of the father / guardian</h2>
+    <p class="note">Please inform us immediately of any changes to your contact details.</p>
+<div class="grid"><div class="field half">
+    <label class="lbl" for="f_father_surname">Father's surname</label>
+    <input type="text" id="f_father_surname" name="father_surname">
+    
+    <p class="err" data-err-for="father_surname"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_father_full_names">Father's full names</label>
+    <input type="text" id="f_father_full_names" name="father_full_names">
+    
+    <p class="err" data-err-for="father_full_names"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_father_id">ID number</label>
+    <input type="text" id="f_father_id" name="father_id">
+    
+    <p class="err" data-err-for="father_id"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_father_marital_status">Marital status / relationship</label>
+    <select id="f_father_marital_status" name="father_marital_status"><option value="">Please select…</option><option value="Married">Married</option><option value="Single">Single</option><option value="Divorced">Divorced</option><option value="Widowed">Widowed</option><option value="Other">Other</option></select>
+    
+    <p class="err" data-err-for="father_marital_status"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_father_residential_address">Residential address</label>
+    <textarea id="f_father_residential_address" name="father_residential_address" rows="2"></textarea>
+    
+    <p class="err" data-err-for="father_residential_address"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_father_postal_address">Postal address</label>
+    <textarea id="f_father_postal_address" name="father_postal_address" rows="2"></textarea>
+    
+    <p class="err" data-err-for="father_postal_address"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_father_occupation">Occupation</label>
+    <input type="text" id="f_father_occupation" name="father_occupation">
+    
+    <p class="err" data-err-for="father_occupation"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_father_employer">Employer</label>
+    <input type="text" id="f_father_employer" name="father_employer">
+    
+    <p class="err" data-err-for="father_employer"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_father_work_address">Work address</label>
+    <textarea id="f_father_work_address" name="father_work_address" rows="2"></textarea>
+    
+    <p class="err" data-err-for="father_work_address"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_father_work_tel">Work telephone</label>
+    <input type="tel" id="f_father_work_tel" name="father_work_tel">
+    
+    <p class="err" data-err-for="father_work_tel"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_father_cell">Cell number</label>
+    <input type="tel" id="f_father_cell" name="father_cell">
+    
+    <p class="err" data-err-for="father_cell"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_father_email">Email</label>
+    <input type="email" id="f_father_email" name="father_email">
+    
+    <p class="err" data-err-for="father_email"></p>
+  </div></div>
+  </section>
+<section class="card" id="sec_guardian" data-title="4. Legal guardian (only if applicable)">
+    <h2>4. Legal guardian (only if applicable)</h2>
+    <p class="note">If only one parent or legal guardian has legal authority to enrol the child, please provide supporting documentation where applicable.</p>
+<div class="grid"><div class="field half">
+    <label class="lbl" for="f_guardian_surname">Legal guardian's surname</label>
+    <input type="text" id="f_guardian_surname" name="guardian_surname">
+    
+    <p class="err" data-err-for="guardian_surname"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_guardian_names">Legal guardian's full names</label>
+    <input type="text" id="f_guardian_names" name="guardian_names">
+    
+    <p class="err" data-err-for="guardian_names"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_guardian_cell">Cell no.</label>
+    <input type="tel" id="f_guardian_cell" name="guardian_cell">
+    
+    <p class="err" data-err-for="guardian_cell"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_guardian_relationship">Relationship</label>
+    <input type="text" id="f_guardian_relationship" name="guardian_relationship">
+    
+    <p class="err" data-err-for="guardian_relationship"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_guardian_supporting_docs">Supporting documentation attached</label>
+    <div class="options" data-key="guardian_supporting_docs"><label class="opt"><input type="radio" name="guardian_supporting_docs" value="Yes" data-i="0"><span>Yes</span></label><label class="opt"><input type="radio" name="guardian_supporting_docs" value="No" data-i="1"><span>No</span></label></div>
+    
+    <p class="err" data-err-for="guardian_supporting_docs"></p>
+  </div></div>
+  </section>
+<section class="card" id="sec_emergency" data-title="5. Emergency contact">
+    <h2>5. Emergency contact</h2>
+    <p class="note">Please provide an emergency contact who is not one of the parents or guardians listed above.</p>
+<div class="grid"><div class="field full">
+    <label class="lbl" for="f_ec_full_name">Full name and surname <span class="req" title="Required">*</span></label>
+    <input type="text" id="f_ec_full_name" name="ec_full_name" required>
+    
+    <p class="err" data-err-for="ec_full_name"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_ec_relationship">Relationship to child <span class="req" title="Required">*</span></label>
+    <input type="text" id="f_ec_relationship" name="ec_relationship" required>
+    
+    <p class="err" data-err-for="ec_relationship"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_ec_cell">Cell phone number <span class="req" title="Required">*</span></label>
+    <input type="tel" id="f_ec_cell" name="ec_cell" required>
+    
+    <p class="err" data-err-for="ec_cell"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_ec_alt">Alternative number</label>
+    <input type="tel" id="f_ec_alt" name="ec_alt">
+    
+    <p class="err" data-err-for="ec_alt"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_ec_email">Email address</label>
+    <input type="email" id="f_ec_email" name="ec_email">
+    
+    <p class="err" data-err-for="ec_email"></p>
+  </div></div>
+  </section>
+<section class="card" id="sec_transport" data-title="6. Details of transport">
+    <h2>6. Details of transport</h2>
+    <div class="grid"><div class="field full">
+    <label class="lbl" for="f_transport_driver_name">Driver's name and surname</label>
+    <input type="text" id="f_transport_driver_name" name="transport_driver_name">
+    
+    <p class="err" data-err-for="transport_driver_name"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_transport_driver_cell">Cell no. of driver</label>
+    <input type="tel" id="f_transport_driver_cell" name="transport_driver_cell">
+    
+    <p class="err" data-err-for="transport_driver_cell"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_transport_driver_vehicle_reg">Driver vehicle registration number</label>
+    <input type="text" id="f_transport_driver_vehicle_reg" name="transport_driver_vehicle_reg">
+    
+    <p class="err" data-err-for="transport_driver_vehicle_reg"></p>
+  </div></div>
+  </section>
+<section class="card" id="sec_medical" data-title="7. Medical history">
+    <h2>7. Medical history</h2>
+    <p class="note">Please complete all medical information fully. If your child has a medical condition (e.g. asthma), provide details including prescribed medication, dosage and emergency instructions. A copy of the immunisation card must be enclosed with your enrolment documents.</p>
+<div class="grid"><div class="field half">
+    <label class="lbl" for="f_med_family_doctor">Family doctor name</label>
+    <input type="text" id="f_med_family_doctor" name="med_family_doctor">
+    
+    <p class="err" data-err-for="med_family_doctor"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_med_immunisation">Immunisation <span class="req" title="Required">*</span></label>
+    <input type="text" id="f_med_immunisation" name="med_immunisation" required>
+    <p class="help">e.g. up to date / outstanding immunisations</p>
+    <p class="err" data-err-for="med_immunisation"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_med_allergies">Allergies</label>
+    <textarea id="f_med_allergies" name="med_allergies" rows="2"></textarea>
+    <p class="help">Food, medication, insect stings, etc. Write &quot;None&quot; if none.</p>
+    <p class="err" data-err-for="med_allergies"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_med_illnesses">Previous illnesses (tick all that apply)</label>
+    <div class="options" data-key="med_illnesses" data-multi="1"><label class="opt"><input type="checkbox" name="med_illnesses" value="Measles"><span>Measles</span></label><label class="opt"><input type="checkbox" name="med_illnesses" value="German Measles"><span>German Measles</span></label><label class="opt"><input type="checkbox" name="med_illnesses" value="Chicken Pox"><span>Chicken Pox</span></label><label class="opt"><input type="checkbox" name="med_illnesses" value="Scarlet Fever"><span>Scarlet Fever</span></label><label class="opt"><input type="checkbox" name="med_illnesses" value="Mumps"><span>Mumps</span></label><label class="opt"><input type="checkbox" name="med_illnesses" value="Hepatitis"><span>Hepatitis</span></label><label class="opt"><input type="checkbox" name="med_illnesses" value="Tuberculosis (TB)"><span>Tuberculosis (TB)</span></label><label class="opt"><input type="checkbox" name="med_illnesses" value="Tonsillectomy"><span>Tonsillectomy</span></label><label class="opt"><input type="checkbox" name="med_illnesses" value="Circumcision"><span>Circumcision</span></label><label class="opt"><input type="checkbox" name="med_illnesses" value="Other"><span>Other</span></label></div>
+    
+    <p class="err" data-err-for="med_illnesses"></p>
+  </div>
+<div class="field full" data-showif-key="med_illnesses" data-showif-value="Other" hidden>
+    <label class="lbl" for="f_med_illnesses_other">Other illness or operations (please specify)</label>
+    <input type="text" id="f_med_illnesses_other" name="med_illnesses_other">
+    
+    <p class="err" data-err-for="med_illnesses_other"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_med_prone_infections">Prone to infections (tick all that apply)</label>
+    <div class="options" data-key="med_prone_infections" data-multi="1"><label class="opt"><input type="checkbox" name="med_prone_infections" value="Ear"><span>Ear</span></label><label class="opt"><input type="checkbox" name="med_prone_infections" value="Nose"><span>Nose</span></label><label class="opt"><input type="checkbox" name="med_prone_infections" value="Throat"><span>Throat</span></label><label class="opt"><input type="checkbox" name="med_prone_infections" value="Chest"><span>Chest</span></label><label class="opt"><input type="checkbox" name="med_prone_infections" value="Bladder"><span>Bladder</span></label><label class="opt"><input type="checkbox" name="med_prone_infections" value="Other"><span>Other</span></label></div>
+    
+    <p class="err" data-err-for="med_prone_infections"></p>
+  </div>
+<div class="field full" data-showif-key="med_prone_infections" data-showif-value="Other" hidden>
+    <label class="lbl" for="f_med_prone_infections_other">Other (please specify)</label>
+    <input type="text" id="f_med_prone_infections_other" name="med_prone_infections_other">
+    
+    <p class="err" data-err-for="med_prone_infections_other"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_med_other_conditions">Other medical history (tick all that apply)</label>
+    <div class="options" data-key="med_other_conditions" data-multi="1"><label class="opt"><input type="checkbox" name="med_other_conditions" value="Epilepsy"><span>Epilepsy</span></label><label class="opt"><input type="checkbox" name="med_other_conditions" value="Asthma"><span>Asthma</span></label><label class="opt"><input type="checkbox" name="med_other_conditions" value="Diabetes"><span>Diabetes</span></label><label class="opt"><input type="checkbox" name="med_other_conditions" value="Other"><span>Other</span></label></div>
+    
+    <p class="err" data-err-for="med_other_conditions"></p>
+  </div>
+<div class="field full" data-showif-key="med_other_conditions" data-showif-value="Other" hidden>
+    <label class="lbl" for="f_med_other_conditions_other">Other (please specify)</label>
+    <input type="text" id="f_med_other_conditions_other" name="med_other_conditions_other">
+    
+    <p class="err" data-err-for="med_other_conditions_other"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_med_fever_convulsions">Does your child develop high temperature and have fever convulsions? <span class="req" title="Required">*</span></label>
+    <div class="options" data-key="med_fever_convulsions"><label class="opt"><input type="radio" name="med_fever_convulsions" value="No" required data-i="0"><span>No</span></label><label class="opt"><input type="radio" name="med_fever_convulsions" value="Yes" required data-i="1"><span>Yes</span></label></div>
+    
+    <p class="err" data-err-for="med_fever_convulsions"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_med_medication_details">Prescribed medication, dosage and emergency instructions</label>
+    <textarea id="f_med_medication_details" name="med_medication_details" rows="2"></textarea>
+    <p class="help">Write &quot;None&quot; if no regular medication.</p>
+    <p class="err" data-err-for="med_medication_details"></p>
+  </div></div>
+  </section>
+<section class="card" id="sec_policies" data-title="8. School policies and procedures">
+    <h2>8. School policies and procedures</h2>
+    <dl class="info"><dt>Extramural activities</dt><dd>Presented by our own teachers at no additional cost: movement activities, music and dance, puppet shows, fantasy and imaginative play, sports and educational activities. Parents will be informed separately if any activity carries an additional charge.</dd><dt>Food policy</dt><dd>The school does not provide meals. Children must eat breakfast at home and bring their own lunch. Full-day learners must bring enough food for lunch and snack time. Please provide healthy food — sweets, cakes and similar items are not permitted unless approved by the school for a special event. Please inform the school of any food allergies or dietary requirements.</dd><dt>Medicine</dt><dd>Please hand in all medicine at the office — do not put any medicine in your child's bag. Parents must complete and sign the school's medication register or authorisation form. No medicine will be given without a parent's signature in the medicine book. The school will contact the parent or emergency services if urgent medical assistance is required.</dd><dt>Monthly planner</dt><dd>Monthly planners are posted on the official WhatsApp group during the first week of the month. All monthly activities are stipulated on the calendar. Please let us know if your cell number or email changes.</dd><dt>Personal belongings</dt><dd>Please label all clothing, shoes, bags and personal belongings clearly with the child's name. The school takes reasonable care of learners' belongings but cannot accept responsibility for ordinary loss or damage to unlabelled or personal items. Please provide an extra set of clothing and a plastic bag for emergencies. Toys, cell phones and iPads are not permitted at school.</dd></dl>
+  </section>
+<section class="card" id="sec_consent" data-title="9. Activities consent and indemnity">
+    <h2>9. Activities consent and indemnity</h2>
+    <div class="grid"><div class="field full wide">
+    <label class="lbl" for="f_consent_activities">I/We give permission for my/our child to participate in school activities, including extramural activities, educational tours, excursions, sports, games and the use of appropriate school equipment. <span class="req" title="Required">*</span></label>
+    <div class="options" data-key="consent_activities"><label class="opt"><input type="radio" name="consent_activities" value="Yes" required data-i="0"><span>Yes</span></label><label class="opt"><input type="radio" name="consent_activities" value="No" required data-i="1"><span>No</span></label></div>
+    
+    <p class="err" data-err-for="consent_activities"></p>
+  </div>
+<div class="field full wide">
+    <label class="lbl" for="f_consent_indemnity">I/We have read and understood the indemnity clause and agree to indemnify and hold harmless the school, its principal, employees and authorised assistants against claims arising from my/our child's participation in school activities, except where loss or injury results from proven negligence, gross negligence, wilful misconduct or unlawful conduct by the school or its representatives. <span class="req" title="Required">*</span></label>
+    <div class="options" data-key="consent_indemnity"><label class="opt"><input type="radio" name="consent_indemnity" value="Yes" required data-i="0"><span>Yes</span></label><label class="opt"><input type="radio" name="consent_indemnity" value="No" required data-i="1"><span>No</span></label></div>
+    
+    <p class="err" data-err-for="consent_indemnity"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_consent_initials">Parent/guardian initials <span class="req" title="Required">*</span></label>
+    <input type="text" id="f_consent_initials" name="consent_initials" required>
+    
+    <p class="err" data-err-for="consent_initials"></p>
+  </div></div>
+  </section>
+<section class="card" id="sec_financial" data-title="10. Financial contract">
+    <h2>10. Financial contract</h2>
+    <p class="note">School fees for 2027 are payable over 11 months. Fees are due on or before the 1st of each month, one month in advance. The R1 500 once-off registration fee (newcomers only, non-refundable, includes 2 school t-shirts) must be paid with the application for it to be processed.</p>
+<div class="grid"><div class="field full">
+    <label class="lbl" for="f_fee_option">My child will be collected at <span class="req" title="Required">*</span></label>
+    <div class="options" data-key="fee_option"><label class="opt"><input type="radio" name="fee_option" value="13h00 — R1 900 per month" required data-i="0"><span>13h00 — R1 900 per month</span></label><label class="opt"><input type="radio" name="fee_option" value="15h00 — R2 000 per month" required data-i="1"><span>15h00 — R2 000 per month</span></label><label class="opt"><input type="radio" name="fee_option" value="17h00 — R2 200 per month" required data-i="2"><span>17h00 — R2 200 per month</span></label></div>
+    
+    <p class="err" data-err-for="fee_option"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_tshirt_size">School t-shirt size (tick your child's size) <span class="req" title="Required">*</span></label>
+    <div class="options" data-key="tshirt_size"><label class="opt"><input type="radio" name="tshirt_size" value="3–4 years" required data-i="0"><span>3–4 years</span></label><label class="opt"><input type="radio" name="tshirt_size" value="5–6 years" required data-i="1"><span>5–6 years</span></label><label class="opt"><input type="radio" name="tshirt_size" value="7–8 years" required data-i="2"><span>7–8 years</span></label></div>
+    
+    <p class="err" data-err-for="tshirt_size"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_book_fee_grade_r">Grade R book fee (R350) applicable</label>
+    <div class="options" data-key="book_fee_grade_r"><label class="opt"><input type="radio" name="book_fee_grade_r" value="Yes" data-i="0"><span>Yes</span></label><label class="opt"><input type="radio" name="book_fee_grade_r" value="No" data-i="1"><span>No</span></label></div>
+    
+    <p class="err" data-err-for="book_fee_grade_r"></p>
+  </div>
+<div class="field full wide">
+    <label class="lbl" for="f_payment_terms_accepted">I/We accept the payment terms and conditions set out above, including that fees are due on or before the 1st of each month, one month in advance. <span class="req" title="Required">*</span></label>
+    <div class="options" data-key="payment_terms_accepted"><label class="opt"><input type="radio" name="payment_terms_accepted" value="Yes" required data-i="0"><span>Yes</span></label><label class="opt"><input type="radio" name="payment_terms_accepted" value="No" required data-i="1"><span>No</span></label></div>
+    
+    <p class="err" data-err-for="payment_terms_accepted"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_account_payer_name">Primary account payer — full name and surname <span class="req" title="Required">*</span></label>
+    <input type="text" id="f_account_payer_name" name="account_payer_name" required>
+    
+    <p class="err" data-err-for="account_payer_name"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_account_payer_id">Identity number</label>
+    <input type="text" id="f_account_payer_id" name="account_payer_id">
+    
+    <p class="err" data-err-for="account_payer_id"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_account_payer_relationship">Relationship to child</label>
+    <input type="text" id="f_account_payer_relationship" name="account_payer_relationship">
+    
+    <p class="err" data-err-for="account_payer_relationship"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_account_payer_cell">Cell phone number <span class="req" title="Required">*</span></label>
+    <input type="tel" id="f_account_payer_cell" name="account_payer_cell" required>
+    
+    <p class="err" data-err-for="account_payer_cell"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_account_payer_email">Email address <span class="req" title="Required">*</span></label>
+    <input type="email" id="f_account_payer_email" name="account_payer_email" required>
+    
+    <p class="err" data-err-for="account_payer_email"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_account_payer_address">Residential address</label>
+    <textarea id="f_account_payer_address" name="account_payer_address" rows="2"></textarea>
+    
+    <p class="err" data-err-for="account_payer_address"></p>
+  </div></div>
+<details class="info-fold"><summary>Banking details &amp; payment terms</summary><dl class="info"><dt>Banking details</dt><dd>Account name: D AND S COMP (PTY) LTD trading as TINGALING PREPRIMARY SCHOOLS · Bank: FNB Richards Bay · Account number: 63161960886 · Branch code: 220830. Payment reference: STUDENT NUMBER, CHILD'S NAME and SURNAME. Send proof of payment to tingalingpreprimaryschool@gmail.com or WhatsApp 072 456 1282.</dd><dt>Payment terms</dt><dd>No cash payments are accepted at the school. Accepted payment methods: electronic funds transfer, debit order or stop order. Fees not paid on the 1st are overdue; late payments attract interest of 2% per month and reasonable administration fees. One full calendar month's written notice is required to withdraw a learner; fees remain payable during the notice period. Where two parents or guardians sign, each may be held responsible for the full amount due. Parents experiencing financial difficulty should contact the principal in writing before the account becomes overdue. This agreement is governed by the laws of the Republic of South Africa, including the Consumer Protection Act 68 of 2008 and POPIA.</dd></dl></details>
+  </section>
+<section class="card" id="sec_popia" data-title="11. Protection of personal information (POPIA)">
+    <h2>11. Protection of personal information (POPIA)</h2>
+    <dl class="info"><dt>How we use information</dt><dd>Information is collected and used for: enrolment and administration; learner safety and emergency contact; educational planning and support; parent and guardian communication; medical and health administration; fee administration and collection; and compliance with legal obligations.</dd><dt>Who we share it with</dt><dd>Authorised school staff on a need-to-know basis; emergency services or medical professionals; service providers acting on behalf of the school; attorneys or debt collectors where legally necessary; and credit bureaux where legally permitted.</dd><dt>Your rights</dt><dd>The school takes reasonable steps to protect personal information and retains it only for as long as reasonably necessary or legally required. Parents and guardians may request access to or correction of their personal information, subject to applicable law. Complaints may be directed to the school's Information Officer or the Information Regulator.</dd></dl>
+<div class="grid"><div class="field half">
+    <label class="lbl" for="f_popia_initials">Parent/guardian initials <span class="req" title="Required">*</span></label>
+    <input type="text" id="f_popia_initials" name="popia_initials" required>
+    
+    <p class="err" data-err-for="popia_initials"></p>
+  </div>
+<div class="field half wide">
+    <label class="lbl" for="f_popia_consent">I/We consent to the lawful processing of personal information as described above. <span class="req" title="Required">*</span></label>
+    <div class="options" data-key="popia_consent"><label class="opt"><input type="radio" name="popia_consent" value="Yes" required data-i="0"><span>Yes</span></label><label class="opt"><input type="radio" name="popia_consent" value="No" required data-i="1"><span>No</span></label></div>
+    
+    <p class="err" data-err-for="popia_consent"></p>
+  </div></div>
+  </section>
+<section class="card" id="sec_operating" data-title="12. School operating information">
+    <h2>12. School operating information</h2>
+    <dl class="info"><dt>Hours</dt><dd>Educational programme: 06:45–17:00 · Aftercare: 13:00–17:00 · Gate opens: 06:45 · Classes begin and gate closes: 08:00.</dd><dt>Please note</dt><dd>Please ensure that your child arrives on time and is collected promptly. If the collection time changes, written notice must be given to the principal before the beginning of the relevant month — the applicable fee will be charged according to the selected collection time.</dd></dl>
+  </section>
+<section class="card" id="sec_acknowledge" data-title="13. Acknowledgement">
+    <h2>13. Acknowledgement</h2>
+    <p class="note">Please read and tick every box.</p>
+<div class="grid"><div class="field full wide"><div class="fieldwrap"><label class="opt solo"><input type="checkbox" name="ack_form_read" value="Yes" required><span>I/We have read and understood this enrolment form.</span></label></div></div>
+<div class="field full wide"><div class="fieldwrap"><label class="opt solo"><input type="checkbox" name="ack_policies_received" value="Yes" required><span>I/We have received or reviewed the school's policies and fee schedule.</span></label></div></div>
+<div class="field full wide"><div class="fieldwrap"><label class="opt solo"><input type="checkbox" name="ack_payment_obligations" value="Yes" required><span>I/We understand the payment obligations and due dates.</span></label></div></div>
+<div class="field full wide"><div class="fieldwrap"><label class="opt solo"><input type="checkbox" name="ack_late_consequences" value="Yes" required><span>I/We understand the consequences of late or non-payment.</span></label></div></div>
+<div class="field full wide"><div class="fieldwrap"><label class="opt solo"><input type="checkbox" name="ack_joint_liability" value="Yes" required><span>I/We understand the joint and several liability provisions, where applicable.</span></label></div></div>
+<div class="field full wide"><div class="fieldwrap"><label class="opt solo"><input type="checkbox" name="ack_withdrawal_notice" value="Yes" required><span>I/We understand the withdrawal notice requirements.</span></label></div></div>
+<div class="field full wide"><div class="fieldwrap"><label class="opt solo"><input type="checkbox" name="ack_popia_consent" value="Yes" required><span>I/We consent to the lawful processing of personal information as described above.</span></label></div></div>
+<div class="field full wide"><div class="fieldwrap"><label class="opt solo"><input type="checkbox" name="ack_activities_consent" value="Yes" required><span>I/We consent to the child participating in school activities.</span></label></div></div>
+<div class="field full wide"><div class="fieldwrap"><label class="opt solo"><input type="checkbox" name="ack_indemnity_read" value="Yes" required><span>I/We have read and understood the indemnity clause.</span></label></div></div>
+<div class="field full wide"><div class="fieldwrap"><label class="opt solo"><input type="checkbox" name="ack_info_accurate" value="Yes" required><span>I/We have provided complete and accurate information.</span></label></div></div>
+<div class="field full wide"><div class="fieldwrap"><label class="opt solo"><input type="checkbox" name="ack_notify_changes" value="Yes" required><span>I/We will notify the school in writing of any relevant changes.</span></label></div></div></div>
+  </section>
+<section class="card" id="sec_signatures" data-title="14. Signatures">
+    <h2>14. Signatures</h2>
+    <p class="note">Type your full name in the signature field to sign this form electronically (Electronic Communications and Transactions Act 25 of 2002).</p>
+<div class="copyrow"><button type="button" class="copybtn" id="copyMother">Copy from mother’s details</button><button type="button" class="copybtn" id="copyFather">Copy from father’s details</button></div>
+<div class="grid"><div class="field half">
+    <label class="lbl" for="f_sig1_name">Parent/Guardian 1 — full name and surname <span class="req" title="Required">*</span></label>
+    <input type="text" id="f_sig1_name" name="sig1_name" required>
+    
+    <p class="err" data-err-for="sig1_name"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_sig1_id">Identity number</label>
+    <input type="text" id="f_sig1_id" name="sig1_id">
+    
+    <p class="err" data-err-for="sig1_id"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_sig1_cell">Cell phone number</label>
+    <input type="tel" id="f_sig1_cell" name="sig1_cell">
+    
+    <p class="err" data-err-for="sig1_cell"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_sig1_email">Email address</label>
+    <input type="email" id="f_sig1_email" name="sig1_email">
+    
+    <p class="err" data-err-for="sig1_email"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_sig1_relationship">Relationship to child</label>
+    <input type="text" id="f_sig1_relationship" name="sig1_relationship">
+    
+    <p class="err" data-err-for="sig1_relationship"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_sig1_date">Date <span class="req" title="Required">*</span></label>
+    <input type="date" id="f_sig1_date" name="sig1_date" required>
+    
+    <p class="err" data-err-for="sig1_date"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_sig1_signature">Parent/Guardian 1 — electronic signature (type your full name) <span class="req" title="Required">*</span></label>
+    <input type="text" id="f_sig1_signature" name="sig1_signature" autocomplete="off" required placeholder="Type your full name as your electronic signature"><p class="help">By typing your name you are signing this form electronically in terms of the Electronic Communications and Transactions Act 25 of 2002.</p>
+    
+    <p class="err" data-err-for="sig1_signature"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_sig1_address">Residential address (if different from above)</label>
+    <textarea id="f_sig1_address" name="sig1_address" rows="2"></textarea>
+    
+    <p class="err" data-err-for="sig1_address"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_sig2_name">Parent/Guardian 2 — full name and surname</label>
+    <input type="text" id="f_sig2_name" name="sig2_name">
+    
+    <p class="err" data-err-for="sig2_name"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_sig2_id">Identity number</label>
+    <input type="text" id="f_sig2_id" name="sig2_id">
+    
+    <p class="err" data-err-for="sig2_id"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_sig2_cell">Cell phone number</label>
+    <input type="tel" id="f_sig2_cell" name="sig2_cell">
+    
+    <p class="err" data-err-for="sig2_cell"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_sig2_email">Email address</label>
+    <input type="email" id="f_sig2_email" name="sig2_email">
+    
+    <p class="err" data-err-for="sig2_email"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_sig2_relationship">Relationship to child</label>
+    <input type="text" id="f_sig2_relationship" name="sig2_relationship">
+    
+    <p class="err" data-err-for="sig2_relationship"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_sig2_date">Date</label>
+    <input type="date" id="f_sig2_date" name="sig2_date">
+    
+    <p class="err" data-err-for="sig2_date"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_sig2_signature">Parent/Guardian 2 — electronic signature (type your full name)</label>
+    <input type="text" id="f_sig2_signature" name="sig2_signature" autocomplete="off" placeholder="Type your full name as your electronic signature"><p class="help">By typing your name you are signing this form electronically in terms of the Electronic Communications and Transactions Act 25 of 2002.</p>
+    
+    <p class="err" data-err-for="sig2_signature"></p>
+  </div>
+<div class="field full">
+    <label class="lbl" for="f_sig2_address">Residential address (if different from above)</label>
+    <textarea id="f_sig2_address" name="sig2_address" rows="2"></textarea>
+    
+    <p class="err" data-err-for="sig2_address"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_witness_name">Witness — full name and surname</label>
+    <input type="text" id="f_witness_name" name="witness_name">
+    
+    <p class="err" data-err-for="witness_name"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_witness_id">Identity number</label>
+    <input type="text" id="f_witness_id" name="witness_id">
+    
+    <p class="err" data-err-for="witness_id"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_witness_date">Date</label>
+    <input type="date" id="f_witness_date" name="witness_date">
+    
+    <p class="err" data-err-for="witness_date"></p>
+  </div>
+<div class="field half">
+    <label class="lbl" for="f_witness_signature">Witness — signature</label>
+    <input type="text" id="f_witness_signature" name="witness_signature">
+    
+    <p class="err" data-err-for="witness_signature"></p>
+  </div></div>
+  </section>
+
+    <div class="card submit-card">
+      <div id="formError" class="formerror" hidden></div>
+      <button type="submit" class="btn" id="submitBtn">Submit enrolment form</button>
+      <p class="help">You will receive a confirmation on screen and a reference number. The school will contact you about the required documents and the R1 500 registration fee.</p>
+    </div>
+  </form>
+</main>
+
+<footer class="foot wrap narrow">
+  <p>Ting-A-Ling Pre-Primary School · Contact 072 456 1282 / 061 527 4429 · tingalingpreprimaryschool@gmail.com</p>
+  <p class="help">Your information is processed in accordance with the Protection of Personal Information Act 4 of 2013.</p>
+</footer>
+
+<script>window.ENROL_CONFIG = {"api":"https://enrol.autoeffortless.com","static":true,"thanks":"thanks/"};</script>
+<script src="form.js"></script>
+</body>
+</html>
