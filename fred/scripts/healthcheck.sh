@@ -99,6 +99,20 @@ else
   FAILURES="$FAILURES fred-tunnel"
 fi
 
+# 9. Ting-A-Ling online enrolment form (enrol.autoeffortless.com)
+ENROL_JSON=$(curl -sf --connect-timeout 10 https://enrol.autoeffortless.com/api/enrol/health 2>/dev/null)
+if echo "$ENROL_JSON" | grep -q '"ok":true'; then
+  echo "  [OK] Enrolment form live" >> "$LOG_FILE"
+  ENROL_PENDING=$(echo "$ENROL_JSON" | python3 -c "import sys,json; print(json.load(sys.stdin).get('pendingSheetSync',0))" 2>/dev/null || echo 0)
+  if [ "${ENROL_PENDING:-0}" -gt 0 ] 2>/dev/null; then
+    echo "  [WARN] Enrolment: $ENROL_PENDING submission(s) not yet synced to the Google Sheet" >> "$LOG_FILE"
+    WARNINGS="$WARNINGS enrol-sheet-sync"
+  fi
+else
+  echo "  [FAIL] Enrolment form DOWN" >> "$LOG_FILE"
+  FAILURES="$FAILURES enrol-form"
+fi
+
 # ── State transition logic ──────────────────────────────────────────
 # Determine current status: "ok", "warning", or "critical"
 current_status="ok"
@@ -145,6 +159,6 @@ elif [ -n "$WARNINGS" ]; then
   echo "[$(date)] STATUS: WARNING — Warnings:$WARNINGS" >> "$LOG_FILE"
   exit 1
 else
-  echo "[$(date)] STATUS: OK — All 7 checks passed" >> "$LOG_FILE"
+  echo "[$(date)] STATUS: OK — All 9 checks passed" >> "$LOG_FILE"
   exit 0
 fi
