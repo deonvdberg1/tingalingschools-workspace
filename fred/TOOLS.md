@@ -21,7 +21,7 @@
 - **Skills:** Clawhub for community tools
 
 ## Client Services (own servers)
-- **Ting-A-Ling 2027 enrolment form:** `fred/enrolment-server/` — Express **:3015**, LaunchAgent `com.autoeffortless.enrol-server`, public at **enrol.autoeffortless.com** (dedicated `enrol` tunnel, `~/.cloudflared/config-enrol.yml`). `fields.js` = single source of truth (form + validation + sheet columns). Write to Drive/Sheets as the school: `--account info@tingalingschools.com`; **always `--input RAW`** (USER_ENTERED eats leading zeros in phone numbers). Logs: `logs/enrol-server.log`, `enrolment-server/data/submit.log`.
+- **Ting-A-Ling 2027 enrolment form:** `fred/enrolment-server/` — Express **:3015**, LaunchAgent `com.autoeffortless.enrol-server`. **Parent link = https://tingalingschools.com/Enrol** (static page deployed to the school's GitHub Pages, `gh-pages`→`Enrol/`; source copy in `website/public/Enrol/`); our **enrol.autoeffortless.com** (dedicated `enrol` tunnel, `~/.cloudflared/config-enrol.yml`) is now just the **API backend** the static page posts to. `fields.js` = single source of truth (form + validation + sheet columns); `scripts/build-static.mjs` builds the school-side page. Write to Drive/Sheets as the school: `--account info@tingalingschools.com`; **always `--input RAW`** (USER_ENTERED eats leading zeros in phone numbers). Logs: `logs/enrol-server.log`, `enrolment-server/data/submit.log`.
 
 ## Coming Soon
 - Stripe — payment processing

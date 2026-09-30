@@ -2,6 +2,10 @@
 
 ## Status: ✅ **TING-A-LING 2027 ONLINE ENROLMENT FORM LIVE** (Mr D request 10:39) — form https://enrol.autoeffortless.com → Google Sheet owned by info@tingalingschools.com (+ QR & A5 poster). Awaiting Mr D review. All infra green; ☀️ 08:00 daily report SENT; ✅ **main-tunnel churn RESOLVED** (08:40 kickstart). Pending Mr D: **CIPC option (1/2/3)**, **usage-tracking build**, **AI Editor wording**, **lead emails (a/b/c/d)**, **alert-channel fix (131047)**, **UPS (R1,293)**, **enrolment wording sign-off**.
 
+### 11:05 SAST (Sep 30) — 🔄 Enrolment form moved to the school's own site (Mr D follow-up)
+- **Parent link = https://tingalingschools.com/Enrol** (static page in their GitHub Pages, `gh-pages`→`Enrol/`; source in `website/public/Enrol/`). `enrol.autoeffortless.com` is now only the API backend (CORS added). Their email everywhere: sender + sheet owner + notifications = info@tingalingschools.com (+ preprimary gmail); Read me tab rewritten with their contact, no autoeffortless. QR/poster regenerated (school URL; share with `?v=2`). Verified E2E from the school URL, 0 errors; test row cleared, sheet pristine.
+- ⚠️ Confirm their email with Mr D: he wrote “infor@tingalingschool.com” (domain doesn't resolve) → used existing **info@tingalingschools.com**.
+
 ### 11:00 SAST (Sep 30) — 🔴 Ting-A-Ling 2027 enrolment form shipped (new client deliverable)
 - **Public form** https://enrol.autoeffortless.com (parents-only sections; no login; mobile-first; teal). **Sheet** https://docs.google.com/spreadsheets/d/1-RYoHZ_LOxTDZXj_7ZHCKARoRdHlZey4IhZ5od7f33w/edit (owner info@tingalingschools.com; 106 cols; RAW input; +Read me tab). **QR + A5 poster** → files.autoeffortless.com/tingaling/enrolment/. Emails: school notice + parent confirmation (as info@tingalingschools.com).
 - New service `fred/enrolment-server/` (:3015, LaunchAgent) + dedicated `enrol` tunnel/hostname; healthcheck now 9 checks; submission never lost (local first → sheet, 5-min retry queue). Verified via playwright E2E over the public URL, 0 console errors; responsive 360→1280, 0 overflow. Committed `b2548c6`. See memory/2026-09-30.md + MEMORY.md.

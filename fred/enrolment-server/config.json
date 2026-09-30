@@ -4,5 +4,11 @@
   "sheetTab": "Applications",
   "driveFolderId": "1EnZ1vDLVfndPwhQTEiIceQUw3IqgzUWe",
   "sheetOwner": "info@tingalingschools.com",
-  "columns": 106
+  "columns": 106,
+  "formUrl": "https://tingalingschools.com/Enrol",
+  "schoolNotifyEmails": [
+    "info@tingalingschools.com",
+    "tingalingpreprimaryschool@gmail.com"
+  ],
+  "sendAccount": "info@tingalingschools.com"
 }

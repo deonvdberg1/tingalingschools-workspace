@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Enrolment received — Ting-A-Ling Pre-Primary School</title>
+<link rel="icon" href="/logo.png">
+<link rel="stylesheet" href="../form.css">
+</head>
+<body>
+<header class="top"><div class="wrap narrow"><img src="/logo.png" alt="" class="logo"><div><h1>Enrolment received</h1><p class="sub">Ting-A-Ling Pre-Primary School</p></div></div></header>
+<main class="wrap narrow">
+  <div class="card done">
+    <div class="tick">✓</div>
+    <h2>Thank you<span id="dear"></span>!</h2>
+    <p>We have received your enrolment application for <strong id="child">your child</strong>.</p>
+    <p class="refbox">Your reference number:<br><strong id="ref">—</strong></p>
+    <p>Please quote this reference whenever you contact the school. Keep it for your records.</p>
+    <p class="note">Next steps: the school will be in touch about the required documents and the R1 500 once-off registration fee (newcomers only, non-refundable). Your application is complete once these have been received.</p>
+    <p><a class="btn" id="wa" href="https://wa.me/27615274429" target="_blank" rel="noopener">Follow up on WhatsApp</a></p>
+  </div>
+</main>
+<footer class="foot wrap narrow"><p>Ting-A-Ling Pre-Primary School · 072 456 1282 / 061 527 4429 · tingalingpreprimaryschool@gmail.com</p></footer>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var ref = q.get('ref') || '';
+  var child = q.get('n') || '';
+  if (ref) document.getElementById('ref').textContent = ref;
+  if (child) {
+    document.getElementById('child').textContent = child;
+    document.getElementById('dear').textContent = ', ' + child.split(' ')[0];
+  }
+  document.getElementById('wa').href = 'https://wa.me/27615274429?text=' + encodeURIComponent('Hi Ting-A-Ling, I submitted enrolment ' + ref + ' for my child.');
+})();
+</script>
+</body>
+</html>

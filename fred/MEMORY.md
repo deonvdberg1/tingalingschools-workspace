@@ -34,16 +34,18 @@ This is where I keep what matters.
 
 ## 📝 Ting-A-Ling 2027 Online Enrolment Form — LIVE (2026-09-30, Mr D request)
 
-- **Public form:** **https://enrol.autoeffortless.com** — parents-only sections of their "Enrolment Form 2027" (Pre-Primary). No login, mobile-first, teal (matches tingalingschools.com). Office-use section dropped. Send the link / the QR to parents.
+- **Public form (parent link):** **https://tingalingschools.com/Enrol** — parents-only sections of their "Enrolment Form 2027" (Pre-Primary). No login, mobile-first, teal (matches tingalingschools.com). Office-use section dropped. Send the link / the QR to parents. (Mr D 2026-09-30: “the link must go through their site, not autoeffortless.”)
+- **How it is hosted:** the form is a **static page deployed into the school's own GitHub Pages site** (repo `deonvdberg1/tingalingschools-workspace`, branch **gh-pages**, folder `Enrol/`; source copy kept in `website/public/Enrol/`). It posts cross-origin to our API — backend stays `fred/enrolment-server/` at **enrol.autoeffortless.com** (invisible to parents; CORS allows `*`). ⚠️ Deploy surgically: `git worktree add -B ghpages-deploy /tmp/x origin/gh-pages` → copy `build/Enrol/` → commit → `git push origin HEAD:gh-pages` (never rebuild the SPA — the live bundle is older than the local `website/dist`). GitHub Pages needs ~60s.
 - **Sheet (owned by the school):** https://docs.google.com/spreadsheets/d/1-RYoHZ_LOxTDZXj_7ZHCKARoRdHlZey4IhZ5od7f33w/edit — owner **info@tingalingschools.com** (Drive folder “Ting-A-Ling Pre-Primary — Enrolment 2027”), writer-shared with info@autoeffortless.com. Tab **Applications** = 106 columns (4 meta + 102 fields; header frozen; **RAW input** so `0821234567` keeps its leading 0) + **Read me** tab. One row per submission. Refs `TAL-PP-2027-0001…`.
 - **QR + printable A5 poster:** `fred/products/tingaling/enrolment/` → public at https://files.autoeffortless.com/tingaling/enrolment/Ting-A-Ling-2027-Enrolment-Poster.pdf
-- **Emails on submit:** school notice → tingalingpreprimaryschool@gmail.com + parent confirmation, both sent as *Tingaling Schools <info@tingalingschools.com>*.
-- **Code:** `fred/enrolment-server/` (Express :3015; LaunchAgent `com.autoeffortless.enrol-server`). **`fields.js` is the single source of truth** — the form HTML, the validation and the sheet columns are all generated from it. `scripts/` has create-sheet / test-submit / e2e / ui-check / make-assets.
+- **Emails on submit:** sent **as the school (info@tingalingschools.com)** → office notification to **info@tingalingschools.com + tingalingpreprimaryschool@gmail.com** + parent confirmation. Nothing parent- or office-facing mentions AutoEffortless (the sheet's Read me tab uses their email too).
+- **Code:** `fred/enrolment-server/` (Express :3015; LaunchAgent `com.autoeffortless.enrol-server`). **`fields.js` is the single source of truth** — the form HTML, the validation and the sheet columns are all generated from it. `scripts/`: create-sheet / **build-static** (→ `build/Enrol/`) / **update-readme** / test-submit / e2e / ui-check / make-assets.
 - **Hosting:** dedicated tunnel **`enrol` (9e68288d)** + `~/.cloudflared/config-enrol.yml` + LaunchAgent `com.autoeffortless.cloudflared-enrol`.
 - **Reliability:** every submission is written to `data/submissions/<ref>.json` **before** the sheet write; failures queue to `pending.jsonl` and retry every 5 min. Healthcheck now has **9 checks** (adds the form + sheet-sync queue).
 - 🔐 **POPIA:** children's data is gitignored (`data/.gitignore`) so it never reaches the GitHub backup. Sheet is NOT link-shared (specific users only).
 - ⚠️ **Lesson:** `cloudflared tunnel route dns` can fuzzy-match a name (“enrol”) to the wrong tunnel — always route with the **tunnel UUID**, and use `-f` *before* the UUID (`--overwrite-dns` after the hostname is mis-parsed).
-- ⏳ Open: Mr D review of wording/fields; friendlier `tingalingschools.com/enrol` path (needs a GitHub Pages deploy — `gh` auth broken); document upload still manual.
+- ⚠️ **Caching:** `files.autoeffortless.com` is Cloudflare-cached ~4h — share asset links with `?v=N` when a file is replaced in place (QR/poster URL change → `?v=2`).
+- ⏳ Open: Mr D review of wording/fields; **confirm their email** (he wrote “infor@tingalingschool.com” — we use the existing **info@tingalingschools.com** account; `tingalingschool.com` does not resolve); document upload still manual.
 
 ## 📞 Phone numbers (2026-09-29)
 

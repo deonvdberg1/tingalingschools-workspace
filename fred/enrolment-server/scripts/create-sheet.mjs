@@ -10,6 +10,7 @@ import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { SHEET_COLUMNS, SHEET_TAB, SCHOOL_LABEL, FORM_YEAR } from '../fields.js';
+import { readmeBanner } from './readme-content.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
@@ -32,25 +33,7 @@ function gog(args, opts = {}) {
 console.log(`[1/5] Building xlsx with ${headers.length} columns …`);
 mkdirSync(path.join(ROOT, 'tmp'), { recursive: true });
 const headersJson = JSON.stringify(headers);
-const banner = [
-  `${SCHOOL_LABEL} — ${FORM_YEAR} Online Enrolment Applications`,
-  '',
-  'HOW THIS WORKS',
-  '• This spreadsheet is filled IN AUTOMATICALLY from the online enrolment form. Every new row = one application.',
-  '• Parents use this link (or the QR code we supply): ' + (process.env.ENROL_URL || 'https://enrol.autoeffortless.com'),
-  '• One row is added the moment a parent submits the form — no copy-typing needed.',
-  '',
-  'PLEASE NOTE',
-  `• Do NOT rename the "${SHEET_TAB}" tab or delete/move columns — the form writes to it automatically.`,
-  '• Reference No. — quote this whenever a parent contacts you about their application.',
-  '• Status — for the office to update, e.g. New → Documents received → Approved / Declined.',
-  '• Documents still required from every parent: copy of I.D. documents of both parents, copy of the child\'s unabridged birth certificate, copy of the clinic card, proof of residence, latest school report (if possible).',
-  '• The R1 500 once-off registration fee (newcomers, non-refundable) must be paid for the application to be processed.',
-  '',
-  'OWNERSHIP',
-  '• This file is owned by info@tingalingschools.com.',
-  '• Built and maintained by AutoEffortless — support: info@autoeffortless.com · WhatsApp 061 527 4429',
-];
+const banner = readmeBanner(process.env.ENROL_URL || 'https://tingalingschools.com/Enrol');
 const bannerJson = JSON.stringify(banner);
 const xlsxPath = path.join(ROOT, 'tmp', 'enrolment-headers.xlsx');
 const py = `

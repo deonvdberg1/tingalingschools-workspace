@@ -50,6 +50,18 @@ fs.mkdirSync(SUB_DIR, { recursive: true });
 
 const app = express();
 app.disable('x-powered-by');
+
+// ── CORS: the form is posted from https://tingalingschools.com/Enrol (and from
+// the portal/preview hosts), so allow cross-origin JSON posts. ──
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Max-Age', '86400');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+
 app.use(express.json({ limit: '512kb' }));
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1h' }));
 
@@ -184,6 +196,8 @@ FINANCIAL
 The full application (all sections) is in the enrolment spreadsheet:
 ${cfg.sheetId ? 'https://docs.google.com/spreadsheets/d/' + cfg.sheetId + '/edit' : '(sheet id not configured)'}
 
+Submitted by the parent via: ${cfg.formUrl || 'the online enrolment form'}
+
 — Sent automatically by the ${SCHOOL_LABEL} online enrolment form.`;
 }
 
@@ -240,7 +254,7 @@ async function retryPending() {
 // ── routes ──
 app.get('/', (req, res) => {
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.type('html').send(renderForm());
+  res.type('html').send(renderForm({ assetBase: '/', apiBase: '' }));
 });
 
 app.get('/thanks', (req, res) => {

@@ -102,7 +102,9 @@ function sectionHtml(s) {
   </section>`;
 }
 
-export function renderForm() {
+export function renderForm(opts = {}) {
+  const assetBase = opts.assetBase ?? '/';
+  const cfg = { api: opts.apiBase || '', static: !!opts.static, thanks: opts.thanksHref || '/thanks' };
   const sections = SECTIONS.map(sectionHtml).join('\n');
 
   const nav = SECTIONS.filter((s) => !s.info)
@@ -121,7 +123,7 @@ export function renderForm() {
 <meta name="robots" content="noindex, nofollow">
 <title>${esc(SCHOOL_LABEL)} — ${esc(FORM_YEAR)} Online Enrolment Form</title>
 <link rel="icon" href="/logo.png">
-<link rel="stylesheet" href="/form.css">
+<link rel="stylesheet" href="${assetBase}form.css">
 </head>
 <body>
 <header class="top">
@@ -165,7 +167,8 @@ export function renderForm() {
   <p class="help">Your information is processed in accordance with the Protection of Personal Information Act 4 of 2013.</p>
 </footer>
 
-<script src="/form.js"></script>
+<script>window.ENROL_CONFIG = ${JSON.stringify(cfg)};</script>
+<script src="${assetBase}form.js"></script>
 </body>
 </html>`;
 }
@@ -197,6 +200,49 @@ export function renderThanks(ref, childName) {
   </div>
 </main>
 <footer class="foot wrap narrow"><p>${esc(SCHOOL_LABEL)} · 072 456 1282 / 061 527 4429 · tingalingpreprimaryschool@gmail.com</p></footer>
+</body>
+</html>`;
+}
+
+// Static thanks page (hosted on the school's own site; reads ?ref=&n= client-side)
+export function renderThanksStatic() {
+  return `<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Enrolment received — ${esc(SCHOOL_LABEL)}</title>
+<link rel="icon" href="/logo.png">
+<link rel="stylesheet" href="../form.css">
+</head>
+<body>
+<header class="top"><div class="wrap narrow"><img src="/logo.png" alt="" class="logo"><div><h1>Enrolment received</h1><p class="sub">${esc(SCHOOL_LABEL)}</p></div></div></header>
+<main class="wrap narrow">
+  <div class="card done">
+    <div class="tick">✓</div>
+    <h2>Thank you<span id="dear"></span>!</h2>
+    <p>We have received your enrolment application for <strong id="child">your child</strong>.</p>
+    <p class="refbox">Your reference number:<br><strong id="ref">—</strong></p>
+    <p>Please quote this reference whenever you contact the school. Keep it for your records.</p>
+    <p class="note">Next steps: the school will be in touch about the required documents and the R1 500 once-off registration fee (newcomers only, non-refundable). Your application is complete once these have been received.</p>
+    <p><a class="btn" id="wa" href="https://wa.me/27615274429" target="_blank" rel="noopener">Follow up on WhatsApp</a></p>
+  </div>
+</main>
+<footer class="foot wrap narrow"><p>${esc(SCHOOL_LABEL)} · 072 456 1282 / 061 527 4429 · tingalingpreprimaryschool@gmail.com</p></footer>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var ref = q.get('ref') || '';
+  var child = q.get('n') || '';
+  if (ref) document.getElementById('ref').textContent = ref;
+  if (child) {
+    document.getElementById('child').textContent = child;
+    document.getElementById('dear').textContent = ', ' + child.split(' ')[0];
+  }
+  document.getElementById('wa').href = 'https://wa.me/27615274429?text=' + encodeURIComponent('Hi Ting-A-Ling, I submitted enrolment ' + ref + ' for my child.');
+})();
+</script>
 </body>
 </html>`;
 }
