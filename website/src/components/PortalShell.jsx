@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   LayoutDashboard, Megaphone, CalendarDays, Users, LogOut, ArrowLeft,
-  Plane, BarChart3,
+  Plane, BarChart3, Clock,
 } from 'lucide-react';
 
 /**
@@ -42,6 +42,7 @@ export default function PortalShell({ user, logout, active = 'dashboard', childr
         </div>
         <nav className="flex-1 p-4 space-y-1 text-sm">
           {navItem('/portal', 'Dashboard', <LayoutDashboard className="w-4 h-4" />, active === 'dashboard')}
+          {navItem('/clock', 'Clock in / out', <Clock className="w-4 h-4" />, active === 'clock', isStaff)}
           {navItem('/portal/analytics', 'Analytics', <BarChart3 className="w-4 h-4" />, active === 'analytics', isAdmin)}
           <div className="px-3 py-2 text-slate-400 flex items-center gap-2">
             <Megaphone className="w-4 h-4" /> Announcements

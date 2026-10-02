@@ -10,6 +10,7 @@ import ErrorBoundary from '@/lib/ErrorBoundary';
 import { AuthProvider } from '@/lib/AuthContext';
 import PortalLogin from './pages/PortalLogin';
 import PortalTeacher from './pages/PortalTeacher';
+import PortalClock from './pages/PortalClock';
 import PortalRegister from './pages/PortalRegister';
 import PortalDashboard from './pages/PortalDashboard';
 import PortalAnalytics from './pages/PortalAnalytics';
@@ -50,6 +51,7 @@ const AppRoutes = () => {
       {/* ── Portal (independent Ting-A-Ling dashboard: staff / admin / parents) ── */}
       <Route path="/login" element={<PortalLogin />} />
       <Route path="/teacher" element={<PortalTeacher />} />
+      <Route path="/clock" element={<PortalClock />} />
       <Route path="/teacher/register" element={<Navigate to="/teacher?signup=1" replace />} />
       <Route path="/register" element={<PortalRegister />} />
       <Route path="/portal" element={<PortalDashboard />} />

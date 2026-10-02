@@ -19,6 +19,9 @@ export default function PortalTeacher() {
   const navigate = useNavigate();
 
   const [tab, setTab] = useState(params.get('signup') ? 'signup' : 'signin');
+  // Where to go after signing in (e.g. the QR clock page: /teacher?next=%2Fclock)
+  const rawNext = params.get('next') || '';
+  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/portal';
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [showPass, setShowPass] = useState(false);
@@ -39,7 +42,7 @@ export default function PortalTeacher() {
     setSubmitting(true);
     try {
       const u = await login(form.email, form.password);
-      navigate('/portal', { replace: true, state: { role: u?.role } });
+      navigate(next, { replace: true, state: { role: u?.role } });
     } catch (err) {
       setError(err.message || 'Sign in failed');
     } finally {
@@ -67,8 +70,8 @@ export default function PortalTeacher() {
         phone: form.phone,
         position: form.position,
       });
-      // Instant access — straight into their dashboard.
-      navigate('/portal', { replace: true });
+      // Instant access — straight into their dashboard (or back to the QR page).
+      navigate(next, { replace: true });
     } catch (err) {
       setError(err.message || 'Could not create your account');
     } finally {

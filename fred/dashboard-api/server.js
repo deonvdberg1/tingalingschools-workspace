@@ -16,6 +16,7 @@ import setupAttendanceRoutes from './attendance-routes.js';
 import setupStaffDirectoryRoutes from './staff-directory-routes.js';
 import setupFredChatRoutes from './fred-chat-routes.js';
 import setupPortalRoutes from './portal-routes.js';
+import setupPortalClockRoutes from './portal-clock-routes.js';
 import { PRODUCTS, PACKAGES } from '../storefront/src/data/products.js';
 import { setupSiteAnalyticsRoutes, logAuthEvent } from './site-analytics.js';
 import { setupContactRoutes } from './contact-routes.js';
@@ -141,6 +142,7 @@ setupFredChatRoutes(app, { requireAuth, requireRole });
 
 // ── School portal routes (Ting-A-Ling staff/admin/parent dashboard) ──
 setupPortalRoutes(app, { query, run, saveDb, requireAuth, requireRole, hashPassword });
+setupPortalClockRoutes(app, { query, run, saveDb, requireAuth, requireRole });
 
 // ── Site analytics routes (GoatCounter views/events + portal login log) ──
 setupSiteAnalyticsRoutes(app, { query, run, saveDb, requireAuth });

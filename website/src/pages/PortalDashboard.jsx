@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
-import { api } from '@/lib/api';
+import { api, API_BASE, getToken } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,9 +10,13 @@ import PortalShell from '@/components/PortalShell';
 import {
   LayoutDashboard, Megaphone, CalendarDays, Users, LogOut, ArrowLeft,
   Plane, UserPlus, RefreshCw, Phone, Clock, BarChart3, MapPin, Crosshair,
+  Download, Printer, QrCode,
 } from 'lucide-react';
 
 const fmtDate = (d) => (d ? new Date(d + (d.length === 10 ? 'T00:00:00' : '')).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' }) : '—');
+// attendance timestamps are UTC strings ("YYYY-MM-DD HH:MM:SS") → show SAST
+const fmtClock = (v) => (v ? new Date(String(v).replace(' ', 'T') + 'Z').toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Johannesburg' }) : '—');
+const fmtDur = (min) => { const m = Math.max(0, Math.round(min || 0)); return `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, '0')}m`; };
 
 const Card = ({ title, children, action }) => (
   <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
@@ -46,6 +50,8 @@ function AdminPanel() {
   const [registrations, setRegistrations] = useState([]);
   const [geo, setGeo] = useState({ enabled: false, radius_m: 300, ips: '', locations: [] });
   const [geoLabel, setGeoLabel] = useState('');
+  const [clock, setClock] = useState({ onShift: [], today: [], staff: [], staffCount: 0 });
+  const [stationQr, setStationQr] = useState('');
   const pendingTeachers = staff.filter(s => (s.status || 'active') === 'pending').length;
   const [reload, setReload] = useState(0);
 
@@ -65,13 +71,15 @@ function AdminPanel() {
 
   const load = useCallback(async () => {
     try {
-      const [s, a, e, l, st, r, g] = await Promise.all([
+      const [s, a, e, l, st, r, g, ck] = await Promise.all([
         api('/portal/stats'), api('/portal/announcements'), api('/portal/events'),
         api('/portal/leave'), api('/portal/teachers'), api('/portal/registrations'),
-        api('/portal/login-locations'),
+        api('/portal/login-locations'), api('/portal/clock/today'),
       ]);
+      api('/portal/clock/station-qr').then(q => setStationQr(q.qr)).catch(() => {});
       setStats(s); setAnnouncements(a); setEvents(e); setLeave(l); setStaff(st); setRegistrations(r);
       setGeo({ enabled: !!g.enabled, radius_m: g.radius_m || 300, ips: g.ips || '', locations: g.locations || [] });
+      if (ck) setClock(ck);
     } catch (err) { setMsg(err.message); }
   }, []);
   useEffect(() => { load(); }, [load, reload]);
@@ -338,6 +346,66 @@ function AdminPanel() {
                 </div>
               ))}
               {geo.locations.length === 0 && <p className="text-sm text-slate-400">No locations yet — add one to enable the restriction.</p>}
+            </div>
+          </div>
+        </Card>
+
+        <Card
+          title="Attendance — Clock in / out"
+          action={<span className="text-xs text-slate-400">{clock.onShift.length} on shift now</span>}
+        >
+          <div className="flex flex-wrap gap-2 mb-4">
+            <a href={`${API_BASE}/portal/clock/export?token=${encodeURIComponent(getToken() || '')}`} target="_blank" rel="noreferrer">
+              <Button size="sm" variant="outline" className="gap-1"><Download className="w-3.5 h-3.5" /> Download CSV</Button>
+            </a>
+            <a href={`${API_BASE}/portal/clock/poster.pdf?token=${encodeURIComponent(getToken() || '')}`} target="_blank" rel="noreferrer">
+              <Button size="sm" variant="outline" className="gap-1"><Printer className="w-3.5 h-3.5" /> Print entrance poster</Button>
+            </a>
+          </div>
+
+          <div className="grid sm:grid-cols-[1fr_auto] gap-4">
+            <div className="space-y-4 min-w-0">
+              <div>
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">On shift now</div>
+                <div className="space-y-1.5 max-h-40 overflow-y-auto">
+                  {clock.onShift.map(r => (
+                    <div key={r.id} className="border border-teal-100 bg-teal-50/50 rounded-lg p-2.5 text-sm flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse shrink-0" />
+                        <span className="font-medium text-slate-800 truncate">{r.name}</span>
+                        {r.method === 'qr' && <Badge variant="secondary" className="text-[10px] shrink-0">QR</Badge>}
+                      </div>
+                      <span className="text-slate-500 text-xs shrink-0">in {fmtClock(r.clock_in)} · {fmtDur(r.minutes)}</span>
+                    </div>
+                  ))}
+                  {clock.onShift.length === 0 && <p className="text-sm text-slate-400">Nobody is clocked in right now.</p>}
+                </div>
+              </div>
+
+              <div>
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Today's shifts</div>
+                <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                  {clock.today.map(r => (
+                    <div key={r.id} className="border border-slate-100 rounded-lg p-2.5 text-sm flex items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="font-medium text-slate-800 truncate">{r.name}</div>
+                        <div className="text-xs text-slate-500">{fmtClock(r.clock_in)} → {r.open ? <span className="text-teal-600">on shift</span> : fmtClock(r.clock_out)}</div>
+                      </div>
+                      <Badge variant={r.open ? 'default' : 'secondary'} className="shrink-0">{r.open ? 'in' : fmtDur(r.minutes)}</Badge>
+                    </div>
+                  ))}
+                  {clock.today.length === 0 && <p className="text-sm text-slate-400">No shifts recorded today.</p>}
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400">{clock.staffCount} teacher{clock.staffCount === 1 ? '' : 's'} set up. Teachers clock in at <span className="text-slate-500">tingalingschools.com/clock</span> — no AutoEffortless login needed.</p>
+            </div>
+
+            <div className="text-center">
+              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Entrance QR</div>
+              {stationQr
+                ? <img src={stationQr} alt="Clock-in QR" className="w-40 h-40 rounded-lg border border-slate-200 bg-white mx-auto" />
+                : <div className="w-40 h-40 rounded-lg border border-slate-200 bg-slate-50 mx-auto flex items-center justify-center"><QrCode className="w-8 h-8 text-slate-300" /></div>}
+              <p className="text-[11px] text-slate-400 mt-2 max-w-[10rem] mx-auto">Print the poster and put it at the entrance.</p>
             </div>
           </div>
         </Card>
