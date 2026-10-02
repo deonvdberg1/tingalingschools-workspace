@@ -1,6 +1,14 @@
 # Heartbeat Monitor
 # Fred checks these on every session start
 
+## 2026-10-02 15:45 — 📦 EVERYTHING MOVED TO TINGALING'S OWN SITE (assistant & services added)
+
+- **Mr D 15:32:** "move everything from autoeffortless over here for tingaling."
+- **Added:** portal card **"Assistant & services"** — every service they own (WhatsApp AI · Instagram auto-reply · Website analytics · Attendance) + WhatsApp assistant usage (messages 7/30d, auto-reply rate, reply rate, avg reply, conversations, busiest hours, recent conversations). Endpoint `GET /api/portal/whatsapp/overview` (admin-only).
+- **Now all on tingalingschools.com:** teacher signup/login · clock in/out (QR) · announcements · events · leave · parent registrations · website analytics · assistant overview.
+- **Left on the AE side (awaiting his call):** the AE client portal itself; 2 `staff_directory` pilot entries + grants; 1 test delivery + 5 driver locations.
+- **Deploy:** gh-pages **700c72d** (index-BV2ORYrx.js); main **4316853**. Verified via API + live browser (admin card renders; parent gets 403).
+
 ## 2026-10-02 15:26 — ⏰ CLOCK IN/OUT NOW ON TINGALING'S OWN SITE
 
 - **Mr D 15:20:** "Let's move everything to tingaling for them." → the clock-in system is now on **tingalingschools.com**, using the teachers' existing logins (no AutoEffortless account).

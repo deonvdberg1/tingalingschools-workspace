@@ -328,6 +328,13 @@ Ting-A-Ling now has its OWN portal on tingalingschools.com — no redirect to Au
 - ⚠️ **A QR proves scanning, not presence** (can be photographed). Bind clock-in to the geofence once the Pre-Primary pin exists.
 - 🔀 The AutoEffortless attendance app (app.autoeffortless.com/app/attendance) still exists and is untouched; its pilot rows stay. Ting-A-Ling now uses the school-site clock.
 
+## 📦 Ting-A-Ling migration off the AutoEffortless portal (2026-10-02 15:32, Mr D "move everything over here")
+
+- **Everything Ting-A-Ling actually uses now lives on tingalingschools.com:** teacher signup/login · clock in/out (QR) · announcements · events · staff leave · parent registrations · website analytics · **Assistant & services** overview.
+- **New:** `GET /api/portal/whatsapp/overview` (admin) → the school's services (client_products) + WhatsApp assistant usage (volume 7/30d, auto-reply rate, reply rate, avg reply, conversations, busiest hours SAST, 8 most recent conversations). Rendered as the portal card **"Assistant & services"**. Deploy gh-pages 700c72d.
+- **AE-side products for client 6:** whatsapp · instagram · site_analytics · attendance (all active, `client_products`).
+- **Still AE-side (left in place, needs Mr D's call):** the AE client portal itself; 2 `staff_directory` pilot entries (Deon van den Berg, deonvdberg1) + their app grants; 1 test `delivery` + 5 `driver_locations`.
+
 
 ## 🌐 tingalingschools.com (School Website) — FIXED 2026-08-05
 
