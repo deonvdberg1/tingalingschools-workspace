@@ -17,6 +17,14 @@ const fmtDate = (d) => (d ? new Date(d + (d.length === 10 ? 'T00:00:00' : '')).t
 // attendance timestamps are UTC strings ("YYYY-MM-DD HH:MM:SS") → show SAST
 const fmtClock = (v) => (v ? new Date(String(v).replace(' ', 'T') + 'Z').toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Johannesburg' }) : '—');
 const fmtDur = (min) => { const m = Math.max(0, Math.round(min || 0)); return `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, '0')}m`; };
+const fmtInHours = (v) => {
+  if (!v) return '';
+  const t = /Z$|[+-]\d{2}:?\d{2}$/.test(String(v)) ? new Date(v).getTime() : new Date(String(v).replace(' ', 'T') + 'Z').getTime();
+  const mins = Math.max(0, Math.round((Date.now() - t) / 60000));
+  if (mins < 60) return `${mins}m ago`;
+  const h = Math.round(mins / 60);
+  return h < 48 ? `${h}h ago` : `${Math.round(h / 24)}d ago`;
+};
 
 const Card = ({ title, children, action }) => (
   <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
@@ -52,6 +60,7 @@ function AdminPanel() {
   const [geoLabel, setGeoLabel] = useState('');
   const [clock, setClock] = useState({ onShift: [], today: [], staff: [], staffCount: 0 });
   const [stationQr, setStationQr] = useState('');
+  const [assist, setAssist] = useState(null);
   const pendingTeachers = staff.filter(s => (s.status || 'active') === 'pending').length;
   const [reload, setReload] = useState(0);
 
@@ -71,15 +80,16 @@ function AdminPanel() {
 
   const load = useCallback(async () => {
     try {
-      const [s, a, e, l, st, r, g, ck] = await Promise.all([
+      const [s, a, e, l, st, r, g, ck, wa] = await Promise.all([
         api('/portal/stats'), api('/portal/announcements'), api('/portal/events'),
         api('/portal/leave'), api('/portal/teachers'), api('/portal/registrations'),
-        api('/portal/login-locations'), api('/portal/clock/today'),
+        api('/portal/login-locations'), api('/portal/clock/today'), api('/portal/whatsapp/overview'),
       ]);
       api('/portal/clock/station-qr').then(q => setStationQr(q.qr)).catch(() => {});
       setStats(s); setAnnouncements(a); setEvents(e); setLeave(l); setStaff(st); setRegistrations(r);
       setGeo({ enabled: !!g.enabled, radius_m: g.radius_m || 300, ips: g.ips || '', locations: g.locations || [] });
       if (ck) setClock(ck);
+      if (wa) setAssist(wa);
     } catch (err) { setMsg(err.message); }
   }, []);
   useEffect(() => { load(); }, [load, reload]);
@@ -348,6 +358,65 @@ function AdminPanel() {
               {geo.locations.length === 0 && <p className="text-sm text-slate-400">No locations yet — add one to enable the restriction.</p>}
             </div>
           </div>
+        </Card>
+
+        <Card title="Assistant & services" action={<span className="text-xs text-slate-400">{assist?.products?.filter(p => p.status === 'active').length || 0} active</span>}>
+          {assist && (
+            <>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {assist.products.map(p => (
+                  <Badge key={p.key} variant={p.status === 'active' ? 'default' : 'secondary'} className="text-[11px]">
+                    {p.name}
+                  </Badge>
+                ))}
+                {assist.products.length === 0 && <p className="text-sm text-slate-400">No services on record.</p>}
+              </div>
+
+              <div className="rounded-lg border border-teal-100 bg-teal-50/50 p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${assist.whatsapp.active ? 'bg-teal-500 animate-pulse' : 'bg-slate-300'}`} />
+                    <span className="text-sm font-medium text-slate-800">WhatsApp AI Assistant</span>
+                  </div>
+                  <span className="text-xs text-slate-500">{assist.whatsapp.number}</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
+                  {[
+                    ['Messages (30d)', assist.whatsapp.last30.messages],
+                    ['Auto-reply', `${assist.whatsapp.auto_reply_rate}%`],
+                    ['Avg reply', assist.whatsapp.avg_response_min == null ? '—' : `${assist.whatsapp.avg_response_min} min`],
+                    ['Conversations', assist.whatsapp.conversations],
+                  ].map(([label, val]) => (
+                    <div key={label} className="bg-white rounded-lg border border-slate-100 p-2 text-center">
+                      <div className="text-lg font-bold text-slate-800">{val}</div>
+                      <div className="text-[11px] text-slate-500">{label}</div>
+                    </div>
+                  ))}
+                </div>
+                {assist.whatsapp.busiest_hours.length > 0 && (
+                  <p className="text-[11px] text-slate-500 mt-3">
+                    Busiest: {assist.whatsapp.busiest_hours.map(h => `${String(h.hour).padStart(2, '0')}:00 (${h.count})`).join(' · ')}
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-4">
+                <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Recent conversations</div>
+                <div className="space-y-1.5 max-h-56 overflow-y-auto">
+                  {assist.whatsapp.recent.map(c => (
+                    <div key={c.phone} className="border border-slate-100 rounded-lg p-2.5 text-sm flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="font-medium text-slate-800 truncate">{c.name} <span className="text-slate-400 text-xs font-normal">{c.phone}</span></div>
+                        <div className="text-slate-500 text-xs truncate">{c.lastDirection === 'out' ? '↩ ' : ''}{c.lastText}</div>
+                      </div>
+                      <span className="text-[11px] text-slate-400 shrink-0">{fmtInHours(c.lastAt)}</span>
+                    </div>
+                  ))}
+                  {assist.whatsapp.recent.length === 0 && <p className="text-sm text-slate-400">No conversations yet.</p>}
+                </div>
+              </div>
+            </>
+          )}
         </Card>
 
         <Card

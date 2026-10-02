@@ -219,6 +219,74 @@ export default function setupPortalRoutes(app, { query, run, saveDb, requireAuth
     res.json(rows);
   });
 
+  // ── Assistant & services overview ─────────────────────────────────────
+  // Everything the school has with AutoEffortless, surfaced in THEIR portal:
+  // WhatsApp AI assistant (status + usage), Instagram auto-reply, analytics, attendance.
+  app.get('/api/portal/whatsapp/overview', requireAuth, requireRole('overlord', 'client_admin'), (req, res) => {
+    const cid = req.user.role === 'overlord' ? (Number(req.query.client_id) || SCHOOL_CLIENT_ID) : req.user.client_id;
+    const client = query('SELECT name, whatsapp_number, phone, email FROM clients WHERE id = ?', [cid])[0] || {};
+    const products = query('SELECT product_key, product_name, status FROM client_products WHERE client_id = ? ORDER BY product_key', [cid]);
+    const rows = query('SELECT phone, name, direction, text, timestamp FROM messages WHERE client_id = ? ORDER BY timestamp ASC', [cid]);
+
+    const now = Date.now();
+    const day = (t) => new Date(t).getTime();
+    let inAll = 0, outAll = 0, in7 = 0, out7 = 0, in30 = 0, out30 = 0;
+    const hours = Array(24).fill(0);
+    const convos = new Map();
+    const lastIn = new Map(); // phone -> ts of last inbound awaiting a reply
+    let replySum = 0, replyCount = 0;
+
+    for (const r of rows) {
+      const t = day(r.timestamp);
+      const ageDays = (now - t) / 86400000;
+      const inbound = r.direction === 'in';
+      if (inbound) { inAll++; if (ageDays < 7) in7++; if (ageDays < 30) in30++; }
+      else { outAll++; if (ageDays < 7) out7++; if (ageDays < 30) out30++; }
+
+      // busiest hours in SAST (UTC+2)
+      const hr = (new Date(t).getUTCHours() + 2) % 24;
+      hours[hr]++;
+
+      // conversations
+      const c = convos.get(r.phone) || { phone: r.phone, name: r.name || 'Unknown', messages: 0, lastAt: null, lastText: '', lastDirection: '' };
+      c.messages++;
+      if (!c.lastAt || t >= day(c.lastAt)) { c.lastAt = r.timestamp; c.lastText = r.text || ''; c.lastDirection = r.direction; }
+      if (r.name && r.name !== 'Unknown') c.name = r.name;
+      convos.set(r.phone, c);
+
+      // response time: inbound → next outbound in the same conversation
+      if (inbound) lastIn.set(r.phone, t);
+      else if (lastIn.has(r.phone)) {
+        const delta = t - lastIn.get(r.phone);
+        if (delta >= 0 && delta < 86400000) { replySum += delta; replyCount++; }
+        lastIn.delete(r.phone);
+      }
+    }
+
+    const total = inAll + outAll;
+    const avgMin = replyCount ? Math.round(replySum / replyCount / 60000) : null;
+    const topHours = hours.map((c, h) => ({ hour: h, count: c })).sort((a, b) => b.count - a.count).slice(0, 4).filter((h) => h.count > 0);
+    const recent = [...convos.values()].sort((a, b) => day(b.lastAt) - day(a.lastAt)).slice(0, 8);
+
+    res.json({
+      client: { name: client.name || '', number: client.whatsapp_number || client.phone || '' },
+      products: products.map((p) => ({ key: p.product_key, name: p.product_name, status: p.status })),
+      whatsapp: {
+        active: products.some((p) => p.product_key === 'whatsapp' && p.status === 'active'),
+        number: client.whatsapp_number || '',
+        totals: { messages: total, inbound: inAll, outbound: outAll },
+        last7: { messages: in7 + out7, inbound: in7, outbound: out7 },
+        last30: { messages: in30 + out30, inbound: in30, outbound: out30 },
+        auto_reply_rate: total ? Math.round((outAll / total) * 100) : 0,
+        reply_rate: inAll ? Math.round((outAll / inAll) * 100) : 0,
+        avg_response_min: avgMin,
+        conversations: convos.size,
+        busiest_hours: topHours,
+        recent,
+      },
+    });
+  });
+
   // ── Login location (geofence) — admin configuration ──────────────────
   // Applies to staff/teacher sign-ins only. Staff may sign in when their
   // device is inside one of the configured locations (or on an allowed IP).
