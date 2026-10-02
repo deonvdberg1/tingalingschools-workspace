@@ -125,7 +125,8 @@ export default function setupPortalRoutes(app, { query, run, saveDb, requireAuth
     const existing = query('SELECT id FROM users WHERE email = ?', [email.toLowerCase().trim()]);
     if (existing.length > 0) return res.status(409).json({ error: 'Email already registered' });
     const cid = req.user.role === 'overlord' ? (req.body.client_id || SCHOOL_CLIENT_ID) : req.user.client_id;
-    run('INSERT INTO users (email, password, name, role, client_id) VALUES (?, ?, ?, ?, ?)',
+    // Office-created logins are trusted → active immediately.
+    run("INSERT INTO users (email, password, name, role, client_id, status) VALUES (?, ?, ?, ?, ?, 'active')",
       [email.toLowerCase().trim(), hashPassword(password), name, 'staff', cid]);
     saveDb();
     const id = query('SELECT id FROM users ORDER BY id DESC LIMIT 1')[0].id;
@@ -135,9 +136,49 @@ export default function setupPortalRoutes(app, { query, run, saveDb, requireAuth
   app.get('/api/portal/staff', requireAuth, requireRole('overlord', 'client_admin'), (req, res) => {
     const cid = scopeClient(req.user);
     const rows = cid
-      ? query("SELECT id, name, email, role, client_id, created_at FROM users WHERE client_id = ? AND role = 'staff'", [cid])
-      : query("SELECT id, name, email, role, client_id, created_at FROM users WHERE role = 'staff'");
+      ? query("SELECT id, name, email, role, status, client_id, created_at FROM users WHERE client_id = ? AND role = 'staff' ORDER BY created_at DESC", [cid])
+      : query("SELECT id, name, email, role, status, client_id, created_at FROM users WHERE role = 'staff' ORDER BY created_at DESC");
     res.json(rows);
+  });
+
+  // ── Teacher self-registration (public, scoped to the school) ──
+  // Creates a PENDING staff account. The school office approves it in the portal
+  // before the teacher can sign in.
+  app.post('/api/portal/register-teacher', (req, res) => {
+    const { name, email, password, phone = '', position = '' } = req.body || {};
+    if (!name || !email || !password) return res.status(400).json({ error: 'Name, email and password required' });
+    if (String(password).length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    const cleanEmail = String(email).toLowerCase().trim();
+    const existing = query('SELECT id FROM users WHERE email = ?', [cleanEmail]);
+    if (existing.length > 0) return res.status(409).json({ error: 'An account with this email already exists' });
+    run('INSERT INTO users (email, password, name, role, client_id, status) VALUES (?, ?, ?, ?, ?, ?)',
+      [cleanEmail, hashPassword(password), String(name).trim(), 'staff', SCHOOL_CLIENT_ID, 'pending']);
+    run('INSERT INTO portal_registrations (client_id, name, email, kind, phone, position) VALUES (?, ?, ?, ?, ?, ?)',
+      [SCHOOL_CLIENT_ID, String(name).trim(), cleanEmail, 'teacher', String(phone).trim(), String(position).trim()]);
+    saveDb();
+    res.status(201).json({ pending: true, message: 'Application received. The school office will review it shortly.' });
+  });
+
+  // ── Teacher accounts — review/approve (admin) ──
+  app.get('/api/portal/teachers', requireAuth, requireRole('overlord', 'client_admin'), (req, res) => {
+    const cid = scopeClient(req.user);
+    const rows = cid
+      ? query("SELECT id, name, email, status, client_id, created_at FROM users WHERE client_id = ? AND role = 'staff' ORDER BY CASE status WHEN 'pending' THEN 0 ELSE 1 END, created_at DESC", [cid])
+      : query("SELECT id, name, email, status, client_id, created_at FROM users WHERE role = 'staff' ORDER BY CASE status WHEN 'pending' THEN 0 ELSE 1 END, created_at DESC");
+    res.json(rows);
+  });
+
+  app.put('/api/portal/teachers/:id/status', requireAuth, requireRole('overlord', 'client_admin'), (req, res) => {
+    const { status } = req.body || {};
+    if (!['active', 'pending', 'rejected'].includes(status)) return res.status(400).json({ error: 'Invalid status' });
+    const cid = scopeClient(req.user);
+    if (cid) {
+      const existing = query("SELECT id FROM users WHERE id = ? AND client_id = ? AND role = 'staff'", [req.params.id, cid]);
+      if (existing.length === 0) return res.status(404).json({ error: 'Not found' });
+    }
+    run('UPDATE users SET status = ? WHERE id = ?', [status, req.params.id]);
+    saveDb();
+    res.json({ ok: true, status });
   });
 
   app.delete('/api/portal/staff/:id', requireAuth, requireRole('overlord', 'client_admin'), (req, res) => {

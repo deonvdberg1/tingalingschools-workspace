@@ -303,6 +303,14 @@ export async function initDb() {
   db.run('CREATE INDEX IF NOT EXISTS idx_announcements_client ON portal_announcements(client_id)');
   db.run('CREATE INDEX IF NOT EXISTS idx_events_client ON portal_events(client_id)');
   db.run('CREATE INDEX IF NOT EXISTS idx_leave_client ON leave_requests(client_id)');
+
+  // ── Teacher self-signup (additive migrations) ──────────────────────────
+  // users.status: 'active' (default, so existing accounts keep working),
+  // 'pending' (self-registered teacher awaiting office approval), 'rejected'.
+  try { db.run("ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'active'"); } catch {}
+  try { db.run("ALTER TABLE portal_registrations ADD COLUMN kind TEXT DEFAULT 'parent'"); } catch {}
+  try { db.run("ALTER TABLE portal_registrations ADD COLUMN phone TEXT DEFAULT ''"); } catch {}
+  try { db.run("ALTER TABLE portal_registrations ADD COLUMN position TEXT DEFAULT ''"); } catch {}
   
   saveDb();
   return db;

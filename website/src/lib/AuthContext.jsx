@@ -51,6 +51,16 @@ export const AuthProvider = ({ children }) => {
     return data.user;
   };
 
+  // Teacher self-registration → creates a PENDING account for the school
+  // office to approve. No token is issued until approved.
+  const registerTeacher = async ({ name, email, password, phone, position }) => {
+    const data = await api('/portal/register-teacher', {
+      method: 'POST',
+      body: { name, email, password, phone, position },
+    });
+    return data; // { pending: true, message }
+  };
+
   const logout = () => {
     setToken(null);
     setUser(null);
@@ -65,6 +75,7 @@ export const AuthProvider = ({ children }) => {
       authError,
       login,
       registerParent,
+      registerTeacher,
       logout,
       checkUserAuth,
     }}>

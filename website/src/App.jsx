@@ -4,11 +4,12 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import NavigationTracker from '@/lib/NavigationTracker'
 import { pagesConfig } from './pages.config'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import ErrorBoundary from '@/lib/ErrorBoundary';
 import { AuthProvider } from '@/lib/AuthContext';
 import PortalLogin from './pages/PortalLogin';
+import PortalTeacher from './pages/PortalTeacher';
 import PortalRegister from './pages/PortalRegister';
 import PortalDashboard from './pages/PortalDashboard';
 import PortalAnalytics from './pages/PortalAnalytics';
@@ -48,6 +49,8 @@ const AppRoutes = () => {
       <Route path="*" element={<PageNotFound />} />
       {/* ── Portal (independent Ting-A-Ling dashboard: staff / admin / parents) ── */}
       <Route path="/login" element={<PortalLogin />} />
+      <Route path="/teacher" element={<PortalTeacher />} />
+      <Route path="/teacher/register" element={<Navigate to="/teacher?signup=1" replace />} />
       <Route path="/register" element={<PortalRegister />} />
       <Route path="/portal" element={<PortalDashboard />} />
       <Route path="/portal/analytics" element={<PortalAnalytics />} />

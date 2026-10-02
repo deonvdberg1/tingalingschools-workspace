@@ -44,6 +44,7 @@ function AdminPanel() {
   const [leave, setLeave] = useState([]);
   const [staff, setStaff] = useState([]);
   const [registrations, setRegistrations] = useState([]);
+  const pendingTeachers = staff.filter(s => (s.status || 'active') === 'pending').length;
   const [reload, setReload] = useState(0);
 
   // announcement form
@@ -64,7 +65,7 @@ function AdminPanel() {
     try {
       const [s, a, e, l, st, r] = await Promise.all([
         api('/portal/stats'), api('/portal/announcements'), api('/portal/events'),
-        api('/portal/leave'), api('/portal/staff'), api('/portal/registrations'),
+        api('/portal/leave'), api('/portal/teachers'), api('/portal/registrations'),
       ]);
       setStats(s); setAnnouncements(a); setEvents(e); setLeave(l); setStaff(st); setRegistrations(r);
     } catch (err) { setMsg(err.message); }
@@ -105,6 +106,11 @@ function AdminPanel() {
   };
   const deleteStaff = async (id) => {
     await api(`/portal/staff/${id}`, { method: 'DELETE' });
+    setReload(r => r + 1);
+  };
+  const setTeacherStatus = async (id, status) => {
+    await api(`/portal/teachers/${id}/status`, { method: 'PUT', body: { status } });
+    flash(status === 'active' ? 'Teacher approved ✅' : 'Teacher application rejected');
     setReload(r => r + 1);
   };
 
@@ -206,34 +212,62 @@ function AdminPanel() {
           </div>
         </Card>
 
-        <Card title="Staff Logins" action={<span className="text-xs text-slate-400">{staff.length} staff</span>}>
+        <Card title="Teacher Accounts" action={<span className="text-xs text-slate-400">{staff.length} account{staff.length === 1 ? '' : 's'}{pendingTeachers > 0 ? ` · ${pendingTeachers} pending` : ''}</span>}>
+          {pendingTeachers > 0 && (
+            <div className="mb-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+              {pendingTeachers} teacher {pendingTeachers === 1 ? 'application is' : 'applications are'} awaiting your approval.
+            </div>
+          )}
           <div className="space-y-3">
             <div className="flex gap-2">
-              <Input value={stName} onChange={e => setStName(e.target.value)} placeholder="Staff name" />
+              <Input value={stName} onChange={e => setStName(e.target.value)} placeholder="Teacher name" />
               <Input type="email" value={stEmail} onChange={e => setStEmail(e.target.value)} placeholder="Email" />
             </div>
             <div className="flex gap-2">
               <Input value={stPass} onChange={e => setStPass(e.target.value)} placeholder="Temporary password" />
               <Button onClick={createStaff} className="gap-2 shrink-0"><UserPlus className="w-4 h-4" /> Add</Button>
             </div>
+            <p className="text-[11px] text-slate-400">Accounts added here are active immediately. Teachers who self-register appear as “pending” until you approve them.</p>
           </div>
-          <div className="mt-4 space-y-2 max-h-48 overflow-y-auto">
-            {staff.map(s => (
-              <div key={s.id} className="border border-slate-100 rounded-lg p-3 text-sm flex items-center justify-between">
-                <div>
-                  <div className="font-medium text-slate-800">{s.name}</div>
-                  <div className="text-slate-500 text-xs">{s.email}</div>
+          <div className="mt-4 space-y-2 max-h-64 overflow-y-auto">
+            {staff.map(s => {
+              const st = s.status || 'active';
+              return (
+                <div key={s.id} className="border border-slate-100 rounded-lg p-3 text-sm flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="font-medium text-slate-800 truncate">{s.name}
+                      <Badge
+                        variant={st === 'active' ? 'default' : st === 'rejected' ? 'destructive' : 'secondary'}
+                        className="ml-2 text-[10px] capitalize"
+                      >{st}</Badge>
+                    </div>
+                    <div className="text-slate-500 text-xs truncate">{s.email}</div>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    {st === 'pending' && (
+                      <>
+                        <Button size="sm" variant="outline" className="text-teal-600" onClick={() => setTeacherStatus(s.id, 'active')}>Approve</Button>
+                        <Button size="sm" variant="outline" className="text-red-500" onClick={() => setTeacherStatus(s.id, 'rejected')}>Reject</Button>
+                      </>
+                    )}
+                    {st === 'rejected' && (
+                      <Button size="sm" variant="ghost" className="text-teal-600" onClick={() => setTeacherStatus(s.id, 'active')}>Approve</Button>
+                    )}
+                    {st === 'active' && (
+                      <Button size="sm" variant="ghost" className="text-amber-600" onClick={() => setTeacherStatus(s.id, 'pending')}>Suspend</Button>
+                    )}
+                    <Button variant="ghost" size="sm" className="text-red-500" onClick={() => deleteStaff(s.id)}>✕</Button>
+                  </div>
                 </div>
-                <Button variant="ghost" size="sm" className="text-red-500" onClick={() => deleteStaff(s.id)}>✕</Button>
-              </div>
-            ))}
-            {staff.length === 0 && <p className="text-sm text-slate-400">No staff logins yet.</p>}
+              );
+            })}
+            {staff.length === 0 && <p className="text-sm text-slate-400">No teacher accounts yet.</p>}
           </div>
         </Card>
 
         <Card title="Parent Registrations">
           <div className="space-y-2 max-h-64 overflow-y-auto">
-            {registrations.map(r => (
+            {registrations.filter(r => (r.kind || 'parent') === 'parent').map(r => (
               <div key={r.id} className="border border-slate-100 rounded-lg p-3 text-sm">
                 <div className="font-medium text-slate-800">{r.name}</div>
                 <div className="text-slate-500 text-xs">{r.email}{r.child_name ? ` · Child: ${r.child_name}` : ''}</div>

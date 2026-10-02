@@ -234,7 +234,17 @@ app.post('/api/auth/signin', (req, res) => {
     logAuthEvent('signin_failed', user, req);
     return res.status(401).json({ error: 'Invalid credentials' });
   }
-  
+
+  // Teacher accounts self-register as 'pending' and must be approved by the
+  // school office before they can sign in. Existing accounts default to 'active'.
+  if (user.status && user.status !== 'active') {
+    logAuthEvent('signin_blocked', user, req);
+    const error = user.status === 'pending'
+      ? 'Your teacher account is awaiting approval by the school office.'
+      : 'This account has not been approved. Please contact the school office.';
+    return res.status(403).json({ error, account_status: user.status });
+  }
+
   const token = createToken(user);
   logAuthEvent('signin', user, req);
   

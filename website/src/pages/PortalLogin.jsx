@@ -78,6 +78,11 @@ export default function PortalLogin() {
 
           <div className="mt-6 pt-4 border-t border-slate-100 text-sm text-slate-600 space-y-2">
             <p>
+              <Link to="/teacher" className="text-teal-600 hover:underline font-medium">
+                Are you a teacher? Sign in or create an account →
+              </Link>
+            </p>
+            <p>
               <Link to="/register" className="text-teal-600 hover:underline font-medium">
                 Are you a parent? Register here →
               </Link>

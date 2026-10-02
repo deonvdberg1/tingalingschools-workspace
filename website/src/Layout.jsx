@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { LogIn, GraduationCap } from 'lucide-react';
+import { LogIn, GraduationCap, School } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Layout({ children, currentPageName }) {
@@ -27,6 +27,12 @@ export default function Layout({ children, currentPageName }) {
                 <Button variant="outline" className="gap-2">
                   <GraduationCap className="w-4 h-4" />
                   Apply Now
+                </Button>
+              </Link>
+              <Link to="/teacher">
+                <Button variant="outline" className="gap-2">
+                  <School className="w-4 h-4" />
+                  Teacher Login
                 </Button>
               </Link>
               <Link to="/login">
