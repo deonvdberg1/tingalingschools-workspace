@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-  LogIn, UserPlus, ArrowLeft, GraduationCap, CheckCircle2, Clock, Eye, EyeOff, MapPin,
+  LogIn, UserPlus, ArrowLeft, Eye, EyeOff,
 } from 'lucide-react';
 
 /**
@@ -21,7 +21,6 @@ export default function PortalTeacher() {
   const [tab, setTab] = useState(params.get('signup') ? 'signup' : 'signin');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState('');
   const [showPass, setShowPass] = useState(false);
 
   const [form, setForm] = useState({
@@ -61,14 +60,15 @@ export default function PortalTeacher() {
     }
     setSubmitting(true);
     try {
-      const data = await registerTeacher({
+      await registerTeacher({
         name: form.name,
         email: form.email,
         password: form.password,
         phone: form.phone,
         position: form.position,
       });
-      setSubmitted(data?.message || 'Application received. The school office will review it shortly.');
+      // Instant access — straight into their dashboard.
+      navigate('/portal', { replace: true });
     } catch (err) {
       setError(err.message || 'Could not create your account');
     } finally {
@@ -93,29 +93,6 @@ export default function PortalTeacher() {
       </div>
     </div>
   );
-
-  // ── Signup success → pending approval confirmation ──
-  if (submitted) {
-    return shell(
-      <div className="text-center space-y-4">
-        <div className="w-14 h-14 rounded-full bg-teal-50 flex items-center justify-center mx-auto">
-          <CheckCircle2 className="w-7 h-7 text-teal-600" />
-        </div>
-        <h2 className="text-lg font-semibold text-slate-800">Account submitted</h2>
-        <p className="text-sm text-slate-600">{submitted}</p>
-        <div className="flex items-start gap-2 text-left text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-          <Clock className="w-4 h-4 mt-0.5 shrink-0" />
-          <span>Your account is <strong>awaiting approval</strong>. Once the school office approves it, you can sign in here with your email and password.</span>
-        </div>
-        <Button className="w-full gap-2" onClick={() => { setSubmitted(''); switchTab('signin'); }}>
-          <LogIn className="w-4 h-4" /> Go to sign in
-        </Button>
-        <Link to="/" className="inline-flex items-center gap-1 text-slate-500 hover:text-slate-700 text-sm">
-          <ArrowLeft className="w-3.5 h-3.5" /> Back to website
-        </Link>
-      </div>
-    );
-  }
 
   return shell(
     <>
@@ -158,10 +135,6 @@ export default function PortalTeacher() {
           <Button type="submit" className="w-full gap-2" disabled={submitting}>
             <LogIn className="w-4 h-4" /> {submitting ? 'Signing in…' : 'Sign In'}
           </Button>
-
-          <p className="text-xs text-slate-400 flex items-center justify-center gap-1 text-center">
-            <MapPin className="w-3 h-3 shrink-0" /> Teacher sign-in is restricted to the school premises.
-          </p>
 
           <p className="text-sm text-slate-600 text-center">
             New teacher?{' '}
@@ -206,7 +179,7 @@ export default function PortalTeacher() {
           </Button>
 
           <p className="text-xs text-slate-400 text-center">
-            New accounts are reviewed and approved by the school office before first sign in.
+            You'll have access right away — no waiting for approval.
           </p>
           <p className="text-sm text-slate-600 text-center">
             Already registered?{' '}

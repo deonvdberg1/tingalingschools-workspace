@@ -301,8 +301,8 @@ Ting-A-Ling now has its OWN portal on tingalingschools.com — no redirect to Au
 ## 🧑‍🏫 Teacher sign-in + self-signup (Ting-A-Ling) — LIVE 2026-10-02
 
 - **URL:** https://tingalingschools.com/teacher — one page, two tabs (**Sign in** / **Create account**); school teal brand. Header nav "Teacher Login" + link from `/login`.
-- **Model:** teacher self-registers → `users.status='pending'` → the school office approves in the portal → then sign-in works. Office-added logins are `active` immediately. Sign-in of a non-active account = **403** with a clear message.
-- **Backend:** `POST /api/portal/register-teacher` (public, client_id 6); `GET /api/portal/teachers`; `PUT /api/portal/teachers/:id/status` (active/pending/rejected); new `users.status`; `portal_registrations.kind/phone/position`. Admin UI: **Teacher Accounts** card (approve/reject/suspend).
+- **Model (UPDATED 2026-10-02 08:55, Mr D "they can just have access to their page immediately please"):** teacher self-registers → account created **active** and **signed straight into their dashboard** — NO approval step. The office can still **Suspend/Reject** in the portal (suspended = 403 with a clear message). Office-added logins are active immediately too.
+- **Backend:** `POST /api/portal/register-teacher` (public, client_id 6 — creates an **active** staff user and returns a token); `GET /api/portal/teachers`; `PUT /api/portal/teachers/:id/status` (active/pending/rejected); new `users.status`; `portal_registrations.kind/phone/position`. Admin UI: **Teacher Accounts** card (suspend/reject/delete).
 - **Deploy:** gh-pages e178481 (bundle index-DrOZlMOR.js); workspace main cd3c64a.
 - Approved teachers use the existing staff dashboard (announcements / events / leave).
 

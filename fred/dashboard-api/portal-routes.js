@@ -142,8 +142,9 @@ export default function setupPortalRoutes(app, { query, run, saveDb, requireAuth
   });
 
   // ── Teacher self-registration (public, scoped to the school) ──
-  // Creates a PENDING staff account. The school office approves it in the portal
-  // before the teacher can sign in.
+  // Access is INSTANT: the account is created active and the teacher is signed
+  // straight in. (Mr D 2026-10-02: "they can just have access to their page
+  // immediately please.") The office can still suspend/reject from the portal.
   app.post('/api/portal/register-teacher', (req, res) => {
     const { name, email, password, phone = '', position = '' } = req.body || {};
     if (!name || !email || !password) return res.status(400).json({ error: 'Name, email and password required' });
@@ -152,11 +153,13 @@ export default function setupPortalRoutes(app, { query, run, saveDb, requireAuth
     const existing = query('SELECT id FROM users WHERE email = ?', [cleanEmail]);
     if (existing.length > 0) return res.status(409).json({ error: 'An account with this email already exists' });
     run('INSERT INTO users (email, password, name, role, client_id, status) VALUES (?, ?, ?, ?, ?, ?)',
-      [cleanEmail, hashPassword(password), String(name).trim(), 'staff', SCHOOL_CLIENT_ID, 'pending']);
+      [cleanEmail, hashPassword(password), String(name).trim(), 'staff', SCHOOL_CLIENT_ID, 'active']);
     run('INSERT INTO portal_registrations (client_id, name, email, kind, phone, position) VALUES (?, ?, ?, ?, ?, ?)',
       [SCHOOL_CLIENT_ID, String(name).trim(), cleanEmail, 'teacher', String(phone).trim(), String(position).trim()]);
     saveDb();
-    res.status(201).json({ pending: true, message: 'Application received. The school office will review it shortly.' });
+    const user = query('SELECT * FROM users WHERE email = ?', [cleanEmail])[0];
+    const token = Buffer.from(JSON.stringify({ id: user.id, role: user.role, client_id: user.client_id })).toString('base64');
+    res.status(201).json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role, client_id: user.client_id } });
   });
 
   // ── Teacher accounts — review/approve (admin) ──

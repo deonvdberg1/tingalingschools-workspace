@@ -11,7 +11,15 @@
 - **Verified:** live public API E2E (201 pending → 403 → approve → 200 staff → reject → 403 → delete → 401) + headless renders. Existing staff/parent/admin logins unaffected. Test data cleaned; API restarted (health 200).
 - **Deploy:** gh-pages **e178481** (bundle index-DrOZlMOR.js); workspace main **cd3c64a**.
 
-### Follow-up 07:52 — 🔒 Teacher sign-in restricted to school premises (geofence)
+### Follow-up 08:55 — ⚡ Teacher signup now grants INSTANT access (no approval)
+
+- **Mr D 08:55:** signed up as a teacher and hit the "awaiting approval" screen → "they can just have access to their page immediately please."
+- **Change:** `POST /api/portal/register-teacher` now creates an **active** account and returns a token → the teacher is **signed straight into `/portal`**. "Awaiting approval" screen removed; copy now says "access right away". Office can still **Suspend/Reject** in the Teacher Accounts card.
+- **His real signup:** *Sandi-lei Heyns* (sheyns@ymail.com) was pending → **activated** (can sign in now).
+- **Verified:** API (201 + token + role staff, signs in, can post leave, admin sees active) + **live-browser CDP signup E2E** (tab → form → submit → lands on /portal, "WELCOME, LIVE BROWSER TEST"). Test data cleaned. gh-pages **0d18ead** (bundle index-xojM_uV7.js).
+- ⏳ Geofence still OFF — pin Pre-Primary later (per Mr D 08:55).
+
+### 07:52 — 🔒 Teacher sign-in restricted to school premises (geofence)
 
 - **Mr D 07:47:** "can they only log in when they are at a certain location?" → built: staff/teacher sign-in is gated to configured locations (haversine, default 300 m) or an allowed IP. **Admins/parents not gated.** 403 `code=location_required` outside.
 - **Admin UI:** dashboard **"Login Location"** card — toggle, radius, **"Use my location"** pin, delete, IP allow-list. **State: fence OFF**; seeded *Special Needs campus* −28.788417, 32.097669. ⏳ Pre-Primary pin (74 Krewilkring) needed.

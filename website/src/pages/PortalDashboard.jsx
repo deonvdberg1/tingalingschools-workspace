@@ -253,7 +253,7 @@ function AdminPanel() {
               <Input value={stPass} onChange={e => setStPass(e.target.value)} placeholder="Temporary password" />
               <Button onClick={createStaff} className="gap-2 shrink-0"><UserPlus className="w-4 h-4" /> Add</Button>
             </div>
-            <p className="text-[11px] text-slate-400">Accounts added here are active immediately. Teachers who self-register appear as “pending” until you approve them.</p>
+            <p className="text-[11px] text-slate-400">Teachers who sign up get access straight away. Use Suspend if you ever need to block an account; office-added logins are active immediately.</p>
           </div>
           <div className="mt-4 space-y-2 max-h-64 overflow-y-auto">
             {staff.map(s => {
