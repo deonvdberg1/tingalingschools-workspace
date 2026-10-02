@@ -298,6 +298,14 @@ Ting-A-Ling now has its OWN portal on tingalingschools.com — no redirect to Au
 - **Frontend:** `website/src/pages/Portal{Login,Register,Dashboard}.jsx`, `lib/api.js`, AuthContext rewritten off Supabase → our JWT API (bundle shrank 600→422 kB).
 - **Deploy:** gh-pages 9060eac, main d77a2e6.
 
+## 🧑‍🏫 Teacher sign-in + self-signup (Ting-A-Ling) — LIVE 2026-10-02
+
+- **URL:** https://tingalingschools.com/teacher — one page, two tabs (**Sign in** / **Create account**); school teal brand. Header nav "Teacher Login" + link from `/login`.
+- **Model:** teacher self-registers → `users.status='pending'` → the school office approves in the portal → then sign-in works. Office-added logins are `active` immediately. Sign-in of a non-active account = **403** with a clear message.
+- **Backend:** `POST /api/portal/register-teacher` (public, client_id 6); `GET /api/portal/teachers`; `PUT /api/portal/teachers/:id/status` (active/pending/rejected); new `users.status`; `portal_registrations.kind/phone/position`. Admin UI: **Teacher Accounts** card (approve/reject/suspend).
+- **Deploy:** gh-pages e178481 (bundle index-DrOZlMOR.js); workspace main cd3c64a.
+- Approved teachers use the existing staff dashboard (announcements / events / leave).
+
 
 ## 🌐 tingalingschools.com (School Website) — FIXED 2026-08-05
 

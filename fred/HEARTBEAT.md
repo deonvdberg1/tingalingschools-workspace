@@ -1,6 +1,16 @@
 # Heartbeat Monitor
 # Fred checks these on every session start
 
+## 2026-10-02 — 🧑‍🏫 TEACHER SIGN-IN + SELF-SIGNUP LIVE (07:41)
+
+- **Mr D ask 07:36:** "We need a teacher signup and login page for Tingalingschools." → shipped live in ~5 min of build.
+- **URL:** https://tingalingschools.com/teacher — one page, two tabs (**Sign in** / **Create account**), school teal brand. Header nav button **"Teacher Login"**; `/login` links across.
+- **Flow:** self-register → account `pending` → **school office approves** in the portal (**Teacher Accounts** card: approve/reject/suspend) → then sign-in works. Office-added logins are active immediately. Non-active sign-in = **403** with a clear message.
+- **Backend:** `users.status` column; `POST /api/portal/register-teacher` (public, client 6); `GET /api/portal/teachers`; `PUT /api/portal/teachers/:id/status`; `portal_registrations.kind/phone/position`. `dashboard-api` files: db.js, portal-routes.js, server.js.
+- **Frontend:** `website/src/pages/PortalTeacher.jsx` (+ AuthContext.registerTeacher, App.jsx routes `/teacher` & `/teacher/register`, Layout nav, PortalLogin link, PortalDashboard admin card).
+- **Verified:** live public API E2E (201 pending → 403 → approve → 200 staff → reject → 403 → delete → 401) + headless renders. Existing staff/parent/admin logins unaffected. Test data cleaned; API restarted (health 200).
+- **Deploy:** gh-pages **e178481** (bundle index-DrOZlMOR.js); workspace main **cd3c64a**.
+
 ## 2026-08-31 — 🤖 FRED IN-PORTAL CHAT BOT LIVE — app.autoeffortless.com (07:40)
 
 - **Mr D's real ask: Fred as a chat bot INSIDE the admin portal** (not an external link — the standalone Control UI page didn't work on iPad/iPhone Safari). Now live: floating gold rocket button (bottom-right) in the portal shell → chat drawer. Sidebar "Fred" item opens it too. Overlord-only (server-enforced 403 for clients).
