@@ -1,6 +1,17 @@
 # Heartbeat Monitor
 # Fred checks these on every session start
 
+## 2026-10-02 15:26 — ⏰ CLOCK IN/OUT NOW ON TINGALING'S OWN SITE
+
+- **Mr D 15:20:** "Let's move everything to tingaling for them." → the clock-in system is now on **tingalingschools.com**, using the teachers' existing logins (no AutoEffortless account).
+- **Teacher:** scan the entrance QR → https://tingalingschools.com/clock → tap **Clock in / Clock out**; sidebar item "Clock in / out". Signed out → `/teacher?next=%2Fclock` → straight back after sign-in.
+- **Office:** portal dashboard **"Attendance — Clock in / out"** card — on shift now, today's shifts + hours, **Download CSV**, **entrance QR + printable poster**.
+- **Backend:** `dashboard-api/portal-clock-routes.js` (reuses `attendance_staff`/`attendance_records`, keyed to school-portal teachers). Frontend: `PortalClock.jsx`, route `/clock`, PortalShell nav, Dashboard card.
+- **Verified:** API E2E + **live-browser CDP E2E** (QR scan → sign-in → land /clock → "Clocked in ✅" → on shift → clock out); admin card + QR render; teacher count = 2.
+- **Deploy:** gh-pages **da266b7** (index-lLkrpoOd.js); main **8027181**.
+- **Printable:** https://files.autoeffortless.com/tingaling/attendance/Ting-A-Ling-Clock-In-Poster.pdf (+ …-QR.png).
+- ⚠️ QR = proof of scanning, not presence — bind to the geofence once the Pre-Primary pin is set.
+
 ## 2026-10-02 — 🧑‍🏫 TEACHER SIGN-IN + SELF-SIGNUP LIVE (07:41)
 
 - **Mr D ask 07:36:** "We need a teacher signup and login page for Tingalingschools." → shipped live in ~5 min of build.

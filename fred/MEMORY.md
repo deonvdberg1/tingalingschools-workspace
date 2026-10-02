@@ -317,6 +317,17 @@ Ting-A-Ling now has its OWN portal on tingalingschools.com — no redirect to Au
 - ⚠️ **Caveat:** device GPS is a **deterrent, not a hard lock** (spoofable); office desktops often have poor location — use the IP allow-list there.
 - 🐞 **`GOOGLE_API_KEY` in dashboard-api/.env is INVALID** → `/api/google/geocode` + Places features dead. Needs rotation.
 
+## ⏰ Ting-A-Ling clock in/out — ON THE SCHOOL SITE (2026-10-02)
+
+- **Mr D "move everything to tingaling for them":** the clock-in system now lives on **tingalingschools.com**, using the teachers' existing logins — no AutoEffortless account.
+- **URL:** https://tingalingschools.com/clock — teachers **scan the printed entrance QR** → tap **Clock in / Clock out** (auto-toggles). Sidebar item **"Clock in / out"**. Signed-out scan → `/teacher?next=%2Fclock` → back to /clock after sign-in.
+- **Office:** portal dashboard → **"Attendance — Clock in / out"** card → on shift now, today's shifts + hours, **Download CSV**, **entrance QR + printable poster**.
+- **Backend:** `dashboard-api/portal-clock-routes.js` — reuses the proven attendance engine (`attendance_staff`/`attendance_records`) but keyed to **school-portal teacher accounts** (row auto-created on first visit; owner = the client admin email, client 6). Routes: `/api/portal/clock/{me,today,records,export,station-qr,poster.pdf}` + `POST /api/portal/clock`. Wired in server.js.
+- **Printable:** https://files.autoeffortless.com/tingaling/attendance/Ting-A-Ling-Clock-In-Poster.pdf · …-QR.png (source in `products/tingaling/attendance/`).
+- **Deploy:** gh-pages da266b7. Verified: API E2E + live-browser CDP E2E (QR scan → sign-in → clock in → on shift → clock out).
+- ⚠️ **A QR proves scanning, not presence** (can be photographed). Bind clock-in to the geofence once the Pre-Primary pin exists.
+- 🔀 The AutoEffortless attendance app (app.autoeffortless.com/app/attendance) still exists and is untouched; its pilot rows stay. Ting-A-Ling now uses the school-site clock.
+
 
 ## 🌐 tingalingschools.com (School Website) — FIXED 2026-08-05
 
