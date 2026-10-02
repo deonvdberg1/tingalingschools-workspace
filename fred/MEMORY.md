@@ -306,6 +306,17 @@ Ting-A-Ling now has its OWN portal on tingalingschools.com — no redirect to Au
 - **Deploy:** gh-pages e178481 (bundle index-DrOZlMOR.js); workspace main cd3c64a.
 - Approved teachers use the existing staff dashboard (announcements / events / leave).
 
+## 🔒 Teacher login location (geofence) — built 2026-10-02
+
+- **Rule:** `role='staff'` (teachers) can only sign in when the device is inside a configured school location (or on an allowed IP). **Admins and parents are not gated.**
+- **Backend:** `clients.geofence_enabled` / `geofence_radius_m` (default 300) / `geofence_ips`; table `client_login_locations` (client_id, label, lat, lng). Sign-in does a haversine check → outside the fence = **403 `code=location_required`** (server.js). Admin API: `GET/PUT/POST/DELETE /api/portal/login-locations` (portal-routes.js).
+- **Frontend:** `/teacher` + `/login` request a GPS fix **only when the server asks** (403 `location_required` → get position → retry once). No prompt for parents/admin.
+- **Admin UI:** dashboard **"Login Location"** card — toggle, radius, **"Use my location"** to pin a campus, delete, optional IP allow-list.
+- **State:** fence **OFF**; one pin seeded — *Special Needs campus (18 Elweboog)* −28.788417, 32.097669. ⏳ **Pre-Primary pin (74 Krewilkring) still needed** (not in OSM; Google key invalid) — pin it in the portal or ask Mr D.
+- **Deploy:** gh-pages 4f4fe00 / main bb0900a. Verified by API cases + live-browser CDP E2E.
+- ⚠️ **Caveat:** device GPS is a **deterrent, not a hard lock** (spoofable); office desktops often have poor location — use the IP allow-list there.
+- 🐞 **`GOOGLE_API_KEY` in dashboard-api/.env is INVALID** → `/api/google/geocode` + Places features dead. Needs rotation.
+
 
 ## 🌐 tingalingschools.com (School Website) — FIXED 2026-08-05
 

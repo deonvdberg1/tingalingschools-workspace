@@ -11,6 +11,14 @@
 - **Verified:** live public API E2E (201 pending → 403 → approve → 200 staff → reject → 403 → delete → 401) + headless renders. Existing staff/parent/admin logins unaffected. Test data cleaned; API restarted (health 200).
 - **Deploy:** gh-pages **e178481** (bundle index-DrOZlMOR.js); workspace main **cd3c64a**.
 
+### Follow-up 07:52 — 🔒 Teacher sign-in restricted to school premises (geofence)
+
+- **Mr D 07:47:** "can they only log in when they are at a certain location?" → built: staff/teacher sign-in is gated to configured locations (haversine, default 300 m) or an allowed IP. **Admins/parents not gated.** 403 `code=location_required` outside.
+- **Admin UI:** dashboard **"Login Location"** card — toggle, radius, **"Use my location"** pin, delete, IP allow-list. **State: fence OFF**; seeded *Special Needs campus* −28.788417, 32.097669. ⏳ Pre-Primary pin (74 Krewilkring) needed.
+- **Verified:** API cases + live-browser CDP E2E (inside→/portal, far→blocked, denied→message, off→/portal). gh-pages **4f4fe00** / main **bb0900a**.
+- **Deploy:** gh-pages **4f4fe00** (bundle index-CkrXpove.js).
+- 🐞 `GOOGLE_API_KEY` in dashboard-api/.env invalid → Places/geocode dead (needs rotation).
+
 ## 2026-08-31 — 🤖 FRED IN-PORTAL CHAT BOT LIVE — app.autoeffortless.com (07:40)
 
 - **Mr D's real ask: Fred as a chat bot INSIDE the admin portal** (not an external link — the standalone Control UI page didn't work on iPad/iPhone Safari). Now live: floating gold rocket button (bottom-right) in the portal shell → chat drawer. Sidebar "Fred" item opens it too. Overlord-only (server-enforced 403 for clients).
