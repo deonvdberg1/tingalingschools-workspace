@@ -112,6 +112,22 @@ function requireRole(...roles) {
   };
 }
 
+// ── Location restriction helpers (staff/teacher sign-in geofence) ──
+function haversineMeters(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+function clientIpOf(req) {
+  const raw = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || '';
+  return String(raw).split(',')[0].trim() || (req.ip || '').replace('::ffff:', '');
+}
+
 // ── Tracking routes (GPS, deliveries) ──
 setupTrackingRoutes(app, { query, run, saveDb });
 
@@ -243,6 +259,28 @@ app.post('/api/auth/signin', (req, res) => {
       ? 'Your teacher account is awaiting approval by the school office.'
       : 'This account has not been approved. Please contact the school office.';
     return res.status(403).json({ error, account_status: user.status });
+  }
+
+  // ── Location restriction (geofence) — staff/teacher sign-ins only ──
+  if (user.role === 'staff' && user.client_id) {
+    const cfg = query('SELECT geofence_enabled, geofence_radius_m, geofence_ips FROM clients WHERE id = ?', [user.client_id])[0];
+    if (cfg && cfg.geofence_enabled) {
+      const locations = query('SELECT lat, lng FROM client_login_locations WHERE client_id = ?', [user.client_id]);
+      const allowedIps = String(cfg.geofence_ips || '').split(',').map(s => s.trim()).filter(Boolean);
+      const ipOk = allowedIps.length > 0 && allowedIps.includes(clientIpOf(req));
+      const lat = parseFloat(req.body && req.body.lat);
+      const lng = parseFloat(req.body && req.body.lng);
+      const radius = Number(cfg.geofence_radius_m) || 300;
+      const locOk = Number.isFinite(lat) && Number.isFinite(lng) && locations.length > 0 &&
+        locations.some(l => haversineMeters(lat, lng, l.lat, l.lng) <= radius);
+      if (!ipOk && !locOk) {
+        logAuthEvent('signin_location_blocked', user, req);
+        return res.status(403).json({
+          error: 'Sign-in is restricted to the school premises. Please try again from the school, with location access allowed.',
+          code: 'location_required',
+        });
+      }
+    }
   }
 
   const token = createToken(user);

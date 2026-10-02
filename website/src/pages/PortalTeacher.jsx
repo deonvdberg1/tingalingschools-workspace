@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-  LogIn, UserPlus, ArrowLeft, GraduationCap, CheckCircle2, Clock, Eye, EyeOff,
+  LogIn, UserPlus, ArrowLeft, GraduationCap, CheckCircle2, Clock, Eye, EyeOff, MapPin,
 } from 'lucide-react';
 
 /**
@@ -158,6 +158,10 @@ export default function PortalTeacher() {
           <Button type="submit" className="w-full gap-2" disabled={submitting}>
             <LogIn className="w-4 h-4" /> {submitting ? 'Signing in…' : 'Sign In'}
           </Button>
+
+          <p className="text-xs text-slate-400 flex items-center justify-center gap-1 text-center">
+            <MapPin className="w-3 h-3 shrink-0" /> Teacher sign-in is restricted to the school premises.
+          </p>
 
           <p className="text-sm text-slate-600 text-center">
             New teacher?{' '}

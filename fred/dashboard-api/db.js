@@ -311,6 +311,22 @@ export async function initDb() {
   try { db.run("ALTER TABLE portal_registrations ADD COLUMN kind TEXT DEFAULT 'parent'"); } catch {}
   try { db.run("ALTER TABLE portal_registrations ADD COLUMN phone TEXT DEFAULT ''"); } catch {}
   try { db.run("ALTER TABLE portal_registrations ADD COLUMN position TEXT DEFAULT ''"); } catch {}
+
+  // ── Login location restriction (geofence) ─────────────────────────────
+  // Staff/teacher sign-in can be limited to one or more places (school campuses).
+  try { db.run('ALTER TABLE clients ADD COLUMN geofence_enabled INTEGER DEFAULT 0'); } catch {}
+  try { db.run('ALTER TABLE clients ADD COLUMN geofence_radius_m INTEGER DEFAULT 300'); } catch {}
+  try { db.run("ALTER TABLE clients ADD COLUMN geofence_ips TEXT DEFAULT ''"); } catch {}
+  db.run(`
+    CREATE TABLE IF NOT EXISTS client_login_locations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id INTEGER NOT NULL,
+      label TEXT DEFAULT '',
+      lat REAL NOT NULL,
+      lng REAL NOT NULL,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+  `);
   
   saveDb();
   return db;

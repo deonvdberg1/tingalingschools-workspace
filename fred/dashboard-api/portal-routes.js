@@ -216,6 +216,56 @@ export default function setupPortalRoutes(app, { query, run, saveDb, requireAuth
     res.json(rows);
   });
 
+  // ── Login location (geofence) — admin configuration ──────────────────
+  // Applies to staff/teacher sign-ins only. Staff may sign in when their
+  // device is inside one of the configured locations (or on an allowed IP).
+  const targetClient = (req, fallback = null) => {
+    if (req.user.role === 'overlord') {
+      const q = Number(req.query.client_id || (req.body && req.body.client_id));
+      return Number.isFinite(q) && q > 0 ? q : (fallback || SCHOOL_CLIENT_ID);
+    }
+    return req.user.client_id;
+  };
+
+  app.get('/api/portal/login-locations', requireAuth, requireRole('overlord', 'client_admin'), (req, res) => {
+    const cid = targetClient(req);
+    const c = query('SELECT geofence_enabled, geofence_radius_m, geofence_ips FROM clients WHERE id = ?', [cid])[0] || {};
+    const locations = query('SELECT id, label, lat, lng FROM client_login_locations WHERE client_id = ? ORDER BY id ASC', [cid]);
+    res.json({ enabled: !!c.geofence_enabled, radius_m: c.geofence_radius_m || 300, ips: c.geofence_ips || '', locations });
+  });
+
+  app.put('/api/portal/login-locations', requireAuth, requireRole('overlord', 'client_admin'), (req, res) => {
+    const cid = targetClient(req);
+    const { enabled, radius_m, ips } = req.body || {};
+    if (enabled !== undefined) run('UPDATE clients SET geofence_enabled = ? WHERE id = ?', [enabled ? 1 : 0, cid]);
+    if (radius_m !== undefined) {
+      const r = Math.max(20, Math.min(20000, Number(radius_m) || 300));
+      run('UPDATE clients SET geofence_radius_m = ? WHERE id = ?', [r, cid]);
+    }
+    if (ips !== undefined) run('UPDATE clients SET geofence_ips = ? WHERE id = ?', [String(ips || '').trim(), cid]);
+    saveDb();
+    res.json({ ok: true });
+  });
+
+  app.post('/api/portal/login-locations', requireAuth, requireRole('overlord', 'client_admin'), (req, res) => {
+    const cid = targetClient(req);
+    const { label = '', lat, lng } = req.body || {};
+    const la = Number(lat), ln = Number(lng);
+    if (!Number.isFinite(la) || !Number.isFinite(ln)) return res.status(400).json({ error: 'Valid latitude and longitude required' });
+    run('INSERT INTO client_login_locations (client_id, label, lat, lng) VALUES (?, ?, ?, ?)',
+      [cid, String(label || '').slice(0, 80), la, ln]);
+    saveDb();
+    const id = query('SELECT id FROM client_login_locations ORDER BY id DESC LIMIT 1')[0].id;
+    res.status(201).json({ id, label, lat: la, lng: ln });
+  });
+
+  app.delete('/api/portal/login-locations/:id', requireAuth, requireRole('overlord', 'client_admin'), (req, res) => {
+    const cid = targetClient(req);
+    run('DELETE FROM client_login_locations WHERE id = ? AND client_id = ?', [req.params.id, cid]);
+    saveDb();
+    res.json({ ok: true });
+  });
+
   // ── Portal stats (admin dashboard) ──
   app.get('/api/portal/stats', requireAuth, requireRole('overlord', 'client_admin'), (req, res) => {
     const cid = scopeClient(req.user);

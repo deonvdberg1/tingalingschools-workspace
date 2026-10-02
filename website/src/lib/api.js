@@ -28,12 +28,17 @@ export async function api(path, { method = 'GET', body } = {}) {
 
   if (!res.ok) {
     let msg = `Request failed (${res.status})`;
+    let payload = null;
     try {
-      const j = await res.json();
-      if (j.error) msg = j.error;
+      payload = await res.json();
+      if (payload.error) msg = payload.error;
     } catch { /* keep default */ }
     const err = new Error(msg);
     err.status = res.status;
+    if (payload) {
+      err.code = payload.code;
+      err.accountStatus = payload.account_status;
+    }
     throw err;
   }
   return res.json();

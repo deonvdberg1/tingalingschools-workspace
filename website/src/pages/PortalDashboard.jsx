@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import PortalShell from '@/components/PortalShell';
 import {
   LayoutDashboard, Megaphone, CalendarDays, Users, LogOut, ArrowLeft,
-  Plane, UserPlus, RefreshCw, Phone, Clock, BarChart3,
+  Plane, UserPlus, RefreshCw, Phone, Clock, BarChart3, MapPin, Crosshair,
 } from 'lucide-react';
 
 const fmtDate = (d) => (d ? new Date(d + (d.length === 10 ? 'T00:00:00' : '')).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' }) : '—');
@@ -44,6 +44,8 @@ function AdminPanel() {
   const [leave, setLeave] = useState([]);
   const [staff, setStaff] = useState([]);
   const [registrations, setRegistrations] = useState([]);
+  const [geo, setGeo] = useState({ enabled: false, radius_m: 300, ips: '', locations: [] });
+  const [geoLabel, setGeoLabel] = useState('');
   const pendingTeachers = staff.filter(s => (s.status || 'active') === 'pending').length;
   const [reload, setReload] = useState(0);
 
@@ -63,11 +65,13 @@ function AdminPanel() {
 
   const load = useCallback(async () => {
     try {
-      const [s, a, e, l, st, r] = await Promise.all([
+      const [s, a, e, l, st, r, g] = await Promise.all([
         api('/portal/stats'), api('/portal/announcements'), api('/portal/events'),
         api('/portal/leave'), api('/portal/teachers'), api('/portal/registrations'),
+        api('/portal/login-locations'),
       ]);
       setStats(s); setAnnouncements(a); setEvents(e); setLeave(l); setStaff(st); setRegistrations(r);
+      setGeo({ enabled: !!g.enabled, radius_m: g.radius_m || 300, ips: g.ips || '', locations: g.locations || [] });
     } catch (err) { setMsg(err.message); }
   }, []);
   useEffect(() => { load(); }, [load, reload]);
@@ -106,6 +110,28 @@ function AdminPanel() {
   };
   const deleteStaff = async (id) => {
     await api(`/portal/staff/${id}`, { method: 'DELETE' });
+    setReload(r => r + 1);
+  };
+  const saveGeo = async (patch = {}) => {
+    const next = { ...geo, ...patch };
+    setGeo(next);
+    await api('/portal/login-locations', { method: 'PUT', body: { enabled: next.enabled, radius_m: next.radius_m, ips: next.ips } });
+    flash('Login location saved ✅');
+  };
+  const addCurrentLocation = async () => {
+    if (!navigator.geolocation) return flash('This browser cannot detect location');
+    flash('Getting your location…');
+    navigator.geolocation.getCurrentPosition(async (p) => {
+      try {
+        await api('/portal/login-locations', { method: 'POST', body: { label: geoLabel || 'School', lat: p.coords.latitude, lng: p.coords.longitude } });
+        setGeoLabel('');
+        flash('Location added ✅');
+        setReload(r => r + 1);
+      } catch (e) { flash(e.message); }
+    }, () => flash('Could not get your location — allow location access and try again.'), { enableHighAccuracy: true, timeout: 12000 });
+  };
+  const deleteLocation = async (id) => {
+    await api(`/portal/login-locations/${id}`, { method: 'DELETE' });
     setReload(r => r + 1);
   };
   const setTeacherStatus = async (id, status) => {
@@ -262,6 +288,57 @@ function AdminPanel() {
               );
             })}
             {staff.length === 0 && <p className="text-sm text-slate-400">No teacher accounts yet.</p>}
+          </div>
+        </Card>
+
+        <Card title="Login Location" action={<span className="text-xs text-slate-400">{geo.locations.length} location{geo.locations.length === 1 ? '' : 's'}</span>}>
+          <label className="flex items-start gap-2 text-sm text-slate-700">
+            <input
+              type="checkbox"
+              checked={!!geo.enabled}
+              onChange={e => saveGeo({ enabled: e.target.checked })}
+              className="w-4 h-4 mt-0.5 accent-teal-600"
+            />
+            <span>Only allow <strong>teachers</strong> to sign in from the school premises.
+              <span className="block text-[11px] text-slate-400">Admins and parents are not affected.</span>
+            </span>
+          </label>
+
+          <div className="mt-4 flex items-center gap-2 text-sm">
+            <span className="text-slate-600 shrink-0">Radius</span>
+            <Input
+              type="number"
+              value={geo.radius_m}
+              onChange={e => setGeo({ ...geo, radius_m: e.target.value })}
+              className="w-24"
+            />
+            <span className="text-slate-400 text-xs">metres</span>
+            <Button size="sm" variant="outline" className="ml-auto gap-1" onClick={() => saveGeo()}>Save</Button>
+          </div>
+
+          <div className="mt-4 space-y-2">
+            <div className="flex gap-2">
+              <Input value={geoLabel} onChange={e => setGeoLabel(e.target.value)} placeholder="Label, e.g. Pre-Primary campus" />
+              <Button size="sm" variant="outline" className="shrink-0 gap-1" onClick={addCurrentLocation}>
+                <Crosshair className="w-3.5 h-3.5" /> Use my location
+              </Button>
+            </div>
+            <p className="text-[11px] text-slate-400">Stand at the school entrance and tap “Use my location” to pin it exactly.</p>
+            <div className="space-y-2 max-h-44 overflow-y-auto">
+              {geo.locations.map(l => (
+                <div key={l.id} className="border border-slate-100 rounded-lg p-3 text-sm flex items-center justify-between gap-2">
+                  <div className="min-w-0 flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-teal-600 shrink-0" />
+                    <div className="min-w-0">
+                      <div className="font-medium text-slate-800 truncate">{l.label || 'School'}</div>
+                      <div className="text-[11px] text-slate-400">{Number(l.lat).toFixed(5)}, {Number(l.lng).toFixed(5)}</div>
+                    </div>
+                  </div>
+                  <Button variant="ghost" size="sm" className="text-red-500 shrink-0" onClick={() => deleteLocation(l.id)}>✕</Button>
+                </div>
+              ))}
+              {geo.locations.length === 0 && <p className="text-sm text-slate-400">No locations yet — add one to enable the restriction.</p>}
+            </div>
           </div>
         </Card>
 
