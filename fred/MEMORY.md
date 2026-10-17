@@ -574,3 +574,11 @@ Each client agent has:
 - Ink's brief: IDENTITY/SOUL/AGENTS/USER/TOOLS/MEMORY/**STATUS.md** (handover state) + the tools/scripts/art/output.
 - ⚠️ Registered but needs a **gateway restart** to go live (`agent not found: ink` until then).
 - File sharing for Mr D stays at fred/products/manga/ → https://files.autoeffortless.com/manga/ — that's the handoff point, nothing else of Fred's is involved.
+
+## 🚨 INCIDENT (2026-10-10 → 2026-10-15) — 5-day blind spot: DeepSeek 402 Insufficient Balance
+
+- **What:** the primary model (DeepSeek V4 Flash) returned `402 Insufficient Balance` on **every** call from `2026-10-10T07:02:55Z` (09:02:55 SAST) to `2026-10-15T08:02:56Z` (10:02:56 SAST). 238 failed calls in my main session; the `delivery` and `main` agents were hit too (same key).
+- **Impact:** no heartbeats, **no daily reports Oct 11–15**, no memory writes (frozen at Oct 10 08:07), no tunnel monitoring. `riverwhisperer` + `ngkerk` cloudflared sat in a QUIC reconnect loop for 4–5 days (river ~4.7k errish on Oct 15) with no user impact; **2 real 2027 enrolments** (TAL-PP-2027-0001/0002) landed unreported.
+- **Fix:** balance topped up ~10:37 SAST Oct 15; heartbeat at 12:06 detected + fixed the tunnel loops (kickstart both LaunchAgents) and reported everything to Mr D.
+- **LESSON / STANDING RULE:** *alerting must never depend on the model it is meant to alert about.* A provider-independent watchdog (plain shell/cron → WhatsApp + email) must ping the model API/balance and scream on 402/401/5xx. This is now **P1** alongside the alert-channel fix (131047).
+- **Related:** the `131047` alert-channel bug (WhatsApp "Re-engagement message" failures to 27615274429) is still open — the very channel we'd alert on failed twice on Oct 14. Outdated cloudflared (2026.5.2 → 2026.10.0) is a likely contributor to recurring tunnel flaps/loops.
