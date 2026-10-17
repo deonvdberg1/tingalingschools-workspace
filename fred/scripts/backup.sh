@@ -6,6 +6,16 @@ WORKSPACE="/Users/deonvandenberg/.openclaw/workspace"
 FRED="$WORKSPACE/fred"
 TIMESTAMP=$(date +"%Y-%m-%d %H:%M:%S SAST")
 
+# Idempotency guard (added 2026-10-17): at most ONE snapshot per day, so the
+# cron job and the launchd agent (com.autoeffortless.backup) can coexist safely.
+# Context: cron silently skipped the 02:00 run on Oct 16 + Oct 17 because the
+# Mac was asleep — launchd re-runs missed calendar jobs on wake, cron does not.
+TODAY=$(date +%Y-%m-%d)
+if compgen -G "$FRED/backups/${TODAY}_*" > /dev/null; then
+    echo "[BACKUP] Snapshot for $TODAY already exists — skipping"
+    exit 0
+fi
+
 # Local snapshot (for memory files + full state)
 SNAPSHOT="$FRED/backups/$(date +%Y-%m-%d_%H-%M)"
 mkdir -p "$SNAPSHOT"
