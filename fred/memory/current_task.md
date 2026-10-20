@@ -1,57 +1,59 @@
-# Current Task — updated 2026-10-19 01:36 SAST
+# Current Task — updated 2026-10-20 01:36 SAST
 
-## Status: 🟢 **ALL GREEN (01:36, Sun→Mon) — QUIC blip #3 overnight self-healed; DeepSeek CNY 5.46 (dry ~06:30–09:00)**
-18/18 real public hosts OK (www.autoeffortless.com = 301 normal); 5/5 local ports 200 (3001/3015/8080/8091/18789); 8 cloudflared; 22 loaded agents (storefront deliberately `disabled`; only api-watchdog exit 1 = expected low_balance); backups 32 (latest `2026-10-18_02-00`); disk 23% (40Gi free); load 1.28; up 3d00:46; net 0% loss (avg 28.6 ms); site-monitor OK 01:30 (index-BV2ORYrx.js); enrol health ok (106 cols, 2 submissions, 0 pending); 0 new ERROR/FATAL.
-⚠️ **QUIC blip #3** 22:16:26Z–22:16:49Z (00:16 SAST): all connectors dropped (`timeout: no recent network activity`) **plus a resolver failure** `lookup protocol-v2.argotunnel.com on 192.168.31.1:53` → re-registered in ~23 s, zero serving impact. Then single-connector drops: fred 23:24Z, riverwhisperer 23:35Z (`Application error 0x0 (remote)`), back in ~10 s each. Pattern now 3 blips in ~5 h ⇒ still WAN/UDP+resolver. **Candidate fix to approve (daytime): tunnels on `protocol: http2`** (planned restart of all 8).
-🔴 **DeepSeek CNY 5.46** (01:33; 7.10 @23:33 ⇒ CNY 0.82/h) ⇒ **dry ≈ 06:30–09:00 Oct 19** — collides with the 08:00 daily report. Inference 200, gateway 200. api-watchdog auto-alerts WhatsApp every 2h; **no manual re-ping** (15:36 was the last). Open ask = **top up CNY 200**. No fallback provider is configured (deepseek only) ⇒ all agents go dark at zero; `gemini` CLI + ollama are only manual stopgaps.
-🟢 Traffic Oct 18 closed 4, Oct 17 = 3; Oct 19 = 0 so far (night). Business flat (8 purchases / 20 users / 4 leads).
-🔎 Correction to the DNS ask: this Mac's resolver is **192.168.31.1** (Mac IP 192.168.31.21) — set 1.1.1.1/8.8.8.8 on the Mac **and** on router 192.168.31.1.
-⚠️ Awaiting Mr D: **DeepSeek top-up (urgent)**, **reboot cause + P1 LaunchDaemon migration approval + UPS (R1,293)**, fallback-DNS change, QUIC→http2 trial. Standing: alert-channel 131047, cloudflared upgrade (2026.5.2 → 2026.10.1), CIPC option, usage-tracking, AI Editor wording, lead emails, enrolment wording sign-off, Pre-Primary geofence pin, GOOGLE_API_KEY rotation.
-🔧 Probe notes: **authoritative host list = the 18 hostnames in `~/.cloudflared/config*.yml` ingress** (autoeffortless.com, www=301, dashboard, enrol, snowman, snowman-v2, app, store, files, portfolio, fred, tracking, whatsapp, ngkerk, tingaling, tingalingschools.com, theriverwhisperer.co.za + www). Never probe `portal.` (no DNS by design), `qr.`, `river-whisperer.`, **`api.`** or **`ai.autoeffortless.com`** (all nonexistent). Local ports 3001/3015/8080/8091/18789 (+5173 = dashboard-temp vite dev, 8092 api). Analytics = `dashboard-api/data/autoeffortless.db` table `site_hits` (column `created_at`). Enrol health = `/api/enrol/health`. Tunnel logs via `scripts/heartbeat-tunnels.sh`. DeepSeek balance from `logs/api-watchdog.log` / state json. `com.autoeffortless.storefront` is intentionally `disabled` — don't flag it.
-⚠️ `heartbeat-tunnels.sh` "today total errish" undercounts just-after-midnight events (log stamps are UTC, script buckets by SAST date) — cross-check with a raw grep on `T22:|T23:` for the overnight window.
+## Status: 🟢 **ALL GREEN — DeepSeek healthy at CNY 82.03**
 
----
-# Current Task — updated 2026-10-18 23:36 SAST
+### DeepSeek / model provider
+🟡 **Balance CNY 82.03** (01:28). Burn 23:28→01:28 = **1.65 over 2h ⇒ 0.82/h** (steady, 8th consecutive ~0.8/h window) ⇒ runway **~4.2 days** at this pace, ~2.3 days at 1.5/h daytime ⇒ dry ≈ **Oct 24–25**. Inference 200, gateway 200, watchdog `status: ok` (01:28). No pings sent; no action until watchdog thresholds.
+🚨 **Residual risk unchanged:** DeepSeek is the ONLY configured provider, no `fallbacks`; `gemini` CLI has no auth; ollama has only llama3.2:3b/moondream (no tool-calling) ⇒ a future zero still blacks out the whole fleet (Oct 10–15 repeat). Plan ready in `memory/fallback-model-plan.md`, **not applied** — needs schema lookup + Mr D's ok.
+✅ 08:00 report job payload already rewritten to report the top-up as resolved and chase the 2 remaining blockers.
 
-## Status: 🟢 **ALL GREEN (23:36, Sun Oct 18) — second QUIC blip auto-healed; DeepSeek now CRITICAL (CNY 7.10)**
-18/18 real public hosts OK (www.autoeffortless.com = 301 normal); 5/5 local ports 200 (3001/3015/8080/8091/18789); 8 cloudflared; 22 loaded agents (storefront deliberately `disabled`; only api-watchdog exit 1 = expected low_balance); backups 32 (latest `2026-10-18_02-00`); disk 23% (40Gi free); load 2.32; up 2d22:46; net 0% loss (avg 28 ms); site-monitor OK 23:30 (index-BV2ORYrx.js); enrol health ok (106 cols, 2 submissions, 0 pending); 0 new ERROR/FATAL.
-⚠️ **QUIC blip #2 today** 20:59:49Z–21:00:37Z: all main connectors dropped (`timeout: no recent network activity`), re-registered <50 s → self-healed, zero serving impact; **36 min clean since**. Pattern = WAN/UDP, not DNS. **Candidate fix to approve (daytime): tunnels on `protocol: http2`** (planned restart of all 8).
-🔴 **DeepSeek CNY 7.10** (23:33; 8.75 @21:33 ⇒ CNY 0.83/h) ⇒ **dry ≈ 06:30–08:00 Oct 19** — lands on the 08:00 daily report. Inference 200, gateway 200. api-watchdog auto-alerts WhatsApp every 2h (last 22:43); **no manual re-ping** (15:36 was the last). Open ask = **top up CNY 200**.
-🟢 Traffic Oct 18 = 4 hits, all real (3 × google.com 15:07: `/`, `/`, `/PrePrimary`; 1 at 03:37). Business flat (8 purchases / 20 users / 4 leads).
-⚠️ Awaiting Mr D: **DeepSeek top-up (urgent)**, **reboot cause + P1 LaunchDaemon migration approval + UPS (R1,293)**, fallback-DNS change (1.1.1.1/8.8.8.8 on Mac + router 192.168.3.1). Standing: alert-channel 131047, cloudflared upgrade (2026.5.2 → 2026.10.1), CIPC option, usage-tracking, AI Editor wording, lead emails, enrolment wording sign-off, Pre-Primary geofence pin, GOOGLE_API_KEY rotation.
-🔧 Probe notes: **authoritative host list = the 18 hostnames in `~/.cloudflared/config*.yml` ingress** (autoeffortless.com, www=301, dashboard, enrol, snowman, snowman-v2, app, store, files, portfolio, fred, tracking, whatsapp, ngkerk, tingaling, tingalingschools.com, theriverwhisperer.co.za + www). Never probe `portal.` (no DNS by design), `qr.`, `river-whisperer.`, **`api.`** or **`ai.autoeffortless.com`** (all nonexistent). Local ports 3001/3015/8080/8091/18789 (+5173 = dashboard-temp vite dev, 8092 api). Analytics = `dashboard-api/data/autoeffortless.db` table `site_hits` (column `created_at`). Enrol health = `/api/enrol/health`. Tunnel logs via `scripts/heartbeat-tunnels.sh`. DeepSeek balance from `logs/api-watchdog.log` / state json. `com.autoeffortless.storefront` is intentionally `disabled` — don't flag it.
+### Infra (01:36)
+- Public hosts **18/18 OK** (www.autoeffortless.com = 301, normal)
+- Local ports **5/5 200**: 3001 / 3015 / 8080 / 8091 / 18789
+- LaunchAgents **20 loaded / 21 plists** — all running or exit 0, no bad PIDs; `storefront` disabled by design.
+- Backups 31; disk 24% (39Gi free); load 1.43; up 4d00:46
+- enrol health ok (106 cols, 2 submissions, 0 pending)
+- 0 ERROR/FATAL today (all tunnel/host/service logs)
+- Tunnels **0 errish today / ~26h clean** — last errish 2026-10-18T23:35:31Z (riverwhisperer datagram WRN, self-healed)
 
----
-# Earlier
+### Traffic / business
+Oct 19 closed **7** (best day this week), Oct 18 = 4, Oct 17 = 3. Business flat: 8 purchases / 20 users / 4 leads.
+*01:36 check: hosts 18/18 (www=301), ports 5/5 200, LaunchAgents 20 loaded/21 plists, backups 31, disk 24% (39Gi free), load 1.43, up 4d00:46, enrol ok (106 cols/2 subs/0 pending), 0 errish tunnels today (last 2026-10-18T23:35:31Z), 0 real ERROR/FATAL.*
 
-# Current Task — updated 2026-10-18 21:36 SAST
-
-## Status: 🟢 **ALL GREEN (21:36, Sun Oct 18) — silent beat, nothing new broke**
-11/11 real public hosts OK (www.autoeffortless.com = 301 normal); 5/5 local ports 200 (3001/3015/8080/8091/18789); 8 cloudflared running; 22 loaded agents (21 AE + 2 tingaling − storefront deliberately `disabled`; only api-watchdog exit 1 = expected low_balance); backups 32 (latest `2026-10-18_02-00`); disk 23% (40Gi free); load 1.20; up 2d20:46; net 0% loss (13–25 ms); site-monitor OK 21:30 (index-BV2ORYrx.js); enrol health ok (106 cols, 2 submissions, 0 pending); 0 new ERROR/FATAL (only June/Aug lines).
-🟢 **Tunnel flap fix holding: 4h00m clean** (last errish all logs = 2026-10-18T17:37:13Z, the tingaling/riverwhisperer restart itself; 775 errish total today, none since). No new tunnel action needed.
-🔴 **DeepSeek CNY 8.75** (21:33; 12.11 @17:32 ⇒ ~CNY 0.7–0.8/h now) ⇒ **dry ≈ Oct 19 morning (04:00–10:00)**. Inference 200, gateway 200. api-watchdog is re-alerting every 2h by WhatsApp (18:42, 20:42 → +27 61 527 4429) so **no manual re-ping from me** (last manual ping 15:36). Open ask = top up CNY 200.
-🟢 Traffic Oct 18 = 4 hits, all real (3 × google.com 15:07: `/`, `/`, `/PrePrimary`; 1 at 03:37). Business flat (8 purchases / 20 users / 4 leads).
-⚠️ Awaiting Mr D: **DeepSeek top-up (urgent)**, **reboot cause + P1 LaunchDaemon migration approval + UPS (R1,293)**, fallback-DNS change (1.1.1.1/8.8.8.8 on Mac + router 192.168.3.1). Standing: alert-channel 131047, cloudflared upgrade (2026.5.2 → 2026.10.1), CIPC option, usage-tracking, AI Editor wording, lead emails, enrolment wording sign-off, Pre-Primary geofence pin, GOOGLE_API_KEY rotation.
-🔧 Probe notes: 11 real public hosts — never `portal.` (no DNS by design), never `qr.` (nonexistent), **never `river-whisperer.autoeffortless.com`** (phantom; use theriverwhisperer.co.za). www.autoeffortless.com = 301 (expected). Local ports 3001/3015/8080/8091/18789 (+5173 = dashboard-temp vite dev, 8092 api). Analytics = `dashboard-api/data/autoeffortless.db` table `site_hits` (column `created_at`). Enrol health = `/api/enrol/health`. Tunnel logs via `scripts/heartbeat-tunnels.sh`. DeepSeek balance from `logs/api-watchdog.log` / state json. `com.autoeffortless.storefront` is intentionally `disabled` — don't flag it.
+### ⚠️ Awaiting Mr D
+1. **Second provider / fallback** (Gemini API key or OpenRouter) — plan written, not applied
+2. **Reboot cause + P1 LaunchDaemon migration approval**
+3. **UPS (R1,293)**
+4. fallback-DNS (1.1.1.1/8.8.8.8 on Mac **and** router 192.168.31.1)
+5. QUIC→http2 tunnel trial (needs 8-connector restart; daytime)
+Standing: alert-channel 131047, cloudflared upgrade (2026.5.2 → 2026.10.1), CIPC option, usage-tracking, AI Editor wording, lead emails, enrolment wording sign-off, Pre-Primary geofence pin, GOOGLE_API_KEY rotation.
 
 ---
-# Earlier
+# Earlier (compact)
 
-# Current Task — updated 2026-10-18 19:36 SAST
+- **23:36 Oct 19** 🟢 all green, CNY 83.68, burn 0.82/h, 18/18 hosts, tunnels 24h clean.
+- **21:36** 🟢 all green, CNY 85.33, burn 0.82/h, 18/18 hosts, tunnels 22h clean.
+- **19:36** 🟢 all green, CNY 86.97, burn 0.84/h, 18/18 hosts, tunnels 20h clean.
+- **17:36** 🟢 all green, CNY 88.64, burn 0.83/h, 18/18 hosts, tunnels 18h clean.
+- **15:36** 🟢 all green, CNY 90.29, burn 0.82/h, 18/18 hosts, tunnels 16h clean.
+- **13:36** 🟢 all green, CNY 91.93, burn 1.11/h, 18/18 hosts, tunnels 13.7h clean.
+- **11:36** 🟢 all green, CNY 93.99, burn 1.69/h, 18/18 hosts, tunnels 12h clean.
+- **05:36** 🔴 DeepSeek CNY 1.58, dry ~06:00 — escalated WhatsApp (+27 61 527 4429, delivered) + email (deonvdberg1@gmail.com, `1a1523bcbb72d617`), ask = top up CNY 200. **Resolved by top-up at 06:54.**
+- **03:36** 🟢 all green, CNY 4.16, tunnels 2h clean.
+- **01:36 Oct 19** 🟢 QUIC blip #3 (00:16 SAST, all connectors + resolver fail to 192.168.31.1, self-healed 23 s).
+- **23:36 / 21:36 Oct 18** 🟢 QUIC blip #2 (20:59Z, healed <50 s); tunnel flap fix holding.
 
-## Status: 🟢 **ALL GREEN (19:36, Sun Oct 18) — tunnel flap FIXED (tingaling + riverwhisperer)**
-11/11 real public hosts OK (www = 301 normal; theriverwhisperer + www 200); 5/5 local ports 200; 8 cloudflared; 20 AE LaunchAgents (only api-watchdog exit 1 = expected low_balance); backups 32 (latest `2026-10-18_02-00`); disk 23% (40Gi); load 1.59; up 2d18:46; site-monitor OK 19:30 (index-BV2ORYrx.js); enrol health ok (106 cols, 2 submissions, 0 pending); 0 ERROR/FATAL app logs; net 0% loss.
-🔧 **FIXED this beat:** 16:20Z network blip knocked all 8 tunnels; 6 self-recovered 16:28Z but **tingaling + riverwhisperer flapped ~1/min for 75 min** (`control stream encountered a failure`). Restarted `com.tingaling.cloudflared-named` + `com.autoeffortless.cloudflared-riverwhisperer` → precheck all PASS, 4 connectors re-registered, **0 new errors since 17:37Z**; both client sites 200 throughout.
-⚠️ **Probe-list correction:** `river-whisperer.autoeffortless.com` **does not exist** (no DNS, no ingress) — phantom host, removed. Real: `theriverwhisperer.co.za` + `www`.
-🔎 Noted: `config-tingaling.yml` uses tunnel **41e8685d = same ID as main** → duplicate connectors, divergent ingress. Works; cleanup candidate.
-🔴 **DeepSeek CNY 10.44** (19:32; 12.11 @17:32 ⇒ ~CNY 20/day) ⇒ **dry ≈ Oct 19 06:00–08:00**. inference 200, gateway 200. **No re-ping** (ping went 15:36; api-watchdog auto-alerts on transition by email+WhatsApp). Open ask = top up CNY 200.
-🟢 Traffic Oct 18 = 4 hits, all real (3 × google.com 15:07: `/`, `/`, `/PrePrimary`; 1 at 03:37). Business flat (8 purchases / 20 users / 4 leads).
-⚠️ Awaiting Mr D: **DeepSeek top-up**, **reboot cause + P1 LaunchDaemon migration approval + UPS (R1,293)**, fallback-DNS change (1.1.1.1/8.8.8.8 on Mac + router 192.168.3.1). Standing: alert-channel 131047, cloudflared upgrade (2026.5.2 → 2026.10.1), CIPC option, usage-tracking, AI Editor wording, lead emails, enrolment wording sign-off, Pre-Primary geofence pin, GOOGLE_API_KEY rotation.
-🔧 Probe notes: 11 real public hosts — never `portal.` (no DNS by design), never `qr.` (nonexistent), **never `river-whisperer.autoeffortless.com`** (phantom; use theriverwhisperer.co.za). www.autoeffortless.com = 301 (expected). Local ports 3001/3015/8080/8091/18789. Analytics = `dashboard-api/data/autoeffortless.db` table `site_hits` (column `created_at`, not `ts`). Enrol health = `/api/enrol/health`. Tunnel logs via `scripts/heartbeat-tunnels.sh`. DeepSeek balance from `logs/api-watchdog.log` / state json.
+---
+# 🔧 Permanent probe notes (do not relearn these)
 
-## Status: 🟢 **ALL GREEN (17:36, Sun Oct 18) — silent beat, nothing new. 12/12 probed public hosts OK (www = 301 normal; dashboard/tingaling/snowman/snowman-v2/river-whisperer all 200); 5/5 local ports 200; 8 cloudflared; 20 AE LaunchAgents (only api-watchdog exit 1 = expected low_balance); backups 32 (latest `2026-10-18_02-00`); disk 23% (40Gi); load 1.41; up 2d16:47; site-monitor OK 17:30 (index-BV2ORYrx.js); enrol health ok (106 cols, 2 submissions, 0 pending); 0 ERROR/FATAL (tracking-log ERRORs are old June/July port-7844 notes).**
-🔴 **DeepSeek down to CNY 12.11** (17:32; was 13.77 at 15:36) ⇒ burn ~CNY 20/day ⇒ **dry ≈ Oct 19 06:00–08:00**, before/around the 08:00 report. Already pinged Mr D 15:36 (CNY 200). **Not re-pinged this beat** — avoid spam. If not topped up today, every AI path dies overnight.
-🟢 Traffic Oct 18 = **4 hits, all real** — 3 at 15:07 from google.com (`/`, `/`, `/PrePrimary`) + 1 at 03:37. Oct 17 closed 3 (1 real). Business flat (8 purchases / 20 users / 4 leads).
-⚠️ Tunnel DNS-resolver flakiness unchanged: 308 errish today across 8 logs, but **nothing new since 15:31 SAST (2h05m clean)**; public serving unaffected → local/router resolver; fallback-DNS fix still queued for Mr D's ok.
-
-## Status: 🟢 **ALL GREEN (15:36, Sun Oct 18) — 13/13 public OK
+- **Authoritative host list = the 18 hostnames in `~/.cloudflared/config*.yml` ingress**: autoeffortless.com, www (301), dashboard, enrol, snowman, snowman-v2, app, store, files, portfolio, fred, tracking, whatsapp, ngkerk, tingaling, tingalingschools.com, theriverwhisperer.co.za + www.
+- **Never probe**: `portal.` (no DNS by design), `qr.`, `river-whisperer.`, `api.`, `ai.autoeffortless.com` — all nonexistent.
+- Local ports 3001 / 3015 / 8080 / 8091 / 18789 (+5173 dashboard-temp vite, 8092 api). LAN: Mac 192.168.31.21, router/resolver 192.168.31.1.
+- Analytics = `dashboard-api/data/autoeffortless.db` table `site_hits` (column **`created_at`**, `client_id=6` for Ting-A-Ling).
+- Enrol health = `http://127.0.0.1:3015/api/enrol/health`. Tunnel logs via `scripts/heartbeat-tunnels.sh` (undercounts just-after-midnight events — cross-check `T22:|T23:`).
+- DeepSeek balance = `logs/api-watchdog-state.json` (`balance_cny`) / `logs/api-watchdog.log`.
+- `com.autoeffortless.storefront` is intentionally `disabled` — don't flag it. Backups rotate at ~31 — a count drop is normal.
+- `scripts/healthcheck.sh` = WhatsApp-server health only (logs to `whatsapp-server/healthcheck.log`, silent on success) — the 18-host/port sweep must be run manually as above.
+- WhatsApp alerts work inside the 24h window; email = `gog gmail send -a info@autoeffortless.com --to deonvdberg1@gmail.com --body-file <f>` (`--body*` required, plain stdin fails).
+- **Burn-rate lesson:** never estimate runway from the night average (0.60/h badly under-called the real ~1.5/h). Always use a rolling 2h window.
+- `crontab <file>` hangs on this Mac (TCC prompt) — new schedules go in **LaunchAgents**.
