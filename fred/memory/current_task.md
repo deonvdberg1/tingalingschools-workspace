@@ -1,24 +1,23 @@
-# Current Task — updated 2026-10-20 01:36 SAST
+# Current Task — updated 2026-10-21 01:36 SAST
 
-## Status: 🟢 **ALL GREEN — DeepSeek healthy at CNY 82.03**
+## Status: 🟢 **ALL GREEN — CNY 58.00 (burn 0.76/h ⇒ dry ≈ Oct 24 05:30) · tunnels ~16h clean since 09:37Z**
 
 ### DeepSeek / model provider
-🟡 **Balance CNY 82.03** (01:28). Burn 23:28→01:28 = **1.65 over 2h ⇒ 0.82/h** (steady, 8th consecutive ~0.8/h window) ⇒ runway **~4.2 days** at this pace, ~2.3 days at 1.5/h daytime ⇒ dry ≈ **Oct 24–25**. Inference 200, gateway 200, watchdog `status: ok` (01:28). No pings sent; no action until watchdog thresholds.
-🚨 **Residual risk unchanged:** DeepSeek is the ONLY configured provider, no `fallbacks`; `gemini` CLI has no auth; ollama has only llama3.2:3b/moondream (no tool-calling) ⇒ a future zero still blacks out the whole fleet (Oct 10–15 repeat). Plan ready in `memory/fallback-model-plan.md`, **not applied** — needs schema lookup + Mr D's ok.
-✅ 08:00 report job payload already rewritten to report the top-up as resolved and chase the 2 remaining blockers.
+🟢 **Balance CNY 58.00** (01:32). Rolling 2h (23:32→01:32): 59.52→58.00 = 1.52 ⇒ **0.76/h** (6 windows flat: 0.78 / 0.78 / 0.77 / 0.76 / 0.75 / 0.76). Runway ~76h ⇒ **dry ≈ Oct 24 05:30** (worst 1.6/h ⇒ Oct 22 10:00). Inference 200, gateway 200, watchdog `status: ok`. ⚠️ **Top-up by Oct 21 evening still the call.**
+🚨 **Residual risk unchanged:** DeepSeek is the ONLY configured provider, no `fallbacks`; `gemini` CLI unauthenticated; ollama has only llama3.2:3b/moondream (no tool-calling) ⇒ a future zero blacks out the whole fleet (Oct 10–15 repeat). Plan ready in `memory/fallback-model-plan.md`, **not applied** — needs schema lookup + Mr D's ok.
 
 ### Infra (01:36)
-- Public hosts **18/18 OK** (www.autoeffortless.com = 301, normal)
+- Public hosts **18/18 OK** (all 200 with -L, 0.08-0.44s)
 - Local ports **5/5 200**: 3001 / 3015 / 8080 / 8091 / 18789
-- LaunchAgents **20 loaded / 21 plists** — all running or exit 0, no bad PIDs; `storefront` disabled by design.
-- Backups 31; disk 24% (39Gi free); load 1.43; up 4d00:46
+- LaunchAgents 20 listed, all exit 0, none bad; `storefront` disabled by design.
+- Backups 31; disk 25% (35Gi free); load 1.46/1.37/1.32; up 5d00:46
 - enrol health ok (106 cols, 2 submissions, 0 pending)
-- 0 ERROR/FATAL today (all tunnel/host/service logs)
-- Tunnels **0 errish today / ~26h clean** — last errish 2026-10-18T23:35:31Z (riverwhisperer datagram WRN, self-healed)
+- 0 app ERROR/FATAL today; **0 tunnel errish today** — last real errish 2026-10-20T09:37:00Z
+- ✅ **Tunnels clean ~16h since 09:37Z**. No stuck connectors.
+- QUIC→http2 trial + fallback DNS still the top infra lever (daytime window open tomorrow).
 
 ### Traffic / business
-Oct 19 closed **7** (best day this week), Oct 18 = 4, Oct 17 = 3. Business flat: 8 purchases / 20 users / 4 leads.
-*01:36 check: hosts 18/18 (www=301), ports 5/5 200, LaunchAgents 20 loaded/21 plists, backups 31, disk 24% (39Gi free), load 1.43, up 4d00:46, enrol ok (106 cols/2 subs/0 pending), 0 errish tunnels today (last 2026-10-18T23:35:31Z), 0 real ERROR/FATAL.*
+Oct 20 closed **1 hit** (10:09; nothing in **15.5h** since). Oct 19 = 7, Oct 18 = 4, Oct 17 = 3. Business flat: 8 purchases / 20 users. **Zero traffic for 15.5h = the real problem, not uptime.**
 
 ### ⚠️ Awaiting Mr D
 1. **Second provider / fallback** (Gemini API key or OpenRouter) — plan written, not applied
@@ -31,6 +30,16 @@ Standing: alert-channel 131047, cloudflared upgrade (2026.5.2 → 2026.10.1), CI
 ---
 # Earlier (compact)
 
+- **23:36 Oct 20** 🟢 green; CNY 59.52, burn 0.75/h (2h) ⇒ dry ≈ Oct 24 06:30; 19/19 hosts, 5/5 ports, tunnels 12h clean.
+- **21:36 Oct 20** 🟢 green; CNY 61.02, burn 0.76/h (2h) ⇒ dry ≈ Oct 24 05:00; 18/18 hosts, 5/5 ports, tunnels 10h clean.
+- **19:36 Oct 20** 🟢 green; CNY 62.54, burn 0.77/h (2h) ⇒ dry ≈ Oct 24; 18/18 hosts, 5/5 ports, tunnels 10h clean.
+- **17:36 Oct 20** 🟢 green; CNY 64.07, burn 0.78/h (2h) ⇒ dry ≈ Oct 24; 18/18 hosts, 5/5 ports, tunnels 8h clean.
+- **15:36 Oct 20** 🟢 green; CNY 65.62, burn 0.78/h (2h) ⇒ dry ≈ Oct 23-24; 19/19 hosts, 5/5 ports, tunnels 4h clean.
+- **13:36 Oct 20** 🟢 green; CNY 67.20, burn 1.05/h (2h) ⇒ dry ≈ Oct 22; 18/18 hosts, 5/5 ports, tunnels 4h clean.
+- **11:36 Oct 20** 🟢 green; CNY 69.30, burn 1.58/h (2h) ⇒ dry ≈ Oct 22; hosts 18/18, ports 5/5; restart fixed stuck enrol connIndex=2; QUIC blips #5/#6 today.
+- **08:00 Oct 20** 🟢 all green, CNY 74.19, burn 1.00/h (2.5h), hosts 19/19, tunnels clean.
+- **07:36 Oct 20** 🟢 all green, CNY 74.60, burn 1.04/h (2h), hosts 19/19, tunnels ~32h clean.
+- **03:36 Oct 20** 🟢 all green, CNY 79.98, burn 1.03/h (2h), hosts 18/18, tunnels 28h clean.
 - **23:36 Oct 19** 🟢 all green, CNY 83.68, burn 0.82/h, 18/18 hosts, tunnels 24h clean.
 - **21:36** 🟢 all green, CNY 85.33, burn 0.82/h, 18/18 hosts, tunnels 22h clean.
 - **19:36** 🟢 all green, CNY 86.97, burn 0.84/h, 18/18 hosts, tunnels 20h clean.
@@ -57,3 +66,5 @@ Standing: alert-channel 131047, cloudflared upgrade (2026.5.2 → 2026.10.1), CI
 - WhatsApp alerts work inside the 24h window; email = `gog gmail send -a info@autoeffortless.com --to deonvdberg1@gmail.com --body-file <f>` (`--body*` required, plain stdin fails).
 - **Burn-rate lesson:** never estimate runway from the night average (0.60/h badly under-called the real ~1.5/h). Always use a rolling 2h window.
 - `crontab <file>` hangs on this Mac (TCC prompt) — new schedules go in **LaunchAgents**.
+- **Errish counts ≠ incidents:** one 4-connector reconnect burst writes ~19–24 errish lines *per tunnel log* (~157 total). Always check the timestamp window + `INF Registered tunnel connection` lines to tell one 16-second blip from a real outage.
+- **Stuck-connector signature:** `Retrying connection ... connIndex=N` repeating every 2-5 min with **no matching `Registered tunnel connection connIndex=N`** in between = that connector is dead while the rest serve (no public outage, silent redundancy loss). Detect by comparing per-index `Retrying` vs `Registered` counts per log; heal with `launchctl kickstart -k gui/$(id -u)/com.autoeffortless.cloudflared-<tunnel>` (recovers in ~4 s).
