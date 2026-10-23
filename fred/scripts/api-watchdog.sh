@@ -168,11 +168,17 @@ if [ "$ALERT" = "1" ]; then
   fi
 
   # (b) Email (reliable, no LLM involved)
-  if command -v gog >/dev/null 2>&1; then
-    printf '%b\n' "$BODY" | gog gmail send -a "$ALERT_EMAIL" --to "$ALERT_EMAIL" \
+  # FIX 2026-10-22: under launchd, PATH was /usr/bin:/bin only ⇒ `command -v gog`
+  #   was false and this whole block was SILENTLY skipped (no log line at all).
+  #   Now resolve gog explicitly and always log the outcome.
+  GOG_BIN=$(command -v gog 2>/dev/null || echo /opt/homebrew/bin/gog)
+  if [ -x "$GOG_BIN" ]; then
+    printf '%b\n' "$BODY" | "$GOG_BIN" gmail send -a "$ALERT_EMAIL" --to "$ALERT_EMAIL" \
       --subject "$SUBJ" --body-file - --no-input >/dev/null 2>&1 \
       && log "  [ALERT] email sent → $ALERT_EMAIL" \
-      || log "  [ALERT] email send FAILED"
+      || log "  [ALERT] email send FAILED ($GOG_BIN)"
+  else
+    log "  [ALERT] email SKIPPED — gog not executable ($GOG_BIN)"
   fi
 
   # (c) macOS notification (only if a user is logged into the GUI)
