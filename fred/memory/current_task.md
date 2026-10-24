@@ -1,6 +1,51 @@
-# Current Task — updated 2026-10-23 01:36 SAST
+# Current Task — updated 2026-10-23 09:36 SAST
 
-## Status: 🔴 **IT IS NOW TOP-UP DAY: balance CNY 11.73 · dry Oct 23 ~10:00–21:40 · infra all green · 12h23m tunnel-clean**
+## Status: 🚨 **~1h45m OF RUNWAY: balance CNY 2.48 · burn 1.40/h · dry ≈ Oct 23 11:20 · infra all green**
+
+### 09:36 SAST — 🚨 balance 2.48 · dry ≈ **11:20** · burn at hot rate 1.40/h · top-up window ≈ 100 min
+- 💰 DeepSeek **2.48 CNY** @09:36 (4.74 @07:59 ⇒ **1.40 CNY/h** over 1h37m — the hot tail is now the sustained rate). Runway **~1h45m ⇒ dry ≈ Oct 23 11:20**. No fallback provider ⇒ a zero stops portal chat, WhatsApp auto-reply, site AI, DocChat.
+- ⚠️ **Watchdog re-alert lands 11:14** (last 09:14 + 2h dedup) — that is *after* projected dry. My direct word in chat is the real alert now.
+- 🔻 **My own heartbeats are a material part of the burn:** balance fell 3.18 → 2.48 in the ~2 min of this heartbeat (probe + heavy context). Fewer/leaner heartbeats buys runway; each ~0.5–0.7 CNY.
+- 🔔 **Watchdog** `low_balance` (exit 1 by design); balance 200 / inference 200 / gateway 200; state refreshed 09:34, log confirms every 10 min.
+- **Traffic:** **0 hits today**; Oct 22 closed 6, Oct 21 10. Subs 2, leads 4, users 20 — flat.
+- **Tunnels:** **0 errish today**; last errish fleet-wide **2026-10-22T12:04:20Z** ⇒ **~19h32m clean**. 8 cloudflared procs.
+- **Infra green:** healthcheck `ok` @09:22; 6/6 ports 200 (3000/3001/3015/8080/8091/18789); 21 LaunchAgents (only api-watchdog nonzero by design); enrol health ok @09:36 (106 cols / 2 subs / 0 pending / dryRun=false); backups 1.6 GB, newest 2026-10-23_02-00 ✔; disk 25% (36Gi); load 1.36/1.33/1.32; up 7d08:46; 0 app errors.
+- **Open blockers unchanged:** (1) 🚨 DeepSeek top-up before ~11:00, (2) no fallback provider (plan ready, not applied), (3) reboot cause + P1 LaunchDaemon migration approval, (4) UPS R1,293, (5) fallback DNS, (6) QUIC→http2 trial awaiting go.
+
+### 08:00 SAST — 🚨 balance 4.74 · dry ≈ **11:20–13:00** · daily report delivered · infra green
+- 💰 DeepSeek **4.74 CNY** @07:59 (5.14 @07:33 ⇒ **0.89/h** over 27 min). Runway **3.3–5.0 h ⇒ dry ≈ Oct 23 11:20–13:00**. No fallback provider ⇒ a zero stops portal chat, WhatsApp auto-reply, site AI, DocChat. **Top-up is the only critical path now — ~3½ h of slack.**
+- 🔔 **Watchdog** `low_balance` (exit 1 by design); balance 200 / inference 200 / gateway 200; last alert stamp 07:13 (08:00 run proved dedup — no new email).
+- 📅 **08:00 daily report handled in this heartbeat** (cron `249af5eb` fired ok @08:00:00): yesterday = **6 pageviews, 2 `/Apply` views, 0 apply-submits**; top paths `/` 3, `/Apply` 2, `/PrePrimary` 1; refs 5 direct / 1 google.com. Balance line delivered first.
+- **Traffic:** **0 hits today**; Oct 22 closed 6, Oct 21 10, Oct 20 1. Enrol submissions 2, leads 4, users 20 — flat.
+- **Tunnels:** **0 events today**; last errish fleet-wide **2026-10-22T12:04:20Z** ⇒ **~20h clean**. 8 cloudflared procs.
+- **Infra green:** healthcheck `ok` @07:52; 6/6 ports 200 (3000/3001/3015/8080/8091/18789); 21 LaunchAgents (only watchdog nonzero by design); enrol health ok @08:00 (106 cols / 2 subs / 0 pending / dryRun=false); backups 31 / 1.6 GB (newest 2026-10-23_02-00 ✔); disk 25% (36Gi); load 1.58/1.32/1.26; up 7d07:10; 0 app errors.
+- **Open blockers unchanged:** (1) 🚨 DeepSeek top-up before ~11:00, (2) no fallback provider (plan ready, not applied; ollama 3B = heartbeat-only), (3) reboot cause + P1 LaunchDaemon migration approval, (4) UPS R1,293, (5) fallback DNS, (6) QUIC→http2 trial awaiting go.
+
+### 07:36 SAST — 🚨 balance 5.14 · dry ≈ **11:10–13:00** · this is the last realistic window
+- 💰 DeepSeek **5.14 CNY** @07:33 (7.01 @05:33 ⇒ **0.94/h** over 2h; the 03:32–05:33 stretch was hotter at 1.42/h). Runway **3.6–5.5 h ⇒ dry ≈ Oct 23 11:10–13:00**. Hours, not days. No fallback provider ⇒ a zero stops portal chat, WhatsApp auto-reply, site AI, DocChat.
+- 🔔 **Watchdog** `low_balance` (exit 1 by design); balance 200 (5.14) / inference 200 / gateway 200. Alerts today: 01:12, 03:12, 05:13, **07:23** — email + WhatsApp attempted each time. No extra spam added.
+- 📅 **08:00 report refreshed again** (job `249af5eb`): still said 7.01 / dry 10:25 → now 5.14 / dry 11:10–13:00, top-up as the first line. Fires in ~24 min.
+- 🗣️ **Told Mr D directly in this heartbeat** (morning, actionable) — balance, runway, one action.
+- **Traffic:** **0 hits today** (no rows for Oct 23); Oct 22 closed at 6, last hit `/` from google.com. Subs 2, leads 4, purchases 8, users 20 — flat.
+- **Tunnels:** **0 errish today**; last fleet-wide event still **2026-10-22T12:04:20Z** ⇒ **~20h clean**. 8 cloudflared procs; WhatsApp named tunnel (`whatsapp-server/cloudflared-named.log`) checked separately — clean since 11:12:49Z.
+- **Infra green:** healthcheck state `ok` @07:22; 6/6 ports 200 (3000/3001/3015/8080/8091/18789); 21 LaunchAgents (only watchdog nonzero by design); enrol health ok @07:36 (106 cols / 2 subs / 0 pending / dryRun=false); backups 31 / 1.6 GB (newest 2026-10-23_02-00 ✔); disk 25% (36Gi); load 1.23/1.22/1.23; up 7d06:46; 0 app errors.
+- **Open blockers unchanged:** (1) 🚨 DeepSeek top-up NOW, (2) no fallback provider (plan ready, not applied; ollama 3B = heartbeat-only), (3) reboot cause + P1 LaunchDaemon migration approval, (4) UPS R1,293, (5) fallback DNS, (6) QUIC→http2 trial awaiting go.
+
+### 05:36 SAST — 🚨 burn at hot tail 1.42/h · dry ≈ **~10:25** · top-up is now a ~5-hour window
+- 💰 DeepSeek **7.01 CNY** @05:33 (9.88 @03:32 ⇒ **1.42/h** over 2h — burn has climbed every 2-h reading: 0.58 → 0.93 → **1.42**). Runway **~4.9 h ⇒ dry ≈ Oct 23 ~10:25**. Single figure now — no blended range left; the hot tail is the trend, not an outlier. **⚠️ Mr D must top up before ~10:00 SAST.** No fallback provider ⇒ a zero stops portal chat, WhatsApp auto-reply, site AI, DocChat.
+- 🔔 **Watchdog alert path healthy and re-firing every ~2h:** 01:12, 03:12, 05:13 (email sent + WhatsApp attempted each time). Status `low_balance`, balance/inference/gateway probes all 200. That's 3 emails already in his inbox — no further spam added.
+- 📅 **08:00 report payload refreshed again** (job `249af5eb`): now leads with "top-up NOW", 7.01 CNY, 1.42/h, dry ≈ 10:25 (previous text still said 11.73 / dry 10:00–21:40). That 08:00 message is likely the last alert before blackout.
+- **Traffic:** **0 hits today** (no rows for Oct 23); Oct 22 closed at 6, Oct 21 at 10, Oct 20 at 1. Enrol submissions 2, leads 4, purchases 8, users 20 — flat.
+- **Tunnels:** **0 errish today**, last event fleet-wide still **2026-10-22T12:04:20Z** (14:04 SAST) ⇒ **15h32m clean**. No flap since 13:12 Oct 22.
+- **Infra green:** healthcheck state `ok` @05:36 (exit 0); 6/6 ports 200 (3000/3001/3015/8080/8091/18789); 21 LaunchAgents (only watchdog exit 1 by design); enrol health ok @05:36 (106 cols / 2 subs / 0 pending / dryRun=false); site monitor OK @05:30 (bundle index-BV2ORYrx.js, render clean); backups 31 / 1.6 GB (newest 2026-10-23_02-00 ✔); disk 25% (36Gi); load 1.58/1.29/1.25; up 7d04:47; 0 app errors.
+- **Open blockers unchanged:** (1) 🚨 DeepSeek top-up before ~10:00, (2) no fallback provider (plan ready, not applied; ollama 3B = heartbeat-only), (3) reboot cause + P1 LaunchDaemon migration approval, (4) UPS R1,293, (5) fallback DNS, (6) QUIC→http2 trial awaiting go.
+
+### 03:36 SAST — ✅ all green · 💰 burn back UP to 0.93/h · 0 traffic today · 13h32m tunnel-clean
+- 💰 DeepSeek **9.88 CNY** @03:32 (11.73 @01:32 ⇒ **0.93/h** over 2h — back up from the 0.58/h blip). Runway **~10.7 h ⇒ dry ≈ Oct 23 ~14:15**; at the 1.4/h hot tail ⇒ ~7 h ⇒ **dry ≈ Oct 23 ~10:40**. Window has **narrowed** vs the 01:36 estimate (was 10:00–21:40) — the long tail is gone. Watchdog `low_balance` (exit 1 by design); balance/inference/gateway all 200; no re-alert since 01:12 (correct dedup). ⚠️ **Mr D must top up before ~10:30 SAST.** No fallback provider ⇒ dry stops portal chat, WhatsApp auto-reply, site AI, DocChat.
+- **Traffic:** **0 hits today** (no rows for Oct 23); Oct 22 closed at 6, last hit 07:45:57. Enrol submissions 2, leads 4, purchases 8, users 20 — flat.
+- **Tunnels:** **0 errish today**, last event fleet-wide still **2026-10-22T12:04:20Z** (14:04 SAST flap #2 tail) ⇒ **13h32m clean**. No new QUIC flap since 13:12 Oct 22.
+- **Infra green:** healthcheck **9/9 OK** @03:36; 8/8 public hosts correct (only expected www 301); 6/6 ports 200 (3000/3001/3015/8080/8091/18789); 21 LaunchAgents (only watchdog exit 1 by design); enrol health ok (106 cols / 2 subs / 0 pending / dryRun=false); backups 31 / 1.6 GB (newest 2026-10-23_02-00 ✔ ran); disk 24% (38Gi); load 1.68/1.37/1.34; up 7d02:46; 0 app errors.
+- **Open blockers unchanged:** (1) 🔴 DeepSeek top-up before ~10:30, (2) no fallback provider (plan ready, not applied; ollama 3B = heartbeat-only), (3) reboot cause + P1 LaunchDaemon migration approval, (4) UPS R1,293, (5) fallback DNS, (6) QUIC→http2 trial awaiting go.
 
 ### 01:36 SAST — ✅ all green · 💰 burn eased to 0.58/h · 0 traffic today · 12h23m tunnel-clean
 - 💰 DeepSeek **11.73 CNY** @01:32 (12.86 @23:36 ⇒ **0.58/h** over 1h56m — burn roughly halved vs the 0.87/h reading at 23:36; steps: 12.09 @00:52–01:02, 11.73 @01:12 and flat since). Runway **~20 h ⇒ dry ≈ Oct 23 ~21:40**; on the 1.4/h hot tail ⇒ ~8.4 h ⇒ **dry ≈ Oct 23 ~10:00**. Blended **Oct 23 10:00–21:40**. Watchdog `low_balance` (exit 1 by design); balance/inference/gateway all 200; **alert re-fired 01:12 — email sent, WhatsApp attempted** (no dedup spam since). ⚠️ **Today is the day: top-up first thing when Mr D wakes.** No fallback provider ⇒ dry stops portal chat, WhatsApp auto-reply, site AI, DocChat.
