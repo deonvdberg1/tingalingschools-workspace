@@ -14,6 +14,8 @@ import PortalClock from './pages/PortalClock';
 import PortalRegister from './pages/PortalRegister';
 import PortalDashboard from './pages/PortalDashboard';
 import PortalAnalytics from './pages/PortalAnalytics';
+import Terms from './pages/Terms';
+import RefundPolicy from './pages/RefundPolicy';
 
 const { Pages, Layout, mainPage, NO_LAYOUT_PAGES = [] } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -47,6 +49,18 @@ const AppRoutes = () => {
           }
         />
       ))}
+      <Route path="/terms" element={
+        <LayoutWrapper currentPageName="Terms">
+          <Terms />
+        </LayoutWrapper>
+      } />
+      <Route path="/Terms" element={<Navigate to="/terms" replace />} />
+      <Route path="/refund-policy" element={
+        <LayoutWrapper currentPageName="RefundPolicy">
+          <RefundPolicy />
+        </LayoutWrapper>
+      } />
+      <Route path="/RefundPolicy" element={<Navigate to="/refund-policy" replace />} />
       <Route path="*" element={<PageNotFound />} />
       {/* ── Portal (independent Ting-A-Ling dashboard: staff / admin / parents) ── */}
       <Route path="/login" element={<PortalLogin />} />

@@ -49,6 +49,23 @@ export default function Layout({ children, currentPageName }) {
       <main>
         {children}
       </main>
+
+      <footer className="bg-slate-900 text-slate-400 text-sm border-t border-slate-700">
+        <div className="max-w-5xl mx-auto px-6 py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <p>&copy; 2026 Ting-A-Ling Schools &middot; Meerensee, Richards Bay</p>
+          <nav className="flex flex-wrap gap-x-5 gap-y-2">
+            <Link to="/terms" className="hover:text-white underline-offset-2 hover:underline">
+              Terms and Conditions
+            </Link>
+            <Link to="/refund-policy" className="hover:text-white underline-offset-2 hover:underline">
+              Refund and Cancellation Policy
+            </Link>
+            <a href="mailto:info@tingalingschools.com" className="hover:text-white underline-offset-2 hover:underline">
+              info@tingalingschools.com
+            </a>
+          </nav>
+        </div>
+      </footer>
     </div>
   );
 }
