@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary Meta Tags -->
+    <title>Ting-A-Ling Schools | Pre-Primary & Special Needs Education in Meerensee</title>
+    <meta name="title" content="Ting-A-Ling Schools | Pre-Primary & Special Needs Education in Meerensee" />
+    <meta name="description" content="Ting-A-Ling Schools in Meerensee, Richards Bay. Quality pre-primary education for ages 2–6 and specialised learning support. Enrol your child today." />
+    <meta name="keywords" content="pre-primary school, special needs school, Meerensee, Richards Bay, early childhood education, school enrolment, Ting-A-Ling" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://tingalingschools.com/" />
+    <meta property="og:title" content="Ting-A-Ling Schools | Pre-Primary & Special Needs Education" />
+    <meta property="og:description" content="Two dedicated schools in Meerensee providing quality education and care for every child." />
+    <meta property="og:image" content="https://tingalingschools.com/logo.png" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://tingalingschools.com/" />
+    <meta property="twitter:title" content="Ting-A-Ling Schools | Pre-Primary & Special Needs Education" />
+    <meta property="twitter:description" content="Two dedicated schools in Meerensee providing quality education and care for every child." />
+    <meta property="twitter:image" content="https://tingalingschools.com/logo.png" />
+    
+    <!-- AutoEffortless site tracking (self-hosted, privacy-friendly, no cookies) -->
+    <script>
+      (function () {
+        function isInternal() {
+          try {
+            // Explicit opt-out flag (set from portal Analytics page)
+            if (localStorage.getItem('ae_internal') === '1') return true;
+            // Portal users (admin/staff) browsing the site count as internal
+            var t = localStorage.getItem('tingaling_token');
+            if (t) {
+              var u = JSON.parse(atob(t));
+              if (u.role === 'client_admin' || u.role === 'overlord' || u.role === 'staff') return true;
+            }
+          } catch (e) {}
+          return false;
+        }
+        function sectionOf() {
+          try {
+            var p = location.pathname.toLowerCase() + location.search.toLowerCase();
+            if (p.indexOf('specialneeds') !== -1 || p.indexOf('special-needs') !== -1) return 'special-needs';
+            if (p.indexOf('preprimary') !== -1 || p.indexOf('pre-primary') !== -1) return 'pre-primary';
+            if (p.indexOf('apply') !== -1) return 'apply';
+            return 'main';
+          } catch (e) { return 'main'; }
+        }
+        function send(data) {
+          try {
+            // Skip portal app pages (admin/staff dashboard) — they're not marketing traffic
+            if (location.pathname.indexOf('/portal') === 0) return;
+            // Skip automated browsers (site monitor's headless Chrome, bots) —
+            // they must not count as customer traffic.
+            // UA check is the reliable one: --headless=new --dump-dom does not
+            // always set navigator.webdriver, so monitor hits were leaking in.
+            if (navigator.webdriver === true) return;
+            if (/HeadlessChrome|TingalingSiteMonitor/i.test(navigator.userAgent)) return;
+            var body = JSON.stringify(Object.assign({
+              clientId: 6,
+              path: location.pathname,
+              title: document.title,
+              referrer: document.referrer,
+              screen: (window.screen ? window.screen.width + 'x' + window.screen.height : ''),
+              ua: navigator.userAgent,
+              internal: isInternal() ? 1 : 0,
+              section: sectionOf()
+            }, data || {}));
+            var url = 'https://whatsapp.autoeffortless.com/api/site-track';
+            if (navigator.sendBeacon) {
+              navigator.sendBeacon(url, new Blob([body], { type: 'text/plain' }));
+            } else {
+              fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: body, keepalive: true });
+            }
+          } catch (e) {}
+        }
+        window.AETrack = function (label, title) {
+          // Event labels may carry a program, e.g. 'apply-submit:PrePrimary' —
+          // attribute the event to that section.
+          var section = sectionOf();
+          if (label && label.indexOf('apply-submit') === 0) {
+            var prog = String(label).split(':')[1] || '';
+            if (prog.toLowerCase().indexOf('special') !== -1) section = 'special-needs';
+            else if (prog.toLowerCase().indexOf('pre') !== -1) section = 'pre-primary';
+            else section = 'apply';
+          }
+          send({ event: true, label: label, title: title || document.title, section: section });
+        };
+        if (document.readyState === 'complete') send({});
+        else window.addEventListener('load', function () { send({}); });
+        // Track SPA route changes too
+        var origPush = history.pushState;
+        history.pushState = function () {
+          var r = origPush.apply(this, arguments);
+          send({});
+          return r;
+        };
+        window.addEventListener('popstate', function () { send({}); });
+      })();
+    </script>
+
+    <script type="module" crossorigin src="/assets/index-sEmt_7y6.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-B340QeLP.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
