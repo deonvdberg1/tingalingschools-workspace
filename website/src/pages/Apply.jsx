@@ -167,11 +167,23 @@ export default function Apply() {
                 </Select>
               </div>
             )}
+            <p className="text-xs text-slate-500 pt-1">
+              By submitting this application you acknowledge our{' '}
+              <Link to="/terms" className="text-teal-700 font-medium hover:underline">Terms and Conditions</Link>
+              {' '}and{' '}
+              <Link to="/refund-policy" className="text-teal-700 font-medium hover:underline">Refund and Cancellation Policy</Link>.
+              Enrolment and registration fees are non-refundable.
+            </p>
             <Button type="submit" disabled={sending} className={`w-full ${btnClass} mt-2`}>
               {sending ? 'Submitting...' : 'Submit Application'}
             </Button>
           </form>
         </Card>
+        <p className="text-center text-xs text-slate-500 mt-6">
+          <Link to="/terms" className="hover:underline">Terms and Conditions</Link>
+          {' · '}
+          <Link to="/refund-policy" className="hover:underline">Refund and Cancellation Policy</Link>
+        </p>
       </div>
     </div>
   );

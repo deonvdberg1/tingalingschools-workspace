@@ -103,3 +103,4 @@ input.bad,select.bad,textarea.bad,.options.bad{border-color:var(--red)!important
 /* footer */
 .foot{text-align:center;color:var(--slate);font-size:.8rem;padding:24px 16px 40px}
 .foot p{margin:4px 0}
+.foot a,.note a{color:var(--teal-dark);text-decoration:underline}
